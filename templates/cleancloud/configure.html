@@ -1,0 +1,64 @@
+{% extends "cleancloud/base_breadcrumb.html" %}
+{% load widget_tweaks %}
+
+{% block title %}
+- Configure Job
+{% endblock %}
+
+{% block breadcrumb %}
+	<li><a href="{% url 'cleancloud.views.start' %}">Start</a> <span class="divider">/</span> </li>
+	{% if not error %}
+	<li><a href="{% url 'cleancloud.views.upload' job.id %}">Select Input</a> <span class="divider">/</span> </li>
+	{% endif %}
+	<li><a href="{% url 'cleancloud.views.review' job.id %}">Review Data</a><span class="divider">/</span> </li>
+	<li class="active">Select Service</li>
+{% endblock %}
+
+{% block inner %}
+<form name="task" action='' method="POST">
+	{% csrf_token %}
+<div class="span12">
+	<h2>Select Service Level</h2>
+	<p>CleanCloud provides multiple levels of service that vary by cost, accuracy, and speed. Please review your options below and select one. Prices and estimated completion times are based on the number of rows in the data file you uploaded.</p>
+	<table class="table">
+		<thead>
+			<tr>
+				<td></td>
+				<th>Name</th>
+				<th>Price</th>
+				<th>Estimated Running Time</th>
+				<th>Service</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for name, cost, time, description in tiers %}
+			<tr>
+				<td><input type="radio" name="service" value="{{ name }}" {% if cost == 0 %}checked{% endif %}></td>
+				<td>{{ name }}
+				<td>{% if cost == 0 %}
+						Free
+					{% else %}
+						${{ cost }}
+					{% endif %}
+				</td>
+				<td>{{ time }} hours</td>
+				<td>
+					<ul>
+						{% for desc_line in description %}
+							<li>{{ desc_line }}</li>
+						{% endfor %}
+					</ul>
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<div class="form-actions">
+		<input class="btn btn-large btn-primary span2" onclick="load_page_onclick('{% url 'cleancloud.views.review' job.id %}')" value="Previous">
+		<div class="pull-right" id="clean">
+			<input class="btn btn-large btn-primary" type="submit" value="Clean!">
+		</div>
+	</div>	
+</div>
+</form> 
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "cleancloud/base_breadcrumb.html" %}
+
+{% block title %}
+- Job Status
+{% endblock %}
+
+{% block body_options %}
+onload="comet({{job.id}})"
+{% endblock %}
+
+{% block breadcrumb %}				
+	<li><a href="{% url 'cleancloud.views.start' %}">Home</a> <span class="divider">/</span>
+	<li class="active">Job Status</li>
+{% endblock %}
+
+{% block inner %}
+<form name="results" action="" method="post">
+	{% csrf_token %}	
+	<div class="span10" id="results">
+	{% if error %}
+		{{ error }}
+	{% endif %}
+	<p>Check the status of a previously submitted job by entering the job ID below.</p>
+	<label class="text">Job ID: <input type="text" name="jobid"></label>
+	<div class="pull-right">
+		<input class="btn btn-large btn-primary" type="submit">
+	</div>
+	</div>
+</form>
+{% endblock %}

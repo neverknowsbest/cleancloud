@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dedool.com{% block title %}{% endblock %}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+	<link href="{{ STATIC_URL }}css/font-awesome.min.css" rel="stylesheet">
+	<link href="{{ STATIC_URL }}css/nsr-web.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/theme.css">
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/animate.css">
+	<link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>		
+	<script src="{{ STATIC_URL }}js/nsr-web.js"></script>
+  </head>
+<body {%block body_options %}{% endblock %}>
+    <!-- Navbar -->
+	<div class="navbar navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				</button>
+          	<a class="brand scroller" data-section="body" href="{% url 'index' %}">
+                <img src="{{ STATIC_URL }}img/logo.png" alt="Dedool" />
+            </a>
+				<div class="nav-collapse collapse pull-right">
+					<ul class="nav">
+						<li id="nav-profile">
+						<a href="{% url 'cleancloud.views.profile' %}">Profile</a>
+						</li>
+						<li id="nav-files">
+						<a href="{% url 'cleancloud.views.files' %}">Files</a>
+						</li>
+						<li id="nav-functions">
+						<a href="{% url 'cleancloud.views.functions' %}">Functions</a>
+						</li>
+						<li id="nav-jobs">
+						<a href="{% url 'cleancloud.views.job_history' %}">Jobs</a>
+						</li>
+						<li class="divider"></li>
+						{% if user.is_authenticated %}
+						<li>
+							<a href="{% url 'cleancloud.views.profile' %}">Welcome, {{ user.username }}!</a>
+						</li>
+						<li>
+						<a class="btn-header" href="{% url 'auth_logout' %}">Logout</a>
+						</li>		
+						{% else %}
+						<li>
+						<a class="btn-header" href="{% url 'auth_login' %}">Login</a>
+						</li>
+						<li>
+						<a class="btn-header" href="{% url 'registration_register' %}">Register</a>
+						</li>
+						{% endif %}		
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!--Page heading -->
+	{% block header %}
+	{% endblock %}
+	
+	<!-- Page body -->
+	<div class="features_page">
+		<div class="container" id="content">
+			<div class="span12 error">
+				{% if error %}
+					<h4>Error</h4>
+					<p>{{ error }}</p>
+				{% endif %}	
+			</div>			
+			{% block body %}
+
+			{% endblock %}	
+		</div>
+	</div>
+	
+	<!-- footer -->
+	<div id="footer">
+			<div class="row copyright">
+				<div class="span5">
+					<!-- <h3>Contact</h3>
+					<a href="#" class="social fb">
+						<i class="i_facebook"></i>
+					</a>
+					<a href="#" class="social tw">
+						<i class="i_twitter"></i>
+					</a>
+					<a href="#" class="social yt">
+						<i class="i_youtube"></i>
+					</a> -->
+				</div>
+				<div class="span2 offset5 copy">
+					<p>2013 - Nittany System Research</p>
+				</div>
+			</div>
+		</div>
+	</div>	
+	
+	<!-- Additional scripts-->
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+	<script src="{{ STATIC_URL }}js/jquery.tablesorter.min.js"></script>
+	<script>
+	// highlight_active_nav();
+	</script>
+	{% block additional_scripts %}
+	{% endblock %}
+  </body>
+</html>

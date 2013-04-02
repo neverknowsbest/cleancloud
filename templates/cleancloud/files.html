@@ -1,0 +1,53 @@
+{% extends 'cleancloud/base.html' %}
+
+{% block title %}- Files{% endblock %}
+
+{% block body %}
+<div>
+	<h2 class="section_header left">
+		<span>Files</span>
+		<hr class="right visible-desktop">
+	</h2> 
+
+	<div class="row">
+		<h4>Upload File</h4>
+		<form action="" enctype="multipart/form-data" method="post">
+			{% csrf_token %}
+			<label>
+				Select a file to upload: <input type="file" name="input_file"/>
+			</label>
+			<input type="submit" class="btn btn-primary" value="Upload File">
+		</form>
+	</div>
+	
+	<div class="row">
+		<h4>File Library</h4>
+		<h5>Quota Usage</h5>
+		<p><b>{{ total_size|filesizeformat }}</b> out of <b>{{ quota|filesizeformat }}</b>. {{ percentage }}% used.</p>
+		<table class="table table-bordered table-hover">
+			<thead>
+				<tr>
+					<th></th>
+					<th>Name</th>
+					<th>Size</th>
+					<th>Rows</th>
+					<th>Columns</th>
+					<th>Type</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for file, stripped_filename in files %}
+					<tr id="{{ file.id }}">
+						<td><a onclick="remove_file('{{ file.id }}')"><i class="icon-remove"></i></td>
+						<td>{{ stripped_filename }}</td>
+						<td>{{ file.size|filesizeformat }}</td>
+						<td>{{ file.rows }}</td>
+						<td>{{ file.columns }}</td>
+						<td>{% if file.type == "U" %}Uploaded{% else %}Cleaned{% endif %}</td>
+					<tr>
+				{% endfor %}
+			</tbody>	
+		</table>
+	</div>
+</div>
+{% endblock %}

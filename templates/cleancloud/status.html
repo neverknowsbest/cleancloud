@@ -1,0 +1,71 @@
+{% extends "cleancloud/base_breadcrumb.html" %}
+
+{% block title %}
+- Job Status
+{% endblock %}
+
+{% block body_options %}
+onload="comet({{job.id}})"
+{% endblock %}
+
+{% block breadcrumb %}				
+	<li><a href="{% url 'cleancloud.views.start' %}">Home</a> <span class="divider">/</span>
+	<li class="active">Running Job</li>
+{% endblock %}
+
+{% block inner %}
+	{% if error %}
+		{{ error }}
+	{% else %}
+	<div class="row">
+		<div class="span12">
+			<h2>Job Status</h2>
+			<p>Job ID: {{ job.id }} <br>
+			{% if job.job_type == "e" and job.user_id == 1 %}
+				EMR Job ID: {{ job.jobflowid }} <br>
+				EMR Job State: <span id="status"></span> <br>
+				EMR Job Action: <span id="details"></span> <br>
+				<span id="tracker_span"><a href="" id="tracker_url">EMR Job Tracker</a> </p></span>
+			{% endif %}
+			Status: <span id="status"></span> <br>
+			<div class="span6 offset2 progress progress-striped active">
+				<div class="bar" style="width: 0%%;" id="progress"></div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="span12">
+			<form id="resultsform" name="results" action="" method="post">
+				{% csrf_token %}
+				<div id="results">
+					<!-- results will be filled in here by javascript -->
+					<input class="btn btn-large btn-primary span3" onclick="cancel('{{ job.id }}')" value="Cancel Running Job">
+				</div>
+			</form>
+		</div>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block additional_scripts %}
+	<script>
+	/* Catch enter button, prevent it from submitting the form */
+$('#resultsform').keydown(function(event) {
+	if (event.which == 13) {
+		var tagname = event.target.tagName.toLowerCase();
+		if (tagname == "input") {
+			return false;
+		}
+	}
+});
+/* Catch mouse click, prevent it from submitting the form except on submit button*/
+$('#resultsform').click(function(event) {
+	var tagname = event.target.id;
+	if (tagname == "final") {
+		return true;
+	}
+	return false;
+});
+
+	</script>
+{% endblock %}

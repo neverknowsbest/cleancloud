@@ -1,0 +1,23 @@
+{% extends "cleancloud/base_breadcrumb.html" %}
+
+{% block title %}
+	- Results
+{% endblock %}
+
+{% block breadcrumb %}
+	<li><a href="{% url 'cleancloud.views.start' %}">Home</a> <span class="divider">/</span>
+	<li class="active">Results</li>
+{% endblock %}
+
+{% block inner %}
+<h3>Final Results</h3>
+<div>
+	<p><a href="{{ results_link }}" class="btn btn-primary btn-large"><i class="icon-download-alt"></i> Download Final Results</a></p>
+</div>
+<h4>Results Table</h4>
+<div class='table'>
+	{% autoescape off %}
+		{{ results_table }}
+	{% endautoescape %}
+</div>
+{% endblock %}

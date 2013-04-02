@@ -1,0 +1,26 @@
+{% extends "cleancloud/base_profile.html" %}
+
+{% block title %}
+- Profile
+{% endblock %}
+
+{% block profile_header %}
+User Profile
+{% endblock %}
+
+{% block inner %}
+<div class="row">
+	{% if profile.first_name|length > 0 %}
+	<p><h6>Name:</h6> {{ profile.first_name }} {{ profile.last_name }}</p>
+	<p><h6>Address:</h6>
+		{{ profile.street_address_1 }}<br/>
+		{% if profile.street_address_2|length > 0 %}
+		{{ profile.street_address_2 }}<br/>
+		{% endif %}
+		{{ profile.city }}, {{ profile.state }}<br/>
+		{{ profile.zipcode }}</p>
+	{% else %}
+	<p>User profile not available. Please click <a href="{% url 'cleancloud.views.edit_profile' %}">here</a> to complete your profile.</p>
+	{% endif %}
+</div>
+{% endblock %}

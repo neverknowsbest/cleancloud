@@ -1,0 +1,45 @@
+{% extends "cleancloud/base_breadcrumb.html" %}
+
+{% block title %}
+ - Review Data
+{% endblock %}
+
+{% block breadcrumb %}
+	<li><a href="{% url 'cleancloud.views.start' %}">Start</a> <span class="divider">/</span> </li>
+	{% if not error %}
+	<li><a href="{% url 'cleancloud.views.upload' job.id %}">Select Input</a> <span class="divider">/</span> </li>
+	{% endif %}
+	<li class="active">Review Data</li>
+{% endblock %}
+
+{% block inner %}
+<div class="span12">
+<form action="" method="POST">	
+	{% csrf_token %}
+		<h2>Review Data</h2>
+		<p>The first 10 lines of <strong>{{ n }}</strong> total in the submitted data file are displayed below. Please verify that the data is correct.</p>
+		<p>Select the data column(s) to include in the cleaning by selecting the checkboxes in the header. The default is column 1.</p>
+		<table class="table">
+			<thead>
+				{% autoescape off %}
+					{{ table_header }}
+				{% endautoescape %}
+			</thead>
+			<tbody>
+				{% autoescape off %}
+					{{ table_body }}
+				{% endautoescape %}
+			</tbody>
+		</table>
+	<input type="hidden" name="ncols" value="{{ ncols }}"/>
+	<input type="hidden" name="nrows" value="{{ nrows }}"/>	
+	<input type="hidden" name="key" value="0"/>
+	<div class="form-actions">
+		<input class="btn btn-large btn-primary span2" onclick="load_page_onclick('{% url 'cleancloud.views.select' job.id %}')" value="Previous">
+		<div class="pull-right" id="clean">
+			<input class="btn btn-large btn-primary" type="submit" value="Next">
+		</div>
+	</div>
+</form>
+</div>
+{% endblock %}

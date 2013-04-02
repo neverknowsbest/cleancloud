@@ -1,0 +1,15 @@
+{%extends "registration/base_registration.html" %}
+
+{% block inner %}
+<div class="container">
+	<h2 class="section_header left">
+		<span>Register</span>
+	</h2>
+	<form action="" method="post">
+	{% csrf_token %}
+		{{ form.as_p }}
+	<input type="submit" value="Submit" class="btn btn-large btn-primary span2"/>
+	</form>
+</div>
+{% endblock %}
+

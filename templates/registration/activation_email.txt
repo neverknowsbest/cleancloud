@@ -1,0 +1,10 @@
+Hello,
+
+Thanks for registering at {{ site.name }}. 
+
+To complete your activation, please click or copy and paste the following link into your browser:
+
+http://{{ site.domain }}/account/activate/{{ activation_key }}/
+
+Thanks,
+The Dedool Team

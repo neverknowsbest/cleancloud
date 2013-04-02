@@ -1,0 +1,113 @@
+{% extends "cleancloud/base.html" %}
+
+{% block header %}
+	<div id="hero">
+		<div class="container">
+			<!-- starts carousel -->
+			<div class="row animated fadeInDown">
+				<div class="span12">
+					<div id="myCarousel" class="carousel slide">
+						<!-- carousel items -->
+						<div class="carousel-inner">
+							<!-- slide -->
+							<div class="active item slide1">
+								<div class="row">
+									<div class="span6">
+										<img src="{{ STATIC_URL }}img/slide1.png" alt="slide1" />
+									</div>
+									<div class="span4">
+										<h1>
+											Cloud-based Data Cleaning Service
+										</h1>
+										<p>
+											Duplicate record cleaning. Clean database files with millions of records.
+										</p>
+										<a href="{% url 'cleancloud.views.start' %}" class="btn btn-primary btn-large">
+											Start Cleaning!
+										</a>
+									</div>
+								</div>
+							</div>
+							<!-- slide 
+							<div class="item slide2">
+								<div class="row">
+									<div class="span4 animated fadeInUpBig">
+										<h1>Fully responsive blog template</h1>
+										<p>
+											Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Nisi ut aliquip ex ea commodo consequat.
+										</p>
+										<a href="blog.html" class="btn btn-success btn-large">
+											Watch it now!
+										</a>
+									</div>
+									<div class="span6 animated fadeInDownBig">
+										<img src="img/slide2.png" alt="slide2" />
+									</div>
+								</div>
+							</div>
+							<!-- slide
+							<div class="item slide3 animated fadeInUpBig">
+								<img src="img/slide3.png" alt="slide3" />
+							</div> -->
+						</div>
+						<!-- Carousel nav -->
+						<!-- <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+						<a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a> -->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="intro">
+		<div class="container">
+			<h1>Dedool is a high-performance cloud-based database record cleaning service.</h1>
+		</div>
+	</div>	
+{% endblock %}
+
+{% block body %}
+<div id="features">
+	<h2 class="section_header">
+		<hr class="left visible-desktop">
+		<span>Features</span>
+		<hr class="right visible-desktop">		
+	</h2>
+	
+	<div class="row">
+		<div class="span4 feature">
+			<img src="{{ STATIC_URL }}img/feature1.jpg" alt="feature1" class="thumb" />
+			<h3>
+				<i class="i_cloud"></i> Cloud-based Record Cleaning
+			</h3>
+			<p class="description">
+				Cleaning takes place on our servers in the cloud -- no downloads or installation hassle.
+			</p>
+		</div>
+		<div class="span4 feature">
+			<img src="{{ STATIC_URL }}img/feature2.jpg" alt="feature2" class="thumb" />
+			<h3>
+				<i class="i_chart"></i> Online File Storage
+			</h3>
+			<p class="description">
+				Cleaned files are automatically stored in our online storage, up to 10 GB.
+			</p>
+		</div>
+		<div class="span4 feature">
+			<img src="{{ STATIC_URL }}img/feature3.jpg" alt="feature3" class="thumb" />
+			<h3>
+				<i class="i_movil"></i> Multiple Price Tiers
+			</h3>
+			<p class="description">
+				Choose the price and service that matches your needs!
+			</p>
+		</div>
+	</div>	
+</div>
+<div id="start">
+	<div class="section_header">
+		<hr class="left visible-desktop">		
+		<a href="{% url 'cleancloud.views.start' %}" class="btn btn-large btn-primary">Start Cleaning</a>
+		<hr class="right visible-desktop">
+	</div>
+</div>	
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "cleancloud/base.html" %}
+
+{% block title %}
+- Job Status
+{% endblock %}
+
+{% block body_options %}
+onload="comet({{job.id}})"
+{% endblock %}
+
+{% block breadcrumb %}				
+	<li><a href="{% url 'cleancloud.views.start' %}">Home</a> <span class="divider">/</span>
+	<li class="active">Running Job</li>
+{% endblock %}
+
+{% block inner %}
+	{% if error %}
+		{{ error }}
+	{% else %}
+	<div class="span10">
+		<h2>Job Status</h2>
+		<p>Job ID: {{ job.id }} <br>
+		{% if job.job_type == "e" %}
+			EMR Job ID: {{ job.status }} <br>
+			EMR Job State: <span id="status"></span> <br>
+			EMR Job Action: <span id="details"></span> <br>
+			<span id="tracker_span"><a href="" id="tracker_url">EMR Job Tracker</a> </p></span>
+		{% else %}
+			Status: <span id="status"></span> <br>
+		{% endif %}
+		<div class="span6 offset2 progress progress-striped active">
+			<div class="bar" style="width: 0%%;" id="progress"></div>
+		</div>
+	</div>
+	<form name="results" action="" method="post">
+		{% csrf_token %}	
+		<div class="span10" id="results">
+
+			<input class="btn btn-large btn-primary span3" onclick="cancel('')" value="Cancel Running Job">
+		</div>
+	</form>
+	
+	{% endif %}
+{% endblock %}

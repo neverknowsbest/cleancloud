@@ -1,0 +1,15 @@
+{% extends "cleancloud/base.html" %}
+
+{% block body %}
+	<div class="span12">
+		<ul class="breadcrumb">
+			{% block breadcrumb %}
+			{% endblock %}
+		</ul>
+	</div>
+
+	<div class="span12">	
+		{%block inner %}
+		{% endblock %}
+	</div>
+{% endblock %}

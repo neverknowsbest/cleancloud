@@ -1,0 +1,64 @@
+{% extends "cleancloud/base_breadcrumb.html" %}
+
+{% block title %}- Upload File{% endblock %}
+
+{% block breadcrumb %}				
+	<li><a href="{% url 'cleancloud.views.start' %}">Home</a> <span class="divider">/</span>
+	<li class="active">Select Input</li>
+{% endblock %}
+
+{% block inner %}			
+	<form action="" enctype="multipart/form-data" method="post">
+		{% csrf_token %}
+		<p>Upload your data as a CSV file with extension .txt or .csv, or choose one of the sample data files below. If a sample data file is selected and a user input file is uploaded, the job will use the sample data file. Please select "None" if you wish to use your data.</p>
+
+		{% if form.errors %}
+		    <p style="color: red;">
+		        Please correct the error{{ form.errors|pluralize }} below.
+		    </p>
+		{% endif %}
+
+		<div class="row">
+			<div class="span3">
+				<label>
+					Select data for input:<br>
+					{{ form.uploaded_file }}
+				</label>
+			</div>
+			<div class="span3">
+				<label>
+					Select sample data:<br>
+					<select name="sample">
+						<option>None</option>
+						<option>SecondString Restaurant Input (864 records)</option>
+						<option>DBgen Synthetic Input (3973 records)</option>
+						<option>Test Run Using Restaurant Input</option>
+						<option>dbgen1m (1000000 records)</option>
+						<option>birdNybirdExtracted (982 records)</option>
+						<option>business (2139 records)</option>
+						<option>celebrity (2614 records)</option>
+						<option>censusText (841 records)</option>
+						<option>citations (1326 records)</option>
+						<option>dbgen (9947 records)</option>
+						<option>dblp (5359 records)</option>
+						<option>map (336 records)</option>
+						<option>vaUniv (116 records)</option>
+						<option>dbgen-100_input</option>
+						<option>dbgen-250_input</option>
+						<option>dbgen-500_input</option>
+						<option>dbgen-1k_input</option>
+						<option>dbgen-2k_input</option>
+						<option>dbgen-4k_input</option>	
+					</select>
+				</label>
+			</div>
+		</div>
+
+		<div>
+			<input class="btn btn-large btn-primary" onclick="back()" value="Back" type="button">
+			<div class="pull-right">
+				<input class="btn btn-large btn-primary" type="submit">
+			</div>
+		</div>
+	</form>
+{% endblock %}

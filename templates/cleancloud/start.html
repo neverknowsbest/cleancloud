@@ -1,0 +1,91 @@
+{% extends "cleancloud/base_breadcrumb.html" %}
+
+{% block title %}
+	- Start Record Cleaning Job
+{% endblock %}
+
+{% block breadcrumb %}
+	<li class="active">Home</li>
+{% endblock %}
+
+{% block inner %}
+<h3>Start New Job</h3>
+<form action="" method="POST">
+{% csrf_token %}
+<p>To start a new job, please enter a job name or use the default and click the "Start New Job" button.</p>
+<p><label>Job Name: <input class="input" type="text" name="name" value="{{ default_name }}"/></label></p>
+<p><input class="btn btn-large btn-primary" type="submit" value="Start New Job"/></p>
+</form>
+
+{% if active_jobs|length > 0 or running|length > 0 %}
+<h3>Active and Running Jobs</h3>
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th>Name</th>
+			<th>Status</th>
+			<th>Input Filename</th>			
+			<th>Submission Time</th>
+			<th>Details</th>
+			<th>Cost</th>
+		</tr>
+	</thead>
+	<tbody>
+{% if active|length > 0 %}
+	{% for job in active %}
+		<tr>
+			<td><a href="{% url 'cleancloud.views.continue_job' job.id %}">{{ job.name }}</a></td>
+			<td>
+				{% if job.status == "unsubmitted" %}
+				<a href="{% url 'cleancloud.views.select' job.id %}">Select Data File</a>
+				{% elif job.status == "uploaded" %}
+				<a href="{% url 'cleancloud.views.review' job.id %}">Review Data</a>
+				{% elif job.status == "reviewed" %}
+				<a href="{% url 'cleancloud.views.configure' job.id %}">Select Service Level</a>
+				{% endif %}
+			</td>
+			<td>{{ job.start_datetime }}</td>			
+			<td>{{ job.input_file.name }}</td>			
+			<td>
+				{% if job.status == 'reviewed' %}
+					{% if job.job_type == 'e' %}
+						{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}
+					{% else %}
+						{{ job.algorithm }}, {{ job.similarity }}, Single Machine
+					{% endif %}
+				{% endif %}
+			</td>
+			<td>${{ job.cost }}</td>
+		</tr>
+	{% endfor %}
+{% endif %}
+
+{% if running|length > 0 %}
+	{% for job in running %}
+		<tr>
+			<td><a href="{% url 'cleancloud.views.continue_job' job.id %}">{{ job.name }}</a></td>
+			<td>
+				{% if job.status == "unsubmitted" %}
+				<a href="{% url 'cleancloud.views.select' job.id %}">Select Data File</a>
+				{% elif job.status == "uploaded" %}
+				<a href="{% url 'cleancloud.views.review' job.id %}">Review Data</a>
+				{% elif job.status == "reviewed" %}
+				<a href="{% url 'cleancloud.views.configure' job.id %}">Select Service Level</a>
+				{% endif %}
+			</td>
+			<td>{{ job.input_file.name }}</td>
+			<td>{{ job.start_datetime }}</td>
+			<td>
+				{% if job.job_type == 'e' %}
+					{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}
+				{% else %}
+					{{ job.algorithm }}, {{ job.similarity }}, Single Machine
+				{% endif %}
+			</td>
+			<td>${{ job.cost }}</td>
+		</tr>
+	{% endfor %}
+{% endif %}
+</table>
+{% endif %}
+{% endblock %}
