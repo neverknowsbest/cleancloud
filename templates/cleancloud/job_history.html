@@ -24,35 +24,7 @@
 				</tr>
 			</thead>
 			<tbody>
-			{% for job, stripped_filename in active %}
-				<tr id="{{ job.id }}">
-					<td><a onclick="remove_job('{{ job.id }}')"><i class="icon-remove"></i></td>				
-					<td><a href="{% url 'cleancloud.views.continue_job' job.id %}">{{ job.name }}</a></td>
-					<td>{{ job.start_datetime }}</td>
-					<td>{{ job.finish_datetime }}</td>
-					<td>
-					{% if job.status == "unsubmitted" %}
-					<a href="{% url 'cleancloud.views.upload' job.id %}">Select Data File</a>
-					{% elif job.status == "uploaded" %}
-					<a href="{% url 'cleancloud.views.review' job.id %}">Review Data</a>
-					{% elif job.status == "reviewed" %}
-					<a href="{% url 'cleancloud.views.configure' job.id %}">Select Service Level</a>
-					{% endif %}
-					</td>
-					<td>{{ stripped_filename }}</td>
-					<td>
-						{% if job.status == 'reviewed' %}
-							{% if job.job_type == 'e' %}
-								{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}
-							{% else %}
-								{{ job.algorithm }}, {{ job.similarity }}, Single Machine
-							{% endif %}
-						{% endif %}
-					</td>
-					<td>${{ job.cost }}</td>
-				</tr>
-			{% empty %}
-			{% endfor %}
+			{% include 'cleancloud/active_job_table.html' %}
 			</tbody>
 		</table>
 	
@@ -70,19 +42,15 @@
 				</tr>
 			</thead>
 			<tbody>
-			{% for job, stripped_filename in finished %}
+			{% for job in finished %}
 				<tr>
 					<td>{{ job.name }}</td>
 					<td>{{ job.start_datetime }}</td>
 					<td>{{ job.finish_datetime }}</td>
 					<td>
-						{% if job.status == "results" %}
-						<a href="{% url 'cleancloud.views.status' job.id %}">Edit Results</a>
-						{% else %}
-						<a href="{% url 'cleancloud.views.results' job.id %}">Final Results</a>
-						{% endif %}				
+						{% include 'cleancloud/job_status.html' %}						
 					</td>
-					<td>{{ stripped_filename }}</td>
+					<td>{{ job.get_short_input_file_name }}</td>
 					<td>
 						{% if job.job_type == 'e' %}
 							{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}

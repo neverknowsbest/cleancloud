@@ -3,6 +3,7 @@ from boto.emr.step import JarStep
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from cleancloud.models import Job, EditedResult, UserFile, User
+from django.db.models import Q
 
 PRICES = {'free':0, '4':0.02, '8':0.04, '8xl':0.05}
 
@@ -301,3 +302,6 @@ def get_user_file_library(user, view):
 	elif view == "select":
 		files = [(f, strip_filename(f.input_file.name)) for f in files if len(f.input_file.name) > 0 and f.type != "S" and f.type != "O"]		
 	return files
+	
+def get_active_jobs(user):
+	return Job.objects.filter((Q(status="uploaded") | Q(status="reviewed") | Q(status="unsubmitted") | Q(status="running")), user=user)	

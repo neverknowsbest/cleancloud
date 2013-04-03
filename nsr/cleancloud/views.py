@@ -37,13 +37,12 @@ def start(request):
 			return redirect('cleancloud.views.select', job.id)
 	else:		
 		#Get user jobs to display "Current Jobs" table
-		active_jobs = Job.objects.filter((Q(status="uploaded") | Q(status="reviewed") | Q(status="unsubmitted")), user=request.user)
-		running_jobs = Job.objects.filter(user=request.user, status="running")
+		active_jobs = get_active_jobs(request.user)
 		all_user_jobs = Job.objects.filter(user=request.user)
 		
 		default_name = "-".join([request.user.username, str(len(all_user_jobs))])
 	
-	return render(request, 'cleancloud/start.html', {'active':active_jobs, 'running':running_jobs, 'default_name':default_name})
+	return render(request, 'cleancloud/start.html', {'active':active_jobs, 'default_name':default_name})
 
 @login_required
 def continue_job(request, job_id):
@@ -293,8 +292,8 @@ def edit_profile(request):
 @login_required
 def job_history(request):
 	"""Display current user's job history."""
-	finished_jobs = [(j, strip_filename(j.get_input_file().name)) for j in Job.objects.filter((Q(status="completed") | Q(status="results")), user=request.user)]
-	active_jobs = [(j, strip_filename(j.get_input_file().name)) for j in Job.objects.filter((Q(status="uploaded") | Q(status="reviewed") | Q(status="unsubmitted") | Q(status="running")), user=request.user)]
+	finished_jobs = Job.objects.filter((Q(status="completed") | Q(status="results")), user=request.user)
+	active_jobs = get_active_jobs(request.user)
 	
 	return render(request, 'cleancloud/job_history.html', {'active':active_jobs, 'finished':finished_jobs})
 	

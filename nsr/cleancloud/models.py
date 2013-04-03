@@ -14,7 +14,7 @@ class Job(models.Model):
 	#1 user per job
 	user = models.ForeignKey(User)
 	# user file interface files accessible through job.userfile_set.all()
-	input_file = models.FileField(upload_to='input/%Y/%m/%d')	
+	input_file = models.FileField(upload_to='input/%Y/%m/%d')	#deprecated, may be removed in future database model
 	name = models.CharField(max_length=100, default="")
 	algorithm = models.CharField(max_length=2, default="MH", choices=ALGORITHM_CHOICES)
 	similarity = models.CharField(max_length=20, default="Jaccard", choices=SIMILARITY_CHOICES)
@@ -23,6 +23,7 @@ class Job(models.Model):
 	nodes = models.IntegerField(null=True, blank=True, default=4, validators=[MaxValueValidator(8), MinValueValidator(4)])
 	node_size = models.CharField(blank=True, max_length=10, default="m1.small", choices=NODE_SIZE_CHOICES)
 	job_type = models.CharField(null=True, max_length=1, default="e")
+	#possible states: unsubmitted, uploaded, reviewed, running, results, completed, cancelled
 	status = models.CharField(max_length=20, default="unsubmitted")
 	key = models.IntegerField(default=0)
 	value = models.CommaSeparatedIntegerField(max_length=5, default=[1])
@@ -44,8 +45,8 @@ class Job(models.Model):
 		try:
 			return "s3n://cleancloud/" + self.userfile_set.all()[0].input_file.name
 		except IndexError:
-			return "s3n://cleancloud/" + self.input_file.name
-	
+			return ""
+				
 	def get_s3_output_path(self):
 		return "s3n://cleancloud/output/%i/%s" % (self.id, self.get_input_file().name)
 		
@@ -53,14 +54,26 @@ class Job(models.Model):
 		try:
 			return self.userfile_set.all()[0].input_file
 		except IndexError:
-			return self.input_file
+			return ""
 			
 	def add_file(self, uf):
 		self.clear_userfile_set()
 		uf.add_job(self)
 		self.rows = uf.rows
-		self.status = "uplaoded"
+		self.status = "uploaded"
 		self.save()
+		
+	def get_short_input_file_name(self):
+		try:
+			name = self.userfile_set.all()[0].input_file.name
+		except:
+			return ""
+			
+		if "_" in name:
+			name = str("".join(name.split("/")[-1].split("_")[1:]))	
+		else:
+			name = str("".join(name.split("/")[-1]))
+		return name			
 	
 	def __unicode__(self):
 		return '-'.join([str(self.job_type), str(self.id), str(self.input_file), str(self.algorithm), str(self.similarity)])
