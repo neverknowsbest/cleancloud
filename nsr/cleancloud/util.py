@@ -63,6 +63,7 @@ def prepare_data(job):
 	c = boto.connect_s3()
 	b = c.create_bucket("dedool-user-files")	
 	l = b.list(job.get_input_file().name)
+	
 	new_b = c.create_bucket("cleancloud")
 	new_k = boto.s3.key.Key(new_b)
 	new_k.key = job.get_input_file().name
@@ -103,7 +104,7 @@ def run_job(job):
 def create_job_steps(job):
 	"""Prepare job steps for EMR job"""
 	steps = []
-	hdfs_path = "hdfs:///simplejoin_input/%i" % job.id	#intermediary output/input path for simplejoin
+	hdfs_path = "hdfs:///%i/" % job.id	#intermediary output/input path for simplejoin
 	jarpath = "s3n://simplejoin/hadoop/simplejoin.jar"
 	
 	if job.algorithm == 'NL':

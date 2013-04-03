@@ -39,10 +39,10 @@ class Job(models.Model):
 	
 	def clear_userfile_set(self):
 		self.userfile_set.clear()
-	
+		
 	def get_s3_input_path(self):
 		try:
-			return "s3n://dedool-user-files/" + self.userfile_set.all()[0].input_file.name
+			return "s3n://cleancloud/" + self.userfile_set.all()[0].input_file.name
 		except IndexError:
 			return "s3n://cleancloud/" + self.input_file.name
 	
