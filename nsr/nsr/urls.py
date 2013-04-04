@@ -15,19 +15,23 @@ urlpatterns += patterns('cleancloud.views',
 	url(r'^select/(\d*)/$', 'select'),
 	url(r'^review/(\d*)/$', 'review'),
 	url(r'^configure/(\d*)/$', 'configure'),
-	url(r'^check/(\d*)/$', 'check'),
 	url(r'^results/(\d*)/$', 'results'),
-	url(r'^cancel/(\d*)/$', 'cancel'),
-	url(r'^status/(\d*)/$', 'status'),	
-	url(r'^edit/(\d*)/$', 'edit'),
-	url(r'^revert/(\d*)/(\d*-\d*)/$', 'revert'),
 	url(r'^start/$', 'start'),	
 	url(r'^continue/(\d*)/$', 'continue_job'),	
 	url(r'^job_history/$', 'job_history'),	
 	url(r'^functions/$', 'functions'),
 	url(r'^status/$', 'status_form'),
 	url(r'^files/$', 'files'),
+	url(r'^status/(\d*)/$', 'status'),
+)
+
+urlpatterns += patterns('cleancloud.ajax_views',
+	url(r'^check/(\d*)/$', 'check'),
+	url(r'^cancel/(\d*)/$', 'cancel'),
+	url(r'^edit/(\d*)/$', 'edit'),
+	url(r'^revert/(\d*)/(\d*-\d*)/$', 'revert'),
 	url(r'^remove/(\d*)/$', 'remove'),
+	url(r'^hide/(\d*)/$', 'hide')
 )
 
 urlpatterns += patterns('cleancloud.views',

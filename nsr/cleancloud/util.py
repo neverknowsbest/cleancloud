@@ -110,6 +110,7 @@ def create_job_steps(job):
 	
 	if job.algorithm == 'NL':
 		prepare_input = JarStep(name="Prepare Input", 
+						action_on_failure="CANCEL_AND_WAIT",
 						jar=jarpath, 
 						main_class="com.nsrdev.PrepareInput", 
 						step_args=[job.get_s3_input_path(), 
@@ -117,6 +118,7 @@ def create_job_steps(job):
 							job.key, 
 							job.value])
 		simplejoin = JarStep(name="SimpleJoin", 
+						action_on_failure="CANCEL_AND_WAIT",
 						jar=jarpath, 
 						main_class="com.nsrdev.SimpleJoin", 
 						step_args=[hdfs_path, 
@@ -127,6 +129,7 @@ def create_job_steps(job):
 		steps.append(simplejoin)
 	elif job.algorithm == 'MH':
 		lsh_minhash = JarStep(name="MinHashMR", 
+						action_on_failure="CANCEL_AND_WAIT",
 						jar=jarpath, 
 						main_class="com.nsrdev.MinHashMR", 
 						step_args=[job.get_s3_input_path(), 

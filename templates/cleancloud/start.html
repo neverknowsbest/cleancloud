@@ -18,22 +18,7 @@
 </form>
 
 {% if active_jobs|length > 0 or running|length > 0 %}
-<h3>Active and Running Jobs</h3>
-<table class="table table-bordered table-striped">
-	<thead>
-		<tr>
-			<th></th>
-			<th>Name</th>
-			<th>Submission Time</th>
-			<th>Completion Time</th>
-			<th>Status</th>
-			<th>Input Filename</th>
-			<th>Details</th>
-			<th>Cost</th>
-		</tr>
-	</thead>
-	<tbody>
+	<h3>Active and Running Jobs</h3>
 	{% include 'cleancloud/active_job_table.html' %}
-</table>
 {% endif %}
 {% endblock %}

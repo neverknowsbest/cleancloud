@@ -10,6 +10,9 @@
 	</h2> 
 	<div class="row">
 		<h4>Active Jobs</h4>
+		{% include 'cleancloud/active_job_table.html' %}
+	
+		<h4>Completed Jobs</h4>
 		<table class="table table-bordered table-striped">
 			<thead>
 				<tr>
@@ -24,26 +27,9 @@
 				</tr>
 			</thead>
 			<tbody>
-			{% include 'cleancloud/active_job_table.html' %}
-			</tbody>
-		</table>
-	
-		<h4>Completed Jobs</h4>
-		<table class="table table-bordered table-striped">
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Submission Time</th>
-					<th>Completion Time</th>
-					<th>Status</th>
-					<th>Input Filename</th>
-					<th>Details</th>
-					<th>Cost</th>
-				</tr>
-			</thead>
-			<tbody>
 			{% for job in finished %}
 				<tr>
+					<td><a onclick="hide_job('{{ job.id }}')"><i class="icon-remove"></i></td>					
 					<td>{{ job.name }}</td>
 					<td>{{ job.start_datetime }}</td>
 					<td>{{ job.finish_datetime }}</td>

@@ -195,17 +195,6 @@ def status(request, job_id):
 	return render(request, 'cleancloud/status.html', {'job':job})
 
 @login_required
-def check(request, job_id):
-	"""Django view for result-checking ajax request (not exposed to user)"""
-	job = Job.objects.get(id=job_id)
-
-	if request.is_ajax() or \
-	(request.user.is_authenticated() and \
-	request.user == job.user):
-		status = check_job_status(job)
-		return HttpResponse(status, mimetype="application/json")
-
-@login_required
 def results(request, job_id):
 	"""Django view for the final results"""
 	try:
@@ -234,46 +223,10 @@ def status_form(request):
 	return render(request, 'cleancloud/status_form.html')
 
 @login_required
-def cancel(request, job_id):
-	try:
-		job = Job.objects.get(id=job_id)
-	except:
-		error = "Requested job id does not exist."
-		return render(request, 'cleancloud/results.html', {'error':error})
-	
-	cancel_job(job)
-	job.cancel()
-	
-	return HttpResponse(job.status)
-
-@login_required
 def profile(request):
 	profile = request.user.userprofile
 		
 	return render(request, 'cleancloud/profile.html', {'profile':profile})
-	
-def edit(request, job_id):
-	"""Save edited data from results page."""
-	try:
-		job = Job.objects.get(id=job_id)
-	except:
-		return HttpResponse("Invalid job specified.")
-	
-	save_edits(job, request)
-	print request.POST
-
-	return HttpResponse("Changes saved.")
-
-def revert(request, job_id, input_id):
-	"""Get the original data for jobid, at input_id (<row id>-<column id>)"""
-	try:
-		job = Job.objects.get(id=job_id)
-	except:
-		return HttpResponse("Invalid job specified.")
-
-	data_json = get_original_data(job, input_id)
-	
-	return HttpResponse(data_json, mimetype="application/json")
 
 @login_required
 def edit_profile(request):
@@ -329,11 +282,3 @@ def files(request):
 		
 	return render(request, 'cleancloud/files.html', {"files":files, "form":form, "error":error, 'total_size':total_size, 'quota':QUOTA, 'percentage':percentage})
 	
-@login_required
-def remove(request, file_id):
-	"""Remove a user file."""
-	user_file = UserFile.objects.get(id=file_id)
-	success = remove_user_file(user_file)
-	user_file.delete()
-
-	return HttpResponse(success)

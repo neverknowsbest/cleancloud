@@ -53,16 +53,18 @@ def get_elapsed_time_emr(emrid):
 	emr.close()
 	
 	try:
-		starttime = datetime.datetime.strptime(job.steps[0].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
-	except AttributeError:
+		if job.steps[-1] == "SimpleJoin":
+			starttime = datetime.datetime.strptime(job.steps[-2].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
+		else:
+			starttime = datetime.datetime.strptime(job.steps[-1].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
+	except AttributeError as e:
 		starttime = datetime.datetime.strptime(job.startdatetime, '%Y-%m-%dT%H:%M:%SZ')
 	
 	try:
 		endtime = datetime.datetime.strptime(job.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
 	except AttributeError:
 		endtime = datetime.datetime.today()	
-		
-	
+
 	return (endtime-starttime)
 
 def get_step_status(emrid):	
@@ -255,7 +257,7 @@ def get_results_table_body(results, original, job):
 	
 	return len(results), results_html, rows_to_delete
 
-def prepare_results(results, job):
+def prepare_results_page(results, job):
 	"Prepare table of results that is sent in the AJAX response"
 	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
 	marker = '\t' if '\t' in original[0] else ','
@@ -273,7 +275,7 @@ def prepare_results(results, job):
 """
 <div class="span12">
 	<h2>Preview Results</h2>
-	<p>Total Time: %.2f minutes</p>
+	<p>Job Time: %.2f minutes</p>
 	%s
 	<p><strong>%i</strong> records matched. Click the '+' button to edit the matched record. Check the box next to a row to remove that row from the final results. </p>
 
@@ -375,7 +377,7 @@ def check_single_job_status(job):
 def get_results(job):
 	"""Get results table for job job."""
 	results_string = get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_input_file().name)
-	results_table = prepare_results(results_string, job)
+	results_table = prepare_results_page(results_string, job)
 
 	return results_table
 	

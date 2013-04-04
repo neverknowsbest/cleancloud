@@ -1,23 +1,39 @@
-{% for job in active %}
-	<tr id="{{ job.id }}">
-		<td><a onclick="remove_job('{{ job.id }}')"><i class="icon-remove"></i></td>				
-		<td><a href="{% url 'cleancloud.views.continue_job' job.id %}">{{ job.name }}</a></td>
-		<td>{{ job.start_datetime }}</td>
-		<td>{{ job.finish_datetime }}</td>
-		<td>
-			{% include 'cleancloud/job_status.html' %}
-		</td>
-		<td>{{ job.get_short_input_file_name }}</td>
-		<td>
-			{% if job.status == 'reviewed' %}
-				{% if job.job_type == 'e' %}
-					{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}
-				{% else %}
-					{{ job.algorithm }}, {{ job.similarity }}, Single Machine
+<table class="table table-bordered table-striped">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Submission Time</th>
+			<th>Completion Time</th>
+			<th>Status</th>
+			<th>Input Filename</th>
+			<th>Details</th>
+			<th>Cost</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for job in active %}
+		<tr id="{{ job.id }}">
+			<td><a onclick="cancel_job('{{ job.id }}')"><i class="icon-remove"></i></td>				
+			<td><a href="{% url 'cleancloud.views.continue_job' job.id %}">{{ job.name }}</a></td>
+			<td>{{ job.start_datetime }}</td>
+			<td>{{ job.finish_datetime }}</td>
+			<td>
+				{% include 'cleancloud/job_status.html' %}
+			</td>
+			<td>{{ job.get_short_input_file_name }}</td>
+			<td>
+				{% if job.status == 'reviewed' %}
+					{% if job.job_type == 'e' %}
+						{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}
+					{% else %}
+						{{ job.algorithm }}, {{ job.similarity }}, Single Machine
+					{% endif %}
 				{% endif %}
-			{% endif %}
-		</td>
-		<td>${{ job.cost }}</td>
-	</tr>
-{% empty %}
-{% endfor %}
+			</td>
+			<td>${{ job.cost }}</td>
+		</tr>
+	{% empty %}
+	{% endfor %}		
+	</tbody>
+</table>

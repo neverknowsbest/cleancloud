@@ -334,11 +334,24 @@ function remove_file(file_id) {
 	});	
 }
 
-/* Remove a job from a user's history */
-function remove_job(job_id) {
+/* Cancel an active job from the job history page */
+function cancel_job(job_id) {
 	$.ajax({
 		type	: 'Get',
 		url		: '/cancel/' + job_id + '/',
+		async	: true,
+		cache	: false,
+		success : function(json) {
+			$("#" + job_id).hide(500);
+		}
+	});	
+}
+
+/* Hide inactive job from the job history page */
+function hide_job(job_id) {
+	$.ajax({
+		type	: 'Get',
+		url		: '/hide/' + job_id + '/',
 		async	: true,
 		cache	: false,
 		success : function(json) {

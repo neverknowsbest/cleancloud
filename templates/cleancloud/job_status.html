@@ -9,5 +9,5 @@
 {% elif job.status == "completed" %}
 	<a href="{% url 'cleancloud.views.results' job.id %}">Final Results</a>
 {% elif job.status == "cancelled" %}
-	<a href="{% url 'cleancloud.views.results' job.id %}">Final Results</a>
+	<a href="{% url 'cleancloud.views.results' job.id %}">Cancelled</a>
 {% endif %}		
