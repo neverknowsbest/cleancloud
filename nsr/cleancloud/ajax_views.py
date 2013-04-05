@@ -35,8 +35,7 @@ def hide(request, job_id):
 	except:
 		return HttpResponse("Invalid job specified.")
 	
-	job.status = "hidden"
-	job.save()
+	job.set_status("hidden")
 	
 	return HttpResponse("")
 	

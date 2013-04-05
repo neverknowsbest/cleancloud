@@ -270,8 +270,17 @@ def prepare_results_page(results, job):
 	header = ''.join(["<th></th><th>Keep Row</th>"] + ["<th></th>" for i in range(ncols-1)])
 
 	n_results, results_html, rows_to_delete = get_results_table_body(results, original, job)
-
-	table_string = \
+	
+	if n_results == 0:
+		job.set_status("no match")
+		table_string = \
+"""
+<div class="span12">
+	<p>No records matched.</p>
+</div>
+"""
+	else:
+		table_string = \
 """
 <div class="span12">
 	<h2>Preview Results</h2>
@@ -327,7 +336,7 @@ def check_job_status(job):
 
 	if status['status'] == "COMPLETED" or status['status'] == "WAITING":
 		job.finish_datetime = job.start_datetime + get_elapsed_time(job)
-		job.status = "results"
+		job.set_status("results")
 		job.save()
 
 	return json.dumps(status)

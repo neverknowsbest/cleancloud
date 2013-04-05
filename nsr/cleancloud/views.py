@@ -74,7 +74,7 @@ def upload(request, job_id):
 				with open(form.cleaned_data['sample']) as f:
 					file_data = File(f)
 					job.input_file.save(filename, file_data)
-					job.status = "uploaded"
+					job.set_status("uploaded")
 					job.save()
 					
 			return redirect('cleancloud.views.review', job.id)
@@ -133,7 +133,7 @@ def review(request, job_id):
 			job.value = ",".join(form.cleaned_data['value'])
 			job.rows = form.cleaned_data['nrows']
 			prepare_data(job)
-			job.status = "reviewed"
+			job.set_status("reviewed")
 			job.save()
 
 			return redirect('cleancloud.views.configure', job.id)
@@ -162,7 +162,7 @@ def configure(request, job_id):
 			fill_job_from_service(job, form.cleaned_data['service'])
 			
 			jobflowid = run_job(job)
-			job.status = "running"
+			job.set_status("running")
 			job.jobflowid = jobflowid
 			job.start_datetime = datetime.datetime.now()
 			job.save()
@@ -186,7 +186,7 @@ def status(request, job_id):
 		form = ResultsForm(request.POST)
 		
 		if form.is_valid():
-			job.status = "completed"
+			job.set_status("completed")
 			job.save()
 			save_results(job, eval(form.cleaned_data['delete']), request.user)
 		
@@ -268,11 +268,14 @@ def files(request):
 		
 		if form.is_valid():
 			if not user_file_is_unique(request.user, request.FILES['input_file'].name):
-				error = "A file with this name already exists. Please select another file, rename this file, or remove the existing file."	
+				error += "A file with this name already exists. Please select another file, rename this file, or remove the existing file.\n"	
 		 	if request.FILES['input_file'].content_type != "text/csv":
-				error += "File is not a CSV file. Please upload a comma-separated value file."
+				error += "File is not a CSV file. Please upload a comma-separated value file.\n"
 			if total_size + request.FILES['input_file'].size > QUOTA:
-				error += "Maximum storage quota reached. Please remove some files and try again."
+				error += "Maximum storage quota reached. Please remove some files and try again.\n"
+			if request.FILES['input_file'].size == 0:
+				error += "Empty file uploaded. Please upload a file with size greater than 0. \n"
+			
 			if not error:
 				form.save(request.user)
 				return redirect('cleancloud.views.files')

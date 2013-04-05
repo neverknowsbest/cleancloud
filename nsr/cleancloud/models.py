@@ -75,6 +75,10 @@ class Job(models.Model):
 			name = str("".join(name.split("/")[-1]))
 		return name			
 	
+	def set_status(self, status):
+		self.status = status
+		self.save()
+	
 	def __unicode__(self):
 		return '-'.join([str(self.job_type), str(self.id), str(self.input_file), str(self.algorithm), str(self.similarity)])
 
