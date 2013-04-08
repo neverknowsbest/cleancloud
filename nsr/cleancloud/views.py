@@ -224,16 +224,24 @@ def status_form(request):
 
 @login_required
 def profile(request):
-	profile = request.user.userprofile
+	try:
+		profile = request.user.userprofile
+	except UserProfile.DoesNotExist:
+		profile = None
 		
 	return render(request, 'cleancloud/profile.html', {'profile':profile})
 
 @login_required
 def edit_profile(request):
 	"""Edit or add auxiliary account information such as name, address, etc. This data goes into the UserProfile model, not the User model, which is only for authentication."""
-	profile = request.user.userprofile
+	try:
+		profile = request.user.userprofile
+	except UserProfile.DoesNotExist:
+		profile = None
 
 	if request.method == "POST":
+		if not profile:
+			form = UserProfileForm(request.POST)
 		form = UserProfileForm(request.POST, instance=profile)
 
 		if form.is_valid():
