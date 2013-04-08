@@ -27,6 +27,9 @@
             </a>
 				<div class="nav-collapse collapse pull-right">
 					<ul class="nav">
+						<li id="nav-home">
+							<a href="{% url 'index' %}">Home</a>
+						</li>
 						<li id="nav-profile">
 						<a href="{% url 'cleancloud.views.profile' %}">Profile</a>
 						</li>
@@ -39,7 +42,7 @@
 						<li id="nav-jobs">
 						<a href="{% url 'cleancloud.views.job_history' %}">Jobs</a>
 						</li>
-						<li class="divider"></li>
+						<li class="divider-vertical"></li>
 						{% if user.is_authenticated %}
 						<li>
 							<a href="{% url 'cleancloud.views.profile' %}">Welcome, {{ user.username }}!</a>
