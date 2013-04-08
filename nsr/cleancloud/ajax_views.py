@@ -37,7 +37,7 @@ def hide(request, job_id):
 	
 	job.set_status("hidden")
 	
-	return HttpResponse("")
+	return HttpResponse("Success.")
 	
 @login_required
 def cancel(request, job_id):

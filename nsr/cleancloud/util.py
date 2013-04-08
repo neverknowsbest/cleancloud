@@ -227,14 +227,14 @@ def check_job_submitted(job):
 def save_edits(job, request):
 	"""Save user result edits to database."""
 	for k, v in request.POST.items():
-		if not re.match("\d+-\d+", k):
+		if not (re.match("\d+-\d+", k) or re.match("\d+", k)):
 			continue
 		try:
 			result = EditedResult.objects.get(job=job, local_id=k)
 			result.value = request.POST['%s' % str(result.local_id)]
+			result.save()
 		except EditedResult.DoesNotExist:
 			result = EditedResult(job=job, local_id=k, value=v)
-		finally:
 			result.save()
 
 def get_redirect_from_job_status(job):

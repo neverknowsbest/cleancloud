@@ -183,12 +183,12 @@ def get_results_table_body(results, original, job):
 		return """
 <td>
 	<span id="editstatus%i"></span>
-	<span id="id_items_%i" class="btn-group" data-toggle="buttons-radio" onclick="toggle_remove_row_button('%i')">
+	<span id="id_items_%i" class="btn-group" data-toggle="buttons-radio" onclick="toggle_remove_row_button('%i', '%i')">
 		<button id="button_ok_%i" type="button" class="btn btn-small btn-success %s"><i class="icon-white icon-ok"></i></button>
 		<button id="button_remove_%i" type="button" class="btn btn-small btn-danger %s"><i class="icon-white icon-remove"></i></button>
 	</span>
 </td>	
-		""" % (rowid, rowid, rowid, rowid, '' if delete else 'active', rowid, 'active' if delete else '')
+		""" % (rowid, rowid, job.id, rowid, rowid, '' if delete else 'active', rowid, 'active' if delete else '')
 	def close_button(rowid):
 		return """
 <td>
@@ -226,15 +226,32 @@ def get_results_table_body(results, original, job):
 			except EditedResult.DoesNotExist:
 				row_data.append("""<td class="%s" id="cell%i-%i" onclick="send_value_to_input('%i', '%i-%i', '%s')">%s</td>""" % (active_column(j, job), id1, j, job.id, id1, j, data, data))
 		
+		#get "delete row" state from database
+		try:
+			delete = EditedResult.objects.get(job=job.id, local_id=id1).value
+		except EditedResult.DoesNotExist:
+			delete = False
+		finally:
+			if delete:
+				rows_to_delete.append(id1)
+		
 		rows.append(''.join(["<tr class='top'>"] + \
 			[close_button(id1)] + \
-			[checkbox(id1, False)] + \
+			[checkbox(id1, delete)] + \
 			row_data + \
 			["</tr>"]))
 			
 		#One or more secondary rows, hidden by default
 		for k, row_id in enumerate(result_set):
-			rows_to_delete.append(row_id)
+			try:
+				delete = EditedResult.objects.get(job=job.id, local_id=row_id).value
+			except EditedResult.DoesNotExist:
+				#delete secondary rows by default
+				delete = True 
+			finally:
+				if delete:
+					rows_to_delete.append(row_id)
+
 			row_data = []
 			for j, data in enumerate(original[row_id-1].split(marker)):
 				try:
@@ -245,7 +262,7 @@ def get_results_table_body(results, original, job):
 						
 			row = ''.join(["<tr id='details%i-%i' class='row-details expand-child %s'>" % (id1, row_id, 'bottom' if k == len(result_set)-1 else '')] + \
 				["<td></td>"] + #close button is not needed for secondary rows \
-				[checkbox(row_id, True)] + \
+				[checkbox(row_id, delete)] + \
 				row_data + \
 				["</tr>"])
 			rows.append(row)

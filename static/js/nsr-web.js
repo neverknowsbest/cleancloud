@@ -31,6 +31,25 @@ function display_details(id) {
 	}
 }
 
+//AJAX method to send edited changes to the server in the background
+function save_edits_ajax(jobid, row_id, save_data) {
+	$.ajax({
+			type : 'POST',
+			url  : '/edit/' + jobid + '/',
+			async : true,
+			cache : false,
+			data : save_data,
+			dataType : "html",
+			success : function(response, status, jqxhr) {
+				$('#editstatus' + row_id).hide().html(response).fadeIn(1000);
+				$('#editstatus' + row_id).hide().html(response).fadeOut(5000);
+			},
+			error : function(XMLHttpRequest, textstatus, error) { 
+				$('#editstatus' + row_id).hide().html(error).fadeIn();
+			}
+	});
+}
+
 /**
 Use AJAX to save the contents of the input box with the given id back to the result database. If no id is specified, save ALL input boxes. 
 
@@ -53,22 +72,7 @@ function save_results_changes(jobid, id, data) {
 		var save_data = json;
 	}
 	
-	//AJAX method to send edited changes to the server in the background
-	$.ajax({
-			type : 'POST',
-			url  : '/edit/' + jobid + '/',
-			async : true,
-			cache : false,
-			data : save_data,
-			dataType : "html",
-			success : function(response, status, jqxhr) {
-				$('#editstatus' + row_id).hide().html(response).fadeIn(1000);
-				$('#editstatus' + row_id).hide().html(response).fadeOut(5000);
-			},
-			error : function(XMLHttpRequest, textstatus, error) { 
-				$('#editstatus' + row_id).hide().html(error).fadeIn();
-			}
-	});
+	save_edits_ajax(jobid, row_id, save_data);
 	
 	//Function to revert input box to plaintext
 	var input_to_plaintext = function() {
@@ -274,7 +278,7 @@ function cancel(jobid) {
 /**
 Toggles the remove row buttons from active to inactive state, according to the given state
 */
-function toggle_remove_row_button(rowid) {
+function toggle_remove_row_button(jobid, rowid) {
 	//Locate the OK/remove buttons via jQuery
 	var ok_button = $('#button_ok_' + rowid);
 	var remove_button = $('#button_remove_' + rowid);
@@ -288,6 +292,11 @@ function toggle_remove_row_button(rowid) {
 		//Toggle OK button to inactive
 		ok_button.attr('class', ok_button_class.replace("active", ""));
 		remove_button.attr('class', remove_button_class + " active");
+
+		//Save OK button state on server		
+		var save_data = {};
+		save_data[rowid] = 0;
+		save_edits_ajax(jobid, rowid, save_data);
 		
 		//Remove this row from the list of rows to delete
 		var rows_to_delete = $('#delete').attr('value');
@@ -296,6 +305,11 @@ function toggle_remove_row_button(rowid) {
 		//Toggle OK button to active
 		remove_button.attr('class', remove_button_class.replace("active", ""));
 		ok_button.attr('class', ok_button_class + " active");
+		
+		//Save OK button state on server
+		var save_data = {};
+		save_data[rowid] = 1;
+		save_edits_ajax(jobid, rowid, save_data);
 		
 		//Add this row to the list of rows to delete
 		var rows_to_delete = $('#delete').attr('value');

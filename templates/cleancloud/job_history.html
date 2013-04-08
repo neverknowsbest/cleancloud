@@ -28,7 +28,7 @@
 			</thead>
 			<tbody>
 			{% for job in finished %}
-				<tr>
+				<tr id="{{ job.id }}">
 					<td><a onclick="hide_job('{{ job.id }}')"><i class="icon-remove"></i></td>					
 					<td>{{ job.name }}</td>
 					<td>{{ job.start_datetime }}</td>

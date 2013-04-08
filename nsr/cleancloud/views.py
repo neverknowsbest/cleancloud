@@ -232,13 +232,15 @@ def profile(request):
 def edit_profile(request):
 	"""Edit or add auxiliary account information such as name, address, etc. This data goes into the UserProfile model, not the User model, which is only for authentication."""
 	profile = request.user.userprofile
-	
+
 	if request.method == "POST":
 		form = UserProfileForm(request.POST, instance=profile)
 
 		if form.is_valid():
 			form.save()
 			return redirect('cleancloud.views.profile')
+		else:
+			return render(request, 'cleancloud/edit_profile.html', {'profile':profile, 'error':form.errors})
 	
 	return render(request, 'cleancloud/edit_profile.html', {'profile':profile})
 	
