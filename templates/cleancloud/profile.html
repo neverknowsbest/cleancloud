@@ -12,6 +12,8 @@ User Profile
 <div class="row">
 	{% if profile.first_name|length > 0 %}
 	<p><h6>Name:</h6> {{ profile.first_name }} {{ profile.last_name }}</p>
+	<p><h6>Company: </h6>{{ profile.company }}</p>
+	<p><h6>Phone Number: </h6>{{ profile.phone }}</p>
 	<p><h6>Address:</h6>
 		{{ profile.street_address_1 }}<br/>
 		{% if profile.street_address_2|length > 0 %}

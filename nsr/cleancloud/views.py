@@ -132,8 +132,6 @@ def review(request, job_id):
 			job.key = form.cleaned_data['key']
 			job.value = ",".join(form.cleaned_data['value'])
 			job.rows = form.cleaned_data['nrows']
-			job.threshold = form.cleaned_data['threshold']
-			print job.threshold, form.cleaned_data['threshold']
 			prepare_data(job)
 			job.set_status("reviewed")
 			job.save()
@@ -226,31 +224,23 @@ def status_form(request):
 
 @login_required
 def profile(request):
-	try:
-		profile = request.user.userprofile
-	except UserProfile.DoesNotExist:
-		profile = None
+	profile = request.user.userprofile
 		
 	return render(request, 'cleancloud/profile.html', {'profile':profile})
 
 @login_required
 def edit_profile(request):
 	"""Edit or add auxiliary account information such as name, address, etc. This data goes into the UserProfile model, not the User model, which is only for authentication."""
-	try:
-		profile = request.user.userprofile
-	except UserProfile.DoesNotExist:
-		profile = None
-
+	profile = request.user.userprofile
+	
 	if request.method == "POST":
-		if not profile:
-			form = UserProfileForm(request.POST)
 		form = UserProfileForm(request.POST, instance=profile)
 
 		if form.is_valid():
 			form.save()
 			return redirect('cleancloud.views.profile')
 		else:
-			return render(request, 'cleancloud/edit_profile.html', {'profile':profile, 'error':form.errors})
+			raise Exception(form.errors)
 	
 	return render(request, 'cleancloud/edit_profile.html', {'profile':profile})
 	
