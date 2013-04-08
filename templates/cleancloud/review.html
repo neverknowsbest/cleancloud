@@ -14,32 +14,52 @@
 
 {% block inner %}
 <div class="span12">
-<form action="" method="POST">	
-	{% csrf_token %}
-		<h2>Review Data</h2>
-		<p>The first 10 lines of <strong>{{ n }}</strong> total in the submitted data file are displayed below. Please verify that the data is correct.</p>
-		<p>Select the data column(s) to include in the cleaning by selecting the checkboxes in the header. The default is column 1.</p>
-		<table class="table">
-			<thead>
-				{% autoescape off %}
-					{{ table_header }}
-				{% endautoescape %}
-			</thead>
-			<tbody>
-				{% autoescape off %}
-					{{ table_body }}
-				{% endautoescape %}
-			</tbody>
-		</table>
-	<input type="hidden" name="ncols" value="{{ ncols }}"/>
-	<input type="hidden" name="nrows" value="{{ nrows }}"/>	
-	<input type="hidden" name="key" value="0"/>
-	<div class="form-actions">
-		<input class="btn btn-large btn-primary span2" onclick="load_page_onclick('{% url 'cleancloud.views.select' job.id %}')" value="Previous">
-		<div class="pull-right" id="clean">
-			<input class="btn btn-large btn-primary" type="submit" value="Next">
+	<form action="" method="POST">	
+		{% csrf_token %}
+		<h2>Similarity Threshold</h2>
+		<p>Set the similarity threshold using the slider below. Lower threshold values allow more permissive fuzzy matching. A threshold value of 1 will only detect exact matches.</p>
+		<div class="span12">
+			<span id="slider" class="span5"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="slider_label"></span>
 		</div>
-	</div>
-</form>
+		<input type="hidden" name="threshold" id="threshold"/>
+		
+		<div>
+			<h2>Review Data</h2>		
+			<p>The first 10 lines of <strong>{{ n }}</strong> total in the submitted data file are displayed below. Please verify that the data is correct.</p>
+			<p>Select the data column(s) to include in the cleaning by selecting the checkboxes in the header. The default is column 1.</p>
+			<table class="table">
+				<thead>
+					{% autoescape off %}
+						{{ table_header }}
+					{% endautoescape %}
+				</thead>
+				<tbody>
+					{% autoescape off %}
+						{{ table_body }}
+					{% endautoescape %}
+				</tbody>
+			</table>
+			<input type="hidden" name="ncols" value="{{ ncols }}"/>
+			<input type="hidden" name="nrows" value="{{ nrows }}"/>	
+			<input type="hidden" name="key" value="0"/>
+			<div class="form-actions">
+				<input class="btn btn-large btn-primary span2" onclick="load_page_onclick('{% url 'cleancloud.views.select' job.id %}')" value="Previous">
+				<div class="pull-right" id="clean">
+					<input class="btn btn-large btn-primary" type="submit" value="Next">
+				</div>
+			</div>
+		</div>
+	</form>
 </div>
+{% endblock %}
+
+{% block additional_scripts %}
+<!-- Javascript for threshold slider -->
+<script src="{{ STATIC_URL }}js/jquery-ui.min.js"></script>	
+<script>
+var val = {{ job.threshold }};
+$("#slider").slider({min:0, max:1.0, step:0.1, value:val, slide: function(event, ui){$("#slider_label").html(ui.value);$("#threshold").val(ui.value);}});
+$("#slider_label").html(val);
+$("#threshold").val($("#slider").slider("value"));
+</script>
 {% endblock %}

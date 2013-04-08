@@ -8,6 +8,7 @@ class FileUploadForm(forms.Form):
 	
 class ReviewForm(forms.Form):
 	key = forms.IntegerField()
+	threshold = forms.FloatField()
 	nrows = forms.IntegerField()
 
 	def __init__(self, n, *args, **kwargs):

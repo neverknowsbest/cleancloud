@@ -127,11 +127,13 @@ def review(request, job_id):
 				
 	if request.method == "POST":
 		form = ReviewForm(request.POST['ncols'], request.POST)
-
+		print form.errors
 		if form.is_valid():
 			job.key = form.cleaned_data['key']
 			job.value = ",".join(form.cleaned_data['value'])
 			job.rows = form.cleaned_data['nrows']
+			job.threshold = form.cleaned_data['threshold']
+			print job.threshold, form.cleaned_data['threshold']
 			prepare_data(job)
 			job.set_status("reviewed")
 			job.save()
