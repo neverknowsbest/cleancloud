@@ -292,7 +292,7 @@ def files(request):
 				form.save(request.user)
 				return redirect('cleancloud.views.files')
 		else:
-			error = form.error
+			error = form.errors
 	form = UserFileForm()
 		
 	return render(request, 'cleancloud/files.html', {"files":files, "form":form, "error":error, 'total_size':total_size, 'quota':QUOTA, 'percentage':percentage})

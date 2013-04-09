@@ -7,6 +7,8 @@ from cleancloud.forms import *
 from util import *
 from status import *
 
+import boto
+
 @login_required
 def check(request, job_id):
 	"""Django view for result-checking ajax request (not exposed to user)"""
@@ -47,8 +49,12 @@ def cancel(request, job_id):
 		error = "Requested job id does not exist."
 		return render(request, 'cleancloud/results.html', {'error':error})
 	
-	cancel_job(job)
-	job.cancel()
+	try:
+		cancel_job(job)
+	except boto.exception.EmrResponseError:
+		pass
+	finally:
+		job.cancel()
 	
 	return HttpResponse(job.status)	
 	
