@@ -46,31 +46,29 @@ def get_elapsed_time(job):
 def get_elapsed_time_emr(job, emrid):
 	"""Get elapsed time for EMR job with job flow id emrid, based on EMR job information."""
 	emr = boto.connect_emr()
-	job = emr.describe_jobflow(emrid)
+	jobflow = emr.describe_jobflow(emrid)
 	emr.close()
 	
 	try:
-		steps = [s for s in job.steps if int(s.name.split("-")[1]) == job.id]
+		steps = [s for s in jobflow.steps if int(s.name.split("-")[1]) == job.id]
 	except IndexError:
 		try:
-			if job.steps[-1].name == "SimpleJoin":
-				starttime = datetime.datetime.strptime(job.steps[-2].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
-			else:
-				starttime = datetime.datetime.strptime(job.steps[-1].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
+			stepcount = -2 if jobflow.steps[-1].name == "SimpleJoin" else -1
+			starttime = datetime.datetime.strptime(jobflow.steps[stepcount].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
 		except AttributeError as e:
-			starttime = datetime.datetime.strptime(job.startdatetime, '%Y-%m-%dT%H:%M:%SZ')
+			starttime = datetime.datetime.strptime(jobflow.startdatetime, '%Y-%m-%dT%H:%M:%SZ')
 		except:
-			starttime = datetime.datetime.strptime(job.steps[-1].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
+			starttime = datetime.datetime.strptime(jobflow.steps[-1].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
 	
 		try:
-			endtime = datetime.datetime.strptime(job.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
+			endtime = datetime.datetime.strptime(jobflow.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
 		except AttributeError:
 			endtime = datetime.datetime.today()	
 		except:
-			endtime = datetime.datetime.strptime(job.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
+			endtime = datetime.datetime.strptime(jobflow.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
 	else:
-		startime = steps[0].creationdatetime
-		endtime = steps[-1].enddatetime
+		starttime = datetime.datetime.strptime(steps[0].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
+		endtime = datetime.datetime.strptime(steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
 
 	return (endtime-starttime)
 
