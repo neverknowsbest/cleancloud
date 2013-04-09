@@ -481,8 +481,8 @@ def save_results(job, marked_rows, user):
 	nrows = len(results_csv)
 	results_csv = "\n".join(results_csv)
 	output_file = File(cStringIO.StringIO(results_csv))
-	output_file.name = "%s.cleaned.csv" % ".".join(job.get_input_file().name.split(".")[:-1])
-	# save_string_to_s3(results_csv, USER_FILE_BUCKET, "cleaned/%s.cleaned.csv" % ".".join(job.get_input_file().name.split(".")[:-1]), public=True)
+	output_file.name = "%i_%s.cleaned.csv" % (job.id, ".".join(job.get_input_file().name.split(".")[:-1]))
+
 	try:
 		uf = UserFile.filter(jobs=job).order_by('id').reverse()[0]
 		uf.input_file = output_file
