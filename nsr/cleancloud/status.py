@@ -4,10 +4,7 @@ from cleancloud.models import EditedResult, UserFile
 from boto.s3.key import Key
 from django.core.files import File
 from django.utils import timezone
-
-SINGLE_MACHINE = '10.203.87.100'
-USER_FILE_BUCKET = 'dedool-user-files'
-DEDOOL_OUTPUT_BUCKET = 'cleancloud'
+from constants import *
 
 def get_accuracy(results, job):
 	"""For sample datasets that include a ground truth file, calculate and return the precision & recall of the given results set."""
@@ -42,28 +39,38 @@ def get_accuracy(results, job):
 def get_elapsed_time(job):
 	"""Get elapsed time for job."""
 	if job.job_type == "e":
-		return get_elapsed_time_emr(job.jobflowid)
+		return get_elapsed_time_emr(job, job.jobflowid)
 	else:
 		return datetime.timedelta(seconds=get_single_status(job))
 
-def get_elapsed_time_emr(emrid):
+def get_elapsed_time_emr(job, emrid):
 	"""Get elapsed time for EMR job with job flow id emrid, based on EMR job information."""
 	emr = boto.connect_emr()
 	job = emr.describe_jobflow(emrid)
 	emr.close()
 	
 	try:
-		if job.steps[-1] == "SimpleJoin":
-			starttime = datetime.datetime.strptime(job.steps[-2].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
-		else:
+		steps = [s for s in job.steps if int(s.name.split("-")[1]) == job.id]
+	except IndexError:
+		try:
+			if job.steps[-1].name == "SimpleJoin":
+				starttime = datetime.datetime.strptime(job.steps[-2].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
+			else:
+				starttime = datetime.datetime.strptime(job.steps[-1].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
+		except AttributeError as e:
+			starttime = datetime.datetime.strptime(job.startdatetime, '%Y-%m-%dT%H:%M:%SZ')
+		except:
 			starttime = datetime.datetime.strptime(job.steps[-1].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
-	except AttributeError as e:
-		starttime = datetime.datetime.strptime(job.startdatetime, '%Y-%m-%dT%H:%M:%SZ')
 	
-	try:
-		endtime = datetime.datetime.strptime(job.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
-	except AttributeError:
-		endtime = datetime.datetime.today()	
+		try:
+			endtime = datetime.datetime.strptime(job.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
+		except AttributeError:
+			endtime = datetime.datetime.today()	
+		except:
+			endtime = datetime.datetime.strptime(job.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
+	else:
+		startime = steps[0].creationdatetime
+		endtime = steps[-1].enddatetime
 
 	return (endtime-starttime)
 
@@ -128,17 +135,8 @@ def save_string_to_s3(contents, bucket, filename, public=False):
 def get_public_results_link(job):
 	"""Return the publicly accessible link to the file containing the final results for job job."""
 	result_file = UserFile.objects.filter(jobs=job, type="O").order_by('id').reverse()[0]
+	return result_file.get_public_link()
 	
-	#make file publicly accessible
-	c = boto.connect_s3()
-	b = c.create_bucket(USER_FILE_BUCKET)
-	k = Key(b)
-	k.key = result_file.input_file.name
-	k.set_acl('public-read')
-	
-	public_s3_file = "http://s3.amazonaws.com/dedool-user-files/" + result_file.input_file.name	
-	return public_s3_file
-
 def get_final_results_table(job):
 	"""Return the table containing the full, final results for job job."""
 	result_file = UserFile.objects.filter(jobs=job, type="O").order_by('id').reverse()[0]
@@ -301,7 +299,7 @@ def prepare_results_page(results, job):
 """
 <div class="span12">
 	<h2>Preview Results</h2>
-	<p>Job Time: %.2f minutes</p>
+	<p>Running Time: %.2f minutes</p>
 	%s
 	<p><strong>%i</strong> records matched. Click the '+' button to edit the matched record. Check the box next to a row to remove that row from the final results. </p>
 

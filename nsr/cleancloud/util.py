@@ -109,7 +109,7 @@ def create_job_steps(job):
 	jarpath = "s3n://simplejoin/hadoop/simplejoin.jar"
 	
 	if job.algorithm == 'NL':
-		prepare_input = JarStep(name="Prepare Input", 
+		prepare_input = JarStep(name="Prepare Input-%i" % job.id, 
 						action_on_failure="CANCEL_AND_WAIT",
 						jar=jarpath, 
 						main_class="com.nsrdev.PrepareInput", 
@@ -117,7 +117,7 @@ def create_job_steps(job):
 							hdfs_path, 
 							job.key, 
 							job.value])
-		simplejoin = JarStep(name="SimpleJoin", 
+		simplejoin = JarStep(name="SimpleJoin-%i" % job.id, 
 						action_on_failure="CANCEL_AND_WAIT",
 						jar=jarpath, 
 						main_class="com.nsrdev.SimpleJoin", 
@@ -128,7 +128,7 @@ def create_job_steps(job):
 		steps.append(prepare_input)
 		steps.append(simplejoin)
 	elif job.algorithm == 'MH':
-		lsh_minhash = JarStep(name="MinHashMR", 
+		lsh_minhash = JarStep(name="MinHashMR-%i" % job.id, 
 						action_on_failure="CANCEL_AND_WAIT",
 						jar=jarpath, 
 						main_class="com.nsrdev.MinHashMR", 
@@ -165,13 +165,13 @@ def run_single_machine(job):
 		
 def get_tiers(job):
 	"""Return the tier description strings."""
-	names = ['free', '4-nl', '4-mh', '8-nl', '8-mh', '8xl-nl', '8xl-mh']
+	names = ['1-nl', '1-mh', '4-nl', '4-mh', '8-nl', '8-mh', '8xl-nl', '8xl-mh']
 	running_times = [job.rows for name in names]
 	costs = [PRICES[name.split('-')[0]] * job.rows for name in names]
 	
 	ALGS = {'nl':'Nested loop algorithm - slow but most accurate', 'mh':'MinHash algorithm - fast, but may miss some fuzzy matches'}
 	ROWS = 'Unlimited rows'
-	MACHINES = {'4':'Up to 4 parallel machines', '8':'Up to 8 parallel machines', '8xl':'Up to 8 high-capacity parallel machines'}
+	MACHINES = {'4':'4 parallel machines', '8':'8 parallel machines', '8xl':'8 high-capacity parallel machines'}
 	
 	free_desc = [('Clean up to 1000 rows', 'One machine', ALGS['nl'])]
 	descriptions = free_desc + [(ROWS, MACHINES[name.split('-')[0]], ALGS[name.split('-')[-1]]) for name in names[1:]]
@@ -180,9 +180,8 @@ def get_tiers(job):
 
 def fill_job_from_service(job, service):
 	"""Fill in the job details from the selected service level."""
-	if service == 'free':
+	if "1" in service:
 		job.job_type = "s"
-		job.algorithm = "NL"
 		job.service = "free"
 		job.cost = PRICES['free']
 	if "nl" in service:
@@ -196,6 +195,10 @@ def fill_job_from_service(job, service):
 	else:
 		job.cost = job.rows * PRICES['4']
 	job.save()
+	
+def get_job_running_time(rows):
+	"""Estimate the running time of a job based on the number of rows in the input ."""
+	
 		
 def cancel_job(job):
 	"""Cancel job job by terminating the EMR job flow or killing the single machine process."""

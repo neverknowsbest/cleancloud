@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from storages.backends.s3boto import S3BotoStorage
+from boto.s3.key import Key
+from constants import *
+import boto
 
 class Job(models.Model):
 	ALGORITHM_CHOICES = (('MH', 'MinHash'), ('NL', 'Nested Loop'))
@@ -127,6 +130,17 @@ class UserFile(models.Model):
 	def add_job(self, job):
 		self.jobs.add(job)
 		self.save()
+		
+	def get_public_link(self):
+		#make file publicly accessible
+		c = boto.connect_s3()
+		b = c.create_bucket(USER_FILE_BUCKET)
+		k = Key(b)
+		k.key = self.input_file.name
+		k.set_acl('public-read')
+	
+		public_s3_file = "http://s3.amazonaws.com/dedool-user-files/" + self.input_file.name	
+		return public_s3_file
 	
 #Automatically create user profile and connect it to the User when a new User is created
 def create_user_profile(sender, instance, created, **kwargs):  

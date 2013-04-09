@@ -34,15 +34,13 @@ onload="comet({{job.id}})"
 		</div>
 	</div>
 	<div class="row">
-		<div class="span12">
-			<form id="resultsform" name="results" action="" method="post">
-				{% csrf_token %}
-				<div id="results">
-					<!-- results will be filled in here by javascript -->
-					<input class="btn btn-large btn-primary span3" onclick="cancel('{{ job.id }}')" value="Cancel Running Job">
-				</div>
-			</form>
-		</div>
+		<form id="resultsform" name="results" action="" method="post">
+			{% csrf_token %}
+			<div id="results">
+				<!-- results will be filled in here by javascript -->
+				<input class="btn btn-large btn-primary span3" onclick="cancel('{{ job.id }}')" value="Cancel Running Job">
+			</div>
+		</form>
 	</div>
 	{% endif %}
 {% endblock %}

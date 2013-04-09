@@ -39,7 +39,7 @@
 				{% for file, stripped_filename in files %}
 					<tr id="{{ file.id }}">
 						<td><a onclick="remove_file('{{ file.id }}')"><i class="icon-remove"></i></td>
-						<td>{{ stripped_filename }}</td>
+						<td><a href="{{ file.get_public_link }}">{{ stripped_filename }}</a></td>
 						<td>{{ file.size|filesizeformat }}</td>
 						<td>{{ file.rows }}</td>
 						<td>{{ file.columns }}</td>
