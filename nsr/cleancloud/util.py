@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from cleancloud.models import Job, EditedResult, UserFile, User
 from django.db.models import Q
 
-PRICES = {'free':0, '4':0.02, '8':0.04, '8xl':0.05}
+PRICES = {'1':0, '4':0.02, '8':0.04, '8xl':0.05}
 
 def get_job_or_error(job_id, page):
 	"""Get job by job_id, or return an error"""
@@ -146,11 +146,13 @@ def create_job_flow(steps, job):
 	conn = boto.connect_emr()
 	
 	job_flows = conn.describe_jobflows(['WAITING'])
-	if len(job_flows) == 0:
-		jobid = conn.run_jobflow("nsr web jobflow", log_uri="s3n://nsr-logs", master_instance_type=str(job.node_size), slave_instance_type=str(job.node_size), num_instances=job.nodes, action_on_failure="CONTINUE", steps=steps, keep_alive=True)
+	for jf in job_flows:
+		if jf.instancecount == job.nodes:
+			conn.add_jobflow_steps(job_flows[0].jobflowid, steps)
+			jobid = job_flows[0].jobflowid
 	else:
-		conn.add_jobflow_steps(job_flows[0].jobflowid, steps)
-		jobid = job_flows[0].jobflowid
+		jobid = conn.run_jobflow("nsr web jobflow", log_uri="s3n://nsr-logs", master_instance_type=str(job.node_size), slave_instance_type=str(job.node_size), num_instances=job.nodes, action_on_failure="CONTINUE", steps=steps, keep_alive=True)
+		
 	conn.close()
 	return jobid
 
@@ -171,7 +173,7 @@ def get_tiers(job):
 	
 	ALGS = {'nl':'Nested loop algorithm - slow but most accurate', 'mh':'MinHash algorithm - fast, but may miss some fuzzy matches'}
 	ROWS = 'Unlimited rows'
-	MACHINES = {'4':'4 parallel machines', '8':'8 parallel machines', '8xl':'8 high-capacity parallel machines'}
+	MACHINES = {'1':'One machine', '4':'4 parallel machines', '8':'8 parallel machines', '8xl':'8 high-capacity parallel machines'}
 	
 	free_desc = [('Clean up to 1000 rows', 'One machine', ALGS['nl'])]
 	descriptions = free_desc + [(ROWS, MACHINES[name.split('-')[0]], ALGS[name.split('-')[-1]]) for name in names[1:]]
