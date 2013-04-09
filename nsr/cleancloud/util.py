@@ -147,9 +147,9 @@ def create_job_flow(steps, job):
 	
 	job_flows = conn.describe_jobflows(['WAITING'])
 	for jf in job_flows:
-		if jf.instancecount == job.nodes:
-			conn.add_jobflow_steps(job_flows[0].jobflowid, steps)
-			jobid = job_flows[0].jobflowid
+		if int(jf.instancecount) >= int(job.nodes):
+			conn.add_jobflow_steps(jf.jobflowid, steps)
+			jobid = jf.jobflowid
 	else:
 		jobid = conn.run_jobflow("nsr web jobflow", log_uri="s3n://nsr-logs", master_instance_type=str(job.node_size), slave_instance_type=str(job.node_size), num_instances=job.nodes, action_on_failure="CONTINUE", steps=steps, keep_alive=True)
 		
