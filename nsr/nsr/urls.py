@@ -8,24 +8,27 @@ urlpatterns = patterns('',
     url(r'^$', TemplateView.as_view(template_name='cleancloud/index.html'), name="index"),
 	url(r'^account/', include('registration.backends.default.urls')),
     url(r'^admin/', include(admin.site.urls)),
+	url(r'^functions/$', TemplateView.as_view(template_name='cleancloud/functions.html'), name="functions"),
 )
 
 urlpatterns += patterns('cleancloud.views',
+	url(r'^continue/(\d*)/$', 'continue_job'),	
+	url(r'^job_history/$', 'job_history'),	
+)
+
+urlpatterns += patterns('dedool_files.views',
+	url(r'^files/$', 'files'),
+)
+
+urlpatterns += patterns('dedool_functions.views',
+	url(r'^start/$', 'start'),	
 	url(r'^upload/(\d*)/$', 'upload'),
 	url(r'^select/(\d*)/$', 'select'),
 	url(r'^review/(\d*)/$', 'review'),
 	url(r'^configure/(\d*)/$', 'configure'),
 	url(r'^results/(\d*)/$', 'results'),
-	url(r'^start/$', 'start'),	
-	url(r'^continue/(\d*)/$', 'continue_job'),	
-	url(r'^job_history/$', 'job_history'),	
-	url(r'^functions/$', 'functions'),
 	url(r'^status/$', 'status_form'),
-	url(r'^status/(\d*)/$', 'status'),
-)
-
-urlpatterns += patterns('dedool_files.views',
-	url(r'^files/$', 'files'),
+	url(r'^status/(\d*)/$', 'status'),	
 )
 
 urlpatterns += patterns('cleancloud.ajax_views',

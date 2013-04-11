@@ -6,11 +6,11 @@
 {% endblock %}
 
 {% block breadcrumb %}
-	<li><a href="{% url 'cleancloud.views.start' %}">Start</a> <span class="divider">/</span> </li>
+	<li><a href="{% url 'dedool_functions.views.start' %}">Start</a> <span class="divider">/</span> </li>
 	{% if not error %}
-	<li><a href="{% url 'cleancloud.views.upload' job.id %}">Select Input</a> <span class="divider">/</span> </li>
+	<li><a href="{% url 'dedool_functions.views.upload' job.id %}">Select Input</a> <span class="divider">/</span> </li>
 	{% endif %}
-	<li><a href="{% url 'cleancloud.views.review' job.id %}">Review Data</a><span class="divider">/</span> </li>
+	<li><a href="{% url 'dedool_functions.views.review' job.id %}">Review Data</a><span class="divider">/</span> </li>
 	<li class="active">Select Service</li>
 {% endblock %}
 
@@ -54,7 +54,7 @@
 		</tbody>
 	</table>
 	<div class="form-actions">
-		<input class="btn btn-large btn-primary span2" onclick="load_page_onclick('{% url 'cleancloud.views.review' job.id %}')" value="Previous">
+		<input class="btn btn-large btn-primary span2" onclick="load_page_onclick('{% url 'dedool_functions.views.review' job.id %}')" value="Previous">
 		<div class="pull-right" id="clean">
 			<input class="btn btn-large btn-primary" type="submit" value="Clean!">
 		</div>

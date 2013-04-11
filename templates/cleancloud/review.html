@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block breadcrumb %}
-	<li><a href="{% url 'cleancloud.views.start' %}">Start</a> <span class="divider">/</span> </li>
+	<li><a href="{% url 'dedool_functions.views.start' %}">Start</a> <span class="divider">/</span> </li>
 	{% if not error %}
-	<li><a href="{% url 'cleancloud.views.upload' job.id %}">Select Input</a> <span class="divider">/</span> </li>
+	<li><a href="{% url 'dedool_functions.views.upload' job.id %}">Select Input</a> <span class="divider">/</span> </li>
 	{% endif %}
 	<li class="active">Review Data</li>
 {% endblock %}
@@ -43,7 +43,7 @@
 			<input type="hidden" name="nrows" value="{{ nrows }}"/>	
 			<input type="hidden" name="key" value="0"/>
 			<div class="form-actions">
-				<input class="btn btn-large btn-primary span2" onclick="load_page_onclick('{% url 'cleancloud.views.select' job.id %}')" value="Previous">
+				<input class="btn btn-large btn-primary span2" onclick="load_page_onclick('{% url 'dedool_functions.views.select' job.id %}')" value="Previous">
 				<div class="pull-right" id="clean">
 					<input class="btn btn-large btn-primary" type="submit" value="Next">
 				</div>

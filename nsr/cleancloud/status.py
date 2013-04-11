@@ -5,7 +5,7 @@ from boto.s3.key import Key
 from django.core.files import File
 from django.utils import timezone
 
-from cleancloud.models import EditedResult
+from dedool_functions.models import EditedResult
 from dedool_files.models import UserFile
 from cleancloud.constants import *
 

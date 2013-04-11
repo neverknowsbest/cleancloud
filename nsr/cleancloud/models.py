@@ -101,14 +101,6 @@ class UserProfile(models.Model):
 	
 	def __unicode__(self):  
 		return "%s's profile %s" % (self.user, self.first_name)
-
-class EditedResult(models.Model):
-	job = models.ForeignKey(Job)
-	local_id = models.CharField(max_length=31)
-	value = models.TextField()
-	
-	def __unicode__(self):
-		return '-'.join([str(self.job.id), str(self.local_id), self.value])
 	
 #Automatically create user profile and connect it to the User when a new User is created
 def create_user_profile(sender, instance, created, **kwargs):  

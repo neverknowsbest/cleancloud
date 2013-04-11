@@ -4,8 +4,9 @@ from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 
-from cleancloud.models import Job, EditedResult, User
+from cleancloud.models import Job, User
 from dedool_files.models import UserFile
+from dedool_functions.models import EditedResult
 
 
 PRICES = {'1':0, '4':0.02, '8':0.04, '8xl':0.05}
@@ -228,7 +229,7 @@ def check_job_submitted(job):
 	"""Check if job job has already been submitted."""
 	error = None
 	if job.status == "completed" or job.status == "running" or job.status == "results":
-		error = "Requested job has already been submitted. You can check its status <a href='%s'>here</a>." % reverse('cleancloud.views.status', args=(job.id,))
+		error = "Requested job has already been submitted. You can check its status <a href='%s'>here</a>." % reverse('dedool_functions.views.status', args=(job.id,))
 		
 	return error
 	
@@ -247,15 +248,15 @@ def save_edits(job, request):
 
 def get_redirect_from_job_status(job):
 	if job.status == "unsubmitted":
-		return redirect('cleancloud.views.select', job.id)
+		return redirect('dedool_functions.views.select', job.id)
 	elif job.status == "uploaded":
-		return redirect('cleancloud.views.review', job.id)	
+		return redirect('dedool_functions.views.review', job.id)	
 	elif job.status == "reviewed":
-		return redirect('cleancloud.views.configure', job.id)
+		return redirect('dedool_functions.views.configure', job.id)
 	elif job.status == "running" or job.status == "results":
-		return redirect('cleancloud.views.status', job.id)
+		return redirect('dedool_functions.views.status', job.id)
 	else:
-		return redirect('cleancloud.views.status', job.id)
+		return redirect('dedool_functions.views.status', job.id)
 
 def user_file_is_unique(user, filename):
 	for uf in UserFile.objects.filter(user=user):

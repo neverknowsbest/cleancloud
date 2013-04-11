@@ -3,7 +3,7 @@
 {% block title %} - Select File {% endblock %}
 
 {% block breadcrumb %}
-	<li><a href="{% url 'cleancloud.views.start' %}">Home</a> <span class="divider">/</span>
+	<li><a href="{% url 'dedool_functions.views.start' %}">Home</a> <span class="divider">/</span>
 	<li class="active">Select Input</li>
 {% endblock %}
 
@@ -65,7 +65,7 @@
 		</tbody>	
 	</table>	
 	<div>
-		<input class="btn btn-large btn-primary" onclick="load_page_onclick('{% url 'cleancloud.views.start' %}')" value="Back" type="button">
+		<input class="btn btn-large btn-primary" onclick="load_page_onclick('{% url 'dedool_functions.views.start' %}')" value="Back" type="button">
 		<div class="pull-right">
 			<input class="btn btn-large btn-primary" type="submit" value="Next">
 		</div>

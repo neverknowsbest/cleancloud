@@ -1,13 +1,13 @@
 {% if job.status == "unsubmitted" %}
-	<a href="{% url 'cleancloud.views.select' job.id %}">Select Data File</a>
+	<a href="{% url 'dedool_functions.views.select' job.id %}">Select Data File</a>
 {% elif job.status == "uploaded" %}
-	<a href="{% url 'cleancloud.views.review' job.id %}">Review Data</a>
+	<a href="{% url 'dedool_functions.views.review' job.id %}">Review Data</a>
 {% elif job.status == "reviewed" %}
-	<a href="{% url 'cleancloud.views.configure' job.id %}">Select Service Level</a>
+	<a href="{% url 'dedool_functions.views.configure' job.id %}">Select Service Level</a>
 {% elif job.status == "results" %}
-	<a href="{% url 'cleancloud.views.status' job.id %}">Edit Results</a>
+	<a href="{% url 'dedool_functions.views.status' job.id %}">Edit Results</a>
 {% elif job.status == "completed" %}
-	<a href="{% url 'cleancloud.views.results' job.id %}">Final Results</a>
+	<a href="{% url 'dedool_functions.views.results' job.id %}">Final Results</a>
 {% elif job.status == "cancelled" %}
 	Cancelled
 {% endif %}		
