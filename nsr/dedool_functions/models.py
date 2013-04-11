@@ -1,6 +1,6 @@
 from django.db import models
 
-from cleancloud.models import Job
+from dedool_jobs.models import Job
 
 class EditedResult(models.Model):
 	job = models.ForeignKey(Job)

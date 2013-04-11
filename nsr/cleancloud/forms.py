@@ -25,14 +25,5 @@ class StartJobForm(forms.Form):
 	name = forms.CharField(label="Job Name")	
 	
 class SelectFileForm(forms.Form):
-	file = forms.CharField()	
-	
-class JobForm(forms.ModelForm):
-	class Meta:
-		model = Job
-		exclude = ('status', 'job_type', 'input_file', 'user', 'cost', 'value')
+	file = forms.CharField()
 
-class UserProfileForm(forms.ModelForm):
-	class Meta:
-		model = UserProfile
-		exclude = ('jobs', 'user', 'street_address_2')

@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from storages.backends.s3boto import S3BotoStorage
 
-from cleancloud.models import Job
+from dedool_jobs.models import Job
 from cleancloud.constants import *
 
 from boto.s3.key import Key

@@ -3,13 +3,11 @@ from boto.emr.step import JarStep
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.contrib.auth.models import User
 
-from cleancloud.models import Job, User
+from dedool_jobs.models import Job
 from dedool_files.models import UserFile
 from dedool_functions.models import EditedResult
-
-
-PRICES = {'1':0, '4':0.02, '8':0.04, '8xl':0.05}
 
 def get_job_or_error(job_id, page):
 	"""Get job by job_id, or return an error"""
@@ -189,7 +187,7 @@ def fill_job_from_service(job, service):
 	if "1" in service:
 		job.job_type = "s"
 		job.service = "free"
-		job.cost = PRICES['free']
+		job.cost = PRICES['1']
 	if "nl" in service:
 		job.algorithm = "NL"
 	if "8" in service:

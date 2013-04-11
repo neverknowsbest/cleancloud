@@ -2,3 +2,4 @@ SINGLE_MACHINE = '10.203.87.100'
 USER_FILE_BUCKET = 'dedool-user-files'
 DEDOOL_OUTPUT_BUCKET = 'cleancloud'
 QUOTA = 10737418240.
+PRICES = {'1':0, '4':0.02, '8':0.04, '8xl':0.05}

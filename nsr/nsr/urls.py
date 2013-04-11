@@ -11,7 +11,7 @@ urlpatterns = patterns('',
 	url(r'^functions/$', TemplateView.as_view(template_name='cleancloud/functions.html'), name="functions"),
 )
 
-urlpatterns += patterns('cleancloud.views',
+urlpatterns += patterns('dedool_jobs.views',
 	url(r'^continue/(\d*)/$', 'continue_job'),	
 	url(r'^job_history/$', 'job_history'),	
 )
@@ -40,7 +40,7 @@ urlpatterns += patterns('cleancloud.ajax_views',
 	url(r'^hide/(\d*)/$', 'hide')
 )
 
-urlpatterns += patterns('cleancloud.views',
+urlpatterns += patterns('dedool_profile.views',
 	url(r'^account/profile/$', 'profile'),	
 	url(r'^account/edit_profile/$', 'edit_profile'),
 )

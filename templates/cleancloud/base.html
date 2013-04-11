@@ -32,7 +32,7 @@
 							<a href="{% url 'index' %}">Home</a>
 						</li>
 						<li id="nav-profile">
-						<a href="{% url 'cleancloud.views.profile' %}">Profile</a>
+						<a href="{% url 'dedool_profile.views.profile' %}">Profile</a>
 						</li>
 						<li id="nav-files">
 						<a href="{% url 'dedool_files.views.files' %}">Files</a>
@@ -41,12 +41,12 @@
 						<a href="{% url 'functions' %}">Functions</a>
 						</li>
 						<li id="nav-jobs">
-						<a href="{% url 'cleancloud.views.job_history' %}">Jobs</a>
+						<a href="{% url 'dedool_jobs.views.job_history' %}">Jobs</a>
 						</li>
 						<li class="divider-vertical"></li>
 						{% if user.is_authenticated %}
 						<li>
-							<a href="{% url 'cleancloud.views.profile' %}">Welcome, {{ user.username }}!</a>
+							<a href="{% url 'dedool_profile.views.profile' %}">Welcome, {{ user.username }}!</a>
 						</li>
 						<li>
 						<a class="btn-header" href="{% url 'auth_logout' %}">Logout</a>

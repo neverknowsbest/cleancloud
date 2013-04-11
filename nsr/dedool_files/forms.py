@@ -1,5 +1,6 @@
 from django import forms
-from models import UserFile
+
+from dedool_files.models import UserFile
 
 class UserFileForm(forms.ModelForm):	
 	def save(self, user, commit=True):

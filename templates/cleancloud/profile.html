@@ -22,7 +22,7 @@ User Profile
 		{{ profile.city }}, {{ profile.state }}<br/>
 		{{ profile.zipcode }}</p>
 	{% else %}
-	<p>User profile not available. Please click <a href="{% url 'cleancloud.views.edit_profile' %}">here</a> to complete your profile.</p>
+	<p>User profile not available. Please click <a href="{% url 'dedool_profile.views.edit_profile' %}">here</a> to complete your profile.</p>
 	{% endif %}
 </div>
 {% endblock %}
