@@ -3,10 +3,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator, RegexVa
 from django.contrib.auth.models import User
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from storages.backends.s3boto import S3BotoStorage
-from boto.s3.key import Key
 from constants import *
-import boto
 
 class Job(models.Model):
 	ALGORITHM_CHOICES = (('MH', 'MinHash'), ('NL', 'Nested Loop'))
@@ -17,7 +14,7 @@ class Job(models.Model):
 	#1 user per job
 	user = models.ForeignKey(User)
 	# user file interface files accessible through job.userfile_set.all()
-	input_file = models.FileField(upload_to='input/%Y/%m/%d')	#deprecated, may be removed in future database model
+	input_file = models.FileField(upload_to='input/%Y/%m/%d') #deprecated, may be removed in future database model
 	name = models.CharField(max_length=100, default="")
 	algorithm = models.CharField(max_length=2, default="MH", choices=ALGORITHM_CHOICES)
 	similarity = models.CharField(max_length=20, default="Jaccard", choices=SIMILARITY_CHOICES)
@@ -112,35 +109,6 @@ class EditedResult(models.Model):
 	
 	def __unicode__(self):
 		return '-'.join([str(self.job.id), str(self.local_id), self.value])
-
-class UserFile(models.Model):
-	#1 user per file
-	user = models.ForeignKey(User)
-	#A file can be used in multiple jobs
-	jobs = models.ManyToManyField(Job)
-	input_file = models.FileField(upload_to='%Y/%m/%d', storage=S3BotoStorage(bucket="dedool-user-files"))
-	size = models.IntegerField(max_length=100)
-	rows = models.IntegerField(max_length=100)
-	columns = models.IntegerField(max_length=100)
-	type = models.CharField(max_length=1)
-	
-	def __unicode__(self):
-		return "-".join([str(self.user), self.type, str(self.input_file)])
-	
-	def add_job(self, job):
-		self.jobs.add(job)
-		self.save()
-		
-	def get_public_link(self):
-		#make file publicly accessible
-		c = boto.connect_s3()
-		b = c.create_bucket(USER_FILE_BUCKET)
-		k = Key(b)
-		k.key = self.input_file.name
-		k.set_acl('public-read')
-	
-		public_s3_file = "http://s3.amazonaws.com/dedool-user-files/" + self.input_file.name	
-		return public_s3_file
 	
 #Automatically create user profile and connect it to the User when a new User is created
 def create_user_profile(sender, instance, created, **kwargs):  

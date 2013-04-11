@@ -2,8 +2,11 @@ import boto, json, subprocess, sys, re, pickle, paramiko
 from boto.emr.step import JarStep
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
-from cleancloud.models import Job, EditedResult, UserFile, User
 from django.db.models import Q
+
+from cleancloud.models import Job, EditedResult, User
+from dedool_files.models import UserFile
+
 
 PRICES = {'1':0, '4':0.02, '8':0.04, '8xl':0.05}
 
@@ -263,7 +266,7 @@ def user_file_is_unique(user, filename):
 def remove_user_file(user_file):
 	try:
 		c = boto.connect_s3()
-		b = c.create_bucket('dedool-user-files')
+		b = c.create_bucket(USER_FILE_BUCKET)
 		k = boto.s3.key.Key(b)
 		k.key = user_file.input_file.name
 		k.delete()

@@ -1,10 +1,14 @@
 import boto, json, time, datetime, re, httplib, paramiko, subprocess, sys, cStringIO
 import numpy as np
-from cleancloud.models import EditedResult, UserFile
+
 from boto.s3.key import Key
 from django.core.files import File
 from django.utils import timezone
-from constants import *
+
+from cleancloud.models import EditedResult
+from dedool_files.models import UserFile
+from cleancloud.constants import *
+
 
 def get_accuracy(results, job):
 	"""For sample datasets that include a ground truth file, calculate and return the precision & recall of the given results set."""

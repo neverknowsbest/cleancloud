@@ -21,8 +21,11 @@ urlpatterns += patterns('cleancloud.views',
 	url(r'^job_history/$', 'job_history'),	
 	url(r'^functions/$', 'functions'),
 	url(r'^status/$', 'status_form'),
-	url(r'^files/$', 'files'),
 	url(r'^status/(\d*)/$', 'status'),
+)
+
+urlpatterns += patterns('dedool_files.views',
+	url(r'^files/$', 'files'),
 )
 
 urlpatterns += patterns('cleancloud.ajax_views',
