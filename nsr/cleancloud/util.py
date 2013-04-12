@@ -5,6 +5,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.contrib.auth.models import User
 
+from cleancloud.constants import *
 from dedool_jobs.models import Job
 from dedool_files.models import UserFile
 from dedool_functions.models import EditedResult
@@ -169,7 +170,7 @@ def run_single_machine(job):
 		
 def get_tiers(job):
 	"""Return the tier description strings."""
-	names = ['1-nl', '1-mh', '4-nl', '4-mh', '8-nl', '8-mh', '8xl-nl', '8xl-mh']
+	names = ['1-nl', '4-nl', '4-mh', '8-nl', '8-mh', '8xl-nl', '8xl-mh']
 	running_times = [job.rows for name in names]
 	costs = [PRICES[name.split('-')[0]] * job.rows for name in names]
 	
@@ -200,8 +201,11 @@ def fill_job_from_service(job, service):
 		job.cost = job.rows * PRICES['4']
 	job.save()
 	
-def get_job_running_time(rows):
-	"""Estimate the running time of a job based on the number of rows in the input ."""
+def estimate_job_running_time(job_type, rows):
+	"""Estimate the running time of a job based on the number of rows in the input, the number of machines, and the algorithm used."""
+	if "nl" in job_type:
+		if "4" in job_type:
+			return rows 
 	
 		
 def cancel_job(job):
