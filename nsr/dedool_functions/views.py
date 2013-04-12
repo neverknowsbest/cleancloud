@@ -121,7 +121,7 @@ def review(request, job_id):
 			job.value = ",".join(form.cleaned_data['value'])
 			job.rows = form.cleaned_data['nrows']
 			job.threshold = form.cleaned_data['threshold']
-			print job.threshold, form.cleaned_data['threshold']
+			
 			prepare_data(job)
 			job.set_status("reviewed")
 			job.save()
@@ -130,7 +130,7 @@ def review(request, job_id):
 	else:
 		table_header, table_body, n, ncols = get_preview(job)
 		
-	return render(request, 'cleancloud/review.html', {'job':job, 'n':n, 'table_header':table_header, 'table_body':table_body, 'ncols':ncols, 'nrows':n})	
+	return render(request, 'cleancloud/review.html', {'job':job, 'table_header':table_header, 'table_body':table_body, 'ncols':ncols, 'nrows':n})	
 
 @login_required
 def configure(request, job_id):

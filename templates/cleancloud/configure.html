@@ -1,5 +1,6 @@
 {% extends "cleancloud/base_breadcrumb.html" %}
 {% load widget_tweaks %}
+{% load humanize %}
 
 {% block title %}
 - Configure Job
@@ -38,10 +39,10 @@
 				<td>{% if cost == 0 %}
 						Free
 					{% else %}
-						${{ cost }}
+						${{ cost|floatformat:2|intcomma }}
 					{% endif %}
 				</td>
-				<td>{{ time }} hours</td>
+				<td>{{ time }}</td>
 				<td>
 					<ul>
 						{% for desc_line in description %}

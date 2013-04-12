@@ -47,9 +47,12 @@ class Job(models.Model):
 			return "s3n://cleancloud/" + self.userfile_set.all()[0].input_file.name
 		except IndexError:
 			return ""
-				
+	
+	def get_output_file_name(self):
+		return self.get_input_file().name.split("/")[-1]
+	
 	def get_s3_output_path(self):
-		return "s3n://cleancloud/output/%i/%s" % (self.id, self.get_input_file().name)
+		return "s3n://cleancloud/output/%i/%s" % (self.id, self.get_output_file_name())
 		
 	def get_input_file(self):
 		try:

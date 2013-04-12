@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>nsr/cleancloud/status.py</string>
+	<string>nsr/cleancloud/util.py</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -40,28 +40,28 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>33</integer>
+				<integer>0</integer>
 				<key>line</key>
 				<integer>75</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
-			<integer>53</integer>
+			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>37</integer>
+			<integer>52</integer>
 		</dict>
 		<key>nsr/cleancloud/util.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>52</integer>
+				<integer>32</integer>
 				<key>line</key>
-				<integer>130</integer>
+				<integer>172</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>92</integer>
+			<integer>165</integer>
 		</dict>
 		<key>nsr/cleancloud/views.py</key>
 		<dict>
@@ -76,6 +76,20 @@
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
 			<integer>112</integer>
+		</dict>
+		<key>nsr/dedool_functions/views.py</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>3</integer>
+				<key>line</key>
+				<integer>123</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>86</integer>
 		</dict>
 		<key>nsr/polls/admin.py</key>
 		<dict>
@@ -118,6 +132,20 @@
 			<integer>10176</integer>
 			<key>firstVisibleLine</key>
 			<integer>32</integer>
+		</dict>
+		<key>templates/cleancloud/configure.html</key>
+		<dict>
+			<key>caret</key>
+			<dict>
+				<key>column</key>
+				<integer>37</integer>
+				<key>line</key>
+				<integer>41</integer>
+			</dict>
+			<key>firstVisibleColumn</key>
+			<integer>0</integer>
+			<key>firstVisibleLine</key>
+			<integer>11</integer>
 		</dict>
 		<key>templates/cleancloud/status.html</key>
 		<dict>
@@ -178,11 +206,10 @@
 	</dict>
 	<key>openDocuments</key>
 	<array>
-		<string>nsr/cleancloud/forms.py</string>
-		<string>nsr/cleancloud/views.py</string>
 		<string>nsr/cleancloud/status.py</string>
-		<string>templates/cleancloud/status.html</string>
 		<string>nsr/cleancloud/util.py</string>
+		<string>templates/cleancloud/configure.html</string>
+		<string>nsr/dedool_functions/views.py</string>
 	</array>
 	<key>showFileHierarchyDrawer</key>
 	<false/>
@@ -203,6 +230,13 @@
 					<key>subItems</key>
 					<dict>
 						<key>cleancloud</key>
+						<dict>
+							<key>isExpanded</key>
+							<true/>
+							<key>subItems</key>
+							<dict/>
+						</dict>
+						<key>dedool_functions</key>
 						<dict>
 							<key>isExpanded</key>
 							<true/>
@@ -259,6 +293,6 @@
 		</dict>
 	</dict>
 	<key>windowFrame</key>
-	<string>{{547, 0}, {777, 878}}</string>
+	<string>{{514, 0}, {777, 878}}</string>
 </dict>
 </plist>

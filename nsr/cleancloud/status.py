@@ -363,7 +363,7 @@ def get_single_status(job):
 	client = paramiko.SSHClient()
 	client.load_host_keys('/var/www/known_hosts')
 	client.connect(SINGLE_MACHINE, 22, 'ec2-user', key_filename='/var/www/nsr-dev.pem')
-	stdin, stdout, stderr = client.exec_command('cat ~/status-output/%s.log' % job.get_input_file().name.split('/')[-1])
+	stdin, stdout, stderr = client.exec_command('cat ~/status-output/%s.log' % job.get_output_file_name())
 
 	status = 0
 	line = stdout.readline()
@@ -371,14 +371,14 @@ def get_single_status(job):
 	try:
 		status = float(line.strip())
 	except ValueError as e:
-		print >> sys.stderr, e
+		print e
 		if "CANCELLED" in line:
 			status = -1
 		else:
 			status = 0
 
 	for line in stderr:
-		print >> sys.stderr, line.strip()
+		print line.strip()
 
 	return status
 
@@ -402,7 +402,7 @@ def check_single_job_status(job):
 
 def get_results(job):
 	"""Get results table for job job."""
-	results_string = get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_input_file().name)
+	results_string = get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
 	results_table = prepare_results_page(results_string, job)
 
 	return results_table

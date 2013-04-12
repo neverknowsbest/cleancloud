@@ -1,4 +1,4 @@
-import boto, json, subprocess, sys, re, pickle, paramiko
+import boto, json, subprocess, sys, re, pickle, paramiko, datetime
 from boto.emr.step import JarStep
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
@@ -161,18 +161,18 @@ def create_job_flow(steps, job):
 
 def run_single_machine(job):
 	"""Start single machine job."""
-	output = "%s.output.csv" % job.get_input_file().name
-	cmd = ['/home/ec2-user/sshexec.sh', job.get_input_file().name, output, job.similarity, str(job.threshold)]
-	
+	cmd = ['/home/ec2-user/sshexec.sh', job.get_input_file().name, job.get_output_file_name(), job.similarity, str(job.threshold), str(job.id)]
+	print cmd
 	p = subprocess.Popen(cmd)
 	# p.wait()
 	# print p.communicate()
 		
 def get_tiers(job):
 	"""Return the tier description strings."""
-	names = ['1-nl', '4-nl', '4-mh', '8-nl', '8-mh', '8xl-nl', '8xl-mh']
-	running_times = [job.rows for name in names]
-	costs = [PRICES[name.split('-')[0]] * job.rows for name in names]
+	names = ['1-nl', '4-nl', '4-mh']
+	running_times = [estimate_running_time(name, job.rows) for name in names]
+	costs = [PRICES[name.split('-')[0]] * t.seconds for t, name in zip(running_times, names)]
+	running_times = [str(t).split(".")[0] for t in running_times]
 	
 	ALGS = {'nl':'Nested loop algorithm - slow but most accurate', 'mh':'MinHash algorithm - fast, but may miss some fuzzy matches'}
 	ROWS = 'Unlimited rows'
@@ -201,12 +201,24 @@ def fill_job_from_service(job, service):
 		job.cost = job.rows * PRICES['4']
 	job.save()
 	
-def estimate_job_running_time(job_type, rows):
+def estimate_running_time(job_type, rows):
 	"""Estimate the running time of a job based on the number of rows in the input, the number of machines, and the algorithm used."""
+	curve = lambda x, a, b, c: a*x**2 + b*x + c
 	if "nl" in job_type:
+		a, b, c = [  5.05025473e-05,   1.46056654e-02,   7.35174938e+01]
 		if "4" in job_type:
-			return rows 
-	
+			pass
+		elif "8" in job_type:
+			a, b, c = a/2., b/2., c/2.
+		elif "1" in job_type:
+			a, b, c = [1.77358211e-04, 5.06898263e-02, -2.29059299e+01]		
+	elif "mh" in job_type:
+		a, b, c = [  1.98641850e-06,  -4.04040423e-03,   6.10269608e+01]
+		if "4" in job_type:
+			pass
+		if "8" in job_type:
+			a, b, c = a/2., b/2., c/2.
+	return datetime.timedelta(seconds=curve(rows, a, b, c))
 		
 def cancel_job(job):
 	"""Cancel job job by terminating the EMR job flow or killing the single machine process."""
