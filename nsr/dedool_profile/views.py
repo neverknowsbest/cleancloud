@@ -18,12 +18,15 @@ def profile(request):
 		profile = request.user.userprofile
 	except UserProfile.DoesNotExist:
 		profile = None
-		
+
 	return render(request, 'cleancloud/profile.html', {'profile':profile})
 
 @login_required
 def edit_profile(request):
-	"""Edit or add auxiliary account information such as name, address, etc. This data goes into the UserProfile model, not the User model, which is only for authentication."""
+	"""
+	Edit or add auxiliary account information such as name, address, etc. This data goes into the
+	UserProfile model, not the User model, which is only for authentication.
+	"""
 	try:
 		profile = request.user.userprofile
 	except UserProfile.DoesNotExist:
@@ -39,5 +42,5 @@ def edit_profile(request):
 			return redirect('dedool_profile.views.profile')
 		else:
 			return render(request, 'cleancloud/edit_profile.html', {'profile':profile, 'error':form.errors})
-	
+
 	return render(request, 'cleancloud/edit_profile.html', {'profile':profile})

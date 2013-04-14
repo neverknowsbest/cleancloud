@@ -1,15 +1,17 @@
 {% extends "cleancloud/base.html" %}
 
+{% block navbar_class-profile %}active{% endblock navbar_class-profile %}
+
 {% block body %}
 <div class="container">
 	<h2 class="section_header left">
 		<span>
 			{% block profile_header %}{% endblock %}
 		</span>
-	</h2>	
+	</h2>
 	<div class="row">
 		<div class="span3 profile-nav">
-			<ul class="nav nav-list">
+			<ul class="nav nav-tabs nav-stacked">
 				<li><a href="{% url 'dedool_profile.views.profile' %}">View Profile</a></li>
 				<li><a href="{% url 'dedool_profile.views.edit_profile' %}">Edit User Profile</a></li>
 				<li><a href="{% url 'auth_password_change' %}">Change Password </a><br></li>

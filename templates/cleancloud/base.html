@@ -1,119 +1,131 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Dedool.com{% block title %}{% endblock %}</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
-	<link href="{{ STATIC_URL }}css/font-awesome.min.css" rel="stylesheet">
-	<link href="{{ STATIC_URL }}css/nsr-web.css" rel="stylesheet">
-	<link href="{{ STATIC_URL }}css/jquery-ui.min.css" rel="stylesheet">	
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/theme.css">
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/animate.css">
-	<link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>		
-	<script src="{{ STATIC_URL }}js/nsr-web.js"></script>
-  </head>
-<body {%block body_options %}{% endblock %}>
-    <!-- Navbar -->
-	<div class="navbar navbar-fixed-top">
-		<div class="navbar-inner">
-			<div class="container">
-				<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				</button>
-          	<a class="brand scroller" data-section="body" href="{% url 'index' %}">
-                <img src="{{ STATIC_URL }}img/logo.png" alt="Dedool" />
-            </a>
-				<div class="nav-collapse collapse pull-right">
-					<ul class="nav">
-						<li id="nav-home">
-							<a href="{% url 'index' %}">Home</a>
-						</li>
-						<li id="nav-profile">
-						<a href="{% url 'dedool_profile.views.profile' %}">Profile</a>
-						</li>
-						<li id="nav-files">
-						<a href="{% url 'dedool_files.views.files' %}">Files</a>
-						</li>
-						<li id="nav-functions">
-						<a href="{% url 'functions' %}">Functions</a>
-						</li>
-						<li id="nav-jobs">
-						<a href="{% url 'dedool_jobs.views.job_history' %}">Jobs</a>
-						</li>
-						<li class="divider-vertical"></li>
-						{% if user.is_authenticated %}
-						<li>
-							<a href="{% url 'dedool_profile.views.profile' %}">Welcome, {{ user.username }}!</a>
-						</li>
-						<li>
-						<a class="btn-header" href="{% url 'auth_logout' %}">Logout</a>
-						</li>		
-						{% else %}
-						<li>
-						<a class="btn-header" href="{% url 'auth_login' %}">Login</a>
-						</li>
-						<li>
-						<a class="btn-header" href="{% url 'registration_register' %}">Register</a>
-						</li>
-						{% endif %}		
-					</ul>
-				</div>
-			</div>
-		</div>
-	</div>
-	
-	<!--Page heading -->
-	{% block header %}
-	{% endblock %}
-	
-	<!-- Page body -->
-	<div class="features_page">
-		<div class="container" id="content">
-			<div class="span12 error">
-				{% if error %}
-					<h4>Error</h4>
-					<p>{{ error }}</p>
-				{% endif %}	
-			</div>			
-			{% block body %}
 
-			{% endblock %}	
-		</div>
-	</div>
-	
-	<!-- footer -->
-	<div id="footer">
-			<div class="row copyright">
-				<div class="span5">
-					<!-- <h3>Contact</h3>
-					<a href="#" class="social fb">
-						<i class="i_facebook"></i>
-					</a>
-					<a href="#" class="social tw">
-						<i class="i_twitter"></i>
-					</a>
-					<a href="#" class="social yt">
-						<i class="i_youtube"></i>
-					</a> -->
-				</div>
-				<div class="span2 offset5 copy">
-					<p>2013 - Nittany System Research</p>
-				</div>
-			</div>
-		</div>
-	</div>	
-	
-	<!-- Additional scripts-->
-    <script src="http://code.jquery.com/jquery-latest.js"></script>
-    <script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
-	<script src="{{ STATIC_URL }}js/jquery.tablesorter.min.js"></script>
-	<script>
-	// highlight_active_nav();
-	</script>
-	{% block additional_scripts %}
-	{% endblock %}
-  </body>
+    <head>
+        <title>
+            Dedool.com | {% block title %}{% endblock %}
+        </title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Bootstrap -->
+        <link href="{{ STATIC_URL }}css/bootstrap.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/font-awesome.min.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/nsr-web.css" rel="stylesheet">
+        <link href="{{ STATIC_URL }}css/jquery-ui.min.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/theme.css">
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/animate.css">
+        <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic'
+        rel='stylesheet' type='text/css'>
+        <script src="{{ STATIC_URL }}js/nsr-web.js">
+
+        </script>
+    </head>
+
+    <body {%block body_options %}{% endblock %}>
+        <!-- Navbar -->
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar">
+                        </span>
+                        <span class="icon-bar">
+                        </span>
+                        <span class="icon-bar">
+                        </span>
+                    </button>
+                    <a class="brand scroller" data-section="body" href="{% url 'index' %}">
+                    	<img src="{{ STATIC_URL }}img/logo.png" alt="Dedool" />
+                    </a>
+                    <div class="nav-collapse collapse pull-right">
+                        <ul class="nav">
+                            <li id="nav-home" class="{% block navbar_class-home %}{% endblock navbar_class-home %}">
+                                <a href="{% url 'index' %}">Home</a>
+                            </li>
+                            <li id="nav-profile" class="{% block navbar_class-profile %}{% endblock navbar_class-profile %}">
+                                <a href="{% url 'dedool_profile.views.profile' %}">Profile</a>
+                            </li>
+                            <li id="nav-files" class="{% block navbar_class-files %}{% endblock navbar_class-files %}">
+                                <a href="{% url 'dedool_files.views.files' %}">Files</a>
+                            </li>
+                            <li id="nav-functions" class="{% block navbar_class-functions %}{% endblock navbar_class-functions %}">
+                                <a href="{% url 'functions' %}">Functions</a>
+                            </li>
+                            <li id="nav-jobs" class="{% block navbar_class-jobs %}{% endblock navbar_class-jobs %}">
+                                <a href="{% url 'dedool_jobs.views.job_history' %}">Jobs</a>
+                            </li>
+                            <li class="divider-vertical">
+                            </li>
+                            {% if user.is_authenticated %}
+                            <li>
+                                <a href="{% url 'dedool_profile.views.profile' %}">Welcome, {{ user.username }}!</a>
+                            </li>
+                            <li>
+                                <a class="btn-header" href="{% url 'auth_logout' %}">Logout</a>
+                            </li>
+                            {% else %}
+                            <li>
+                                <a class="btn-header" href="{% url 'auth_login' %}">Login</a>
+                            </li>
+                            <li>
+                                <a class="btn-header" href="{% url 'registration_register' %}">Register</a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Page heading -->
+        {% block header %} {% endblock %}
+        <!-- Page body -->
+        <div class="features_page">
+            <div class="container" id="content">
+                <div class="span12 error">
+                    {% if error %}
+                    <h4>
+                        Error
+                    </h4>
+                    <p>
+                        {{ error }}
+                    </p>
+                    {% endif %}
+                </div>
+                {% block body %} {% endblock %}
+            </div>
+        </div>
+        <!-- footer -->
+        <div id="footer">
+            <div class="row copyright">
+                <div class="span5">
+                    <!--
+                    <h3>Contact</h3>
+                    	<a href="#" class="social fb"><class="i_facebook"></i></a>
+						<a href="#" class="social tw"><i class="i_twitter"></i></a>
+						<a href="#" class="social yt"><i class="i_youtube"></i></a>
+					-->
+                </div>
+                <div class="span2 offset5 copy">
+                    <p>
+                        2013 - Nittany System Research
+                    </p>
+                </div>
+            </div>
+        </div>
+        </div>
+        <!-- Additional scripts-->
+        <script src="http://code.jquery.com/jquery-latest.js">
+
+        </script>
+        <script src="{{ STATIC_URL }}js/bootstrap.min.js">
+
+        </script>
+        <script src="{{ STATIC_URL }}js/jquery.tablesorter.min.js">
+
+        </script>
+        <script>
+
+        </script>
+        {% block additional_scripts %} {% endblock %}
+    </body>
+
 </html>

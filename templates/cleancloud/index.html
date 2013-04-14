@@ -1,5 +1,9 @@
 {% extends "cleancloud/base.html" %}
 
+{% block navbar_class-home %}active{% endblock navbar_class-home %}
+
+{% block title %}Home{% endblock title %}
+
 {% block header %}
 	<div id="hero">
 		<div class="container">
@@ -28,7 +32,7 @@
 									</div>
 								</div>
 							</div>
-							<!-- slide 
+							<!-- slide
 							<div class="item slide2">
 								<div class="row">
 									<div class="span4 animated fadeInUpBig">
@@ -62,7 +66,7 @@
 		<div class="container">
 			<h1>Dedool is a high-performance cloud-based database record cleaning service.</h1>
 		</div>
-	</div>	
+	</div>
 {% endblock %}
 
 {% block body %}
@@ -70,9 +74,9 @@
 	<h2 class="section_header">
 		<hr class="left visible-desktop">
 		<span>Features</span>
-		<hr class="right visible-desktop">		
+		<hr class="right visible-desktop">
 	</h2>
-	
+
 	<div class="row">
 		<div class="span4 feature">
 			<img src="{{ STATIC_URL }}img/feature1.jpg" alt="feature1" class="thumb" />
@@ -101,13 +105,13 @@
 				Choose the price and service that matches your needs!
 			</p>
 		</div>
-	</div>	
+	</div>
 </div>
 <div id="start">
 	<div class="section_header">
-		<hr class="left visible-desktop">		
+		<hr class="left visible-desktop">
 		<a href="{% url 'dedool_functions.views.start' %}" class="btn btn-large btn-primary">Start Cleaning</a>
 		<hr class="right visible-desktop">
 	</div>
-</div>	
+</div>
 {% endblock %}
