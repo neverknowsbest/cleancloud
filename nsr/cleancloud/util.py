@@ -132,7 +132,7 @@ def create_job_steps(job):
 		steps.append(simplejoin)
 	elif job.algorithm == 'MH':
 		lsh_minhash = JarStep(name="MinHashMR-%i" % job.id, 
-						action_on_failure="CANCEL_AND_WAIT",
+						action_on_failure="CONTINUE",
 						jar=jarpath, 
 						main_class="com.nsrdev.MinHashMR", 
 						step_args=[job.get_s3_input_path(), 
@@ -153,6 +153,7 @@ def create_job_flow(steps, job):
 		if int(jf.instancecount) >= int(job.nodes):
 			conn.add_jobflow_steps(jf.jobflowid, steps)
 			jobid = jf.jobflowid
+			break
 	else:
 		jobid = conn.run_jobflow("nsr web jobflow", log_uri="s3n://nsr-logs", master_instance_type=str(job.node_size), slave_instance_type=str(job.node_size), num_instances=job.nodes, action_on_failure="CONTINUE", steps=steps, keep_alive=True)
 		

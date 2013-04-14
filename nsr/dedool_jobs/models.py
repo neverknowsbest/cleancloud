@@ -53,7 +53,7 @@ class Job(models.Model):
 	
 	def get_s3_output_path(self):
 		return "s3n://cleancloud/output/%i/%s" % (self.id, self.get_output_file_name())
-		
+	
 	def get_input_file(self):
 		try:
 			return self.userfile_set.all()[0].input_file
