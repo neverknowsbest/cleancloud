@@ -10,47 +10,49 @@
 		<span>Job History</span>
 	</h2>
 	<div class="row">
-		<h4>Active Jobs</h4>
-		{% include 'cleancloud/active_job_table.html' %}
+		<div class="span12">
+			<h4>Active Jobs</h4>
+			{% include 'cleancloud/active_job_table.html' %}
 
-		<h4>Completed Jobs</h4>
-		<table class="table table-bordered table-striped">
-			<thead>
-				<tr>
-					<th></th>
-					<th>Name</th>
-					<th>Submission Time</th>
-					<th>Completion Time</th>
-					<th>Status</th>
-					<th>Input Filename</th>
-					<th>Details</th>
-					<th>Cost</th>
-				</tr>
-			</thead>
-			<tbody>
-			{% for job in finished %}
-				<tr id="{{ job.id }}">
-					<td><a onclick="hide_job('{{ job.id }}')"><i class="icon-remove"></i></td>
-					<td>{{ job.name }}</td>
-					<td>{{ job.start_datetime }}</td>
-					<td>{{ job.finish_datetime }}</td>
-					<td>
-						{% include 'cleancloud/job_status.html' %}
-					</td>
-					<td>{{ job.get_short_input_file_name }}</td>
-					<td>
-						{% if job.job_type == 'e' %}
-							{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}
-						{% else %}
-							{{ job.algorithm }}, {{ job.similarity }}, Single Machine
-						{% endif %}
-					</td>
-					<td>${{ job.cost }}</td>
-				</tr>
-			{% empty %}
-			{% endfor %}
-			</tbody>
-		</table>
+			<h4>Completed Jobs</h4>
+			<table class="table table-bordered table-striped">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Name</th>
+						<th>Submission Time</th>
+						<th>Completion Time</th>
+						<th>Status</th>
+						<th>Input Filename</th>
+						<th>Details</th>
+						<th>Cost</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for job in finished %}
+					<tr id="{{ job.id }}">
+						<td><a onclick="hide_job('{{ job.id }}')"><i class="icon-remove"></i></td>
+						<td>{{ job.name }}</td>
+						<td>{{ job.start_datetime }}</td>
+						<td>{{ job.finish_datetime }}</td>
+						<td>
+							{% include 'cleancloud/job_status.html' %}
+						</td>
+						<td>{{ job.get_short_input_file_name }}</td>
+						<td>
+							{% if job.job_type == 'e' %}
+								{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}
+							{% else %}
+								{{ job.algorithm }}, {{ job.similarity }}, Single Machine
+							{% endif %}
+						</td>
+						<td>${{ job.cost }}</td>
+					</tr>
+				{% empty %}
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 {% endblock %}
