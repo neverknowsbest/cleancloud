@@ -38,7 +38,7 @@ onload="comet({{job.id}})"
 			{% csrf_token %}
 			<div id="results">
 				<!-- results will be filled in here by javascript -->
-				<input class="btn btn-large btn-primary span3" onclick="cancel('{{ job.id }}')" value="Cancel Running Job">
+			<div id="cancel"></div>
 			</div>
 		</form>
 	</div>

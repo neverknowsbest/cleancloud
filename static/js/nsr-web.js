@@ -220,6 +220,7 @@ function comet(jobid) {
 						display_results(json);
 					} else if (json['status'] == "CANCELLED") {
 					} else {
+						$("#cancel").html("<input class='btn btn-large btn-primary span3' onclick=\"cancel('jobid')\" value='Cancel Running Job'>");
 						var com = function(){comet(jobid);};
 						setTimeout(com, 15000);
 					}
