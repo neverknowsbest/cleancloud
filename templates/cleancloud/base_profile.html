@@ -4,23 +4,28 @@
 
 {% block body %}
 <div class="container">
-	<h2 class="section_header left">
-		<span>
-			{% block profile_header %}{% endblock %}
-		</span>
-	</h2>
-	<div class="row">
-		<div class="span3 profile-nav">
-			<ul class="nav nav-tabs nav-stacked">
-				<li><a href="{% url 'dedool_profile.views.profile' %}">View Profile</a></li>
-				<li><a href="{% url 'dedool_profile.views.edit_profile' %}">Edit User Profile</a></li>
-				<li><a href="{% url 'auth_password_change' %}">Change Password </a><br></li>
-			</ul>
-		</div>
-		<div class="span8">
-			{% block inner %}
-			{% endblock %}
-		</div>
-	</div>
+    <h2 class="section_header left">
+        <span>
+            {% block profile_header %}{% endblock %}
+        </span>
+    </h2>
+    <div class="row">
+        <div class="span12 profile-nav">
+            <ul class="nav nav-pills">
+                <li class="{% block navpills_class-profile %}{% endblock navpills_class-profile %}">
+                    <a href="{% url 'dedool_profile.views.profile' %}">View/Edit User Profile</a>
+                </li>
+                <li class="{% block navpills_class-password %}{% endblock navpills_class-password %}">
+                    <a href="{% url 'auth_password_change' %}">Change Password</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span4 offset1">
+            {% block inner %}
+            {% endblock %}
+        </div>
+    </div>
 </div>
 {% endblock %}

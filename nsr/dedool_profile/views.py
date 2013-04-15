@@ -1,46 +1,34 @@
-from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
+from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from django.db.models import Q
 
-from dedool_jobs.models import Job
 from dedool_profile.models import UserProfile
 from dedool_profile.forms import UserProfileForm
 
-from cleancloud.util import *
-from cleancloud.status import *
 
 @login_required
 def profile(request):
-	try:
-		profile = request.user.userprofile
-	except UserProfile.DoesNotExist:
-		profile = None
+    """
+    Edit or add auxiliary account information such as name, address, etc. This data goes into the
+    UserProfile model, not the User model, which is only for authentication.
+    """
+    user = request.user
 
-	return render(request, 'cleancloud/profile.html', {'profile':profile})
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = None
 
-@login_required
-def edit_profile(request):
-	"""
-	Edit or add auxiliary account information such as name, address, etc. This data goes into the
-	UserProfile model, not the User model, which is only for authentication.
-	"""
-	try:
-		profile = request.user.userprofile
-	except UserProfile.DoesNotExist:
-		profile = None
+    if request.method == "POST":
+        if not profile:
+            form = UserProfileForm(request.POST)
+        form = UserProfileForm(request.POST, instance=profile)
 
-	if request.method == "POST":
-		if not profile:
-			form = UserProfileForm(request.POST)
-		form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('dedool_profile.views.edit_profile')
+        else:
+            return render(request, 'cleancloud/edit_profile.html',
+                          {'user': user, 'profile': profile, 'error': form.errors})
 
-		if form.is_valid():
-			form.save()
-			return redirect('dedool_profile.views.profile')
-		else:
-			return render(request, 'cleancloud/edit_profile.html', {'profile':profile, 'error':form.errors})
+    return render(request, 'cleancloud/edit_profile.html', {'user': user, 'profile': profile})
 
-	return render(request, 'cleancloud/edit_profile.html', {'profile':profile})

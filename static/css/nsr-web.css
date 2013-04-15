@@ -166,40 +166,40 @@
 /* tablesorter */
 /* tables */
 table.tablesorter {
-	font-family:arial;
-	background-color: #CDCDCD;
-	margin:10px 0pt 15px;
-	font-size: 8pt;
-	width: 100%;
-	text-align: left;
+  font-family:arial;
+  background-color: #CDCDCD;
+  margin:10px 0pt 15px;
+  font-size: 8pt;
+  width: 100%;
+  text-align: left;
 }
 table.tablesorter thead tr th, table.tablesorter tfoot tr th {
-	background-color: #e6EEEE;
-	border: 1px solid #FFF;
-	font-size: 8pt;
-	padding: 4px;
+  background-color: #e6EEEE;
+  border: 1px solid #FFF;
+  font-size: 8pt;
+  padding: 4px;
 }
 table.tablesorter thead tr .header {
-	background-image: url(/static/icons/bg.gif);
-	background-repeat: no-repeat;
-	background-position: center right;
-	cursor: pointer;
+  background-image: url(/static/icons/bg.gif);
+  background-repeat: no-repeat;
+  background-position: center right;
+  cursor: pointer;
 }
 table.tablesorter tbody td {
-	color: #3D3D3D;
-	padding: 4px;
-/*	background-color: #FFF;*/
-	vertical-align: top;
+  color: #3D3D3D;
+  padding: 4px;
+/*  background-color: #FFF;*/
+  vertical-align: top;
 }
 /*table.tablesorter tbody tr.odd td {
-	background-color:#F0F0F6;
+  background-color:#F0F0F6;
 }
 */
 table.tablesorter thead tr .headerSortUp {
-	background-image: url(/static/icons/asc.gif);
+  background-image: url(/static/icons/asc.gif);
 }
 table.tablesorter thead tr .headerSortDown {
-	background-image: url(/static/icons/desc.gif);
+  background-image: url(/static/icons/desc.gif);
 }
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
 background-color: #8dbdd8;
@@ -212,50 +212,71 @@ tr.bottom td { border-bottom: thick solid black; }
 tr.row td:last-child { border-right: thin solid black; }*/
 
 [class^="arrow-"] {
-	border: none;
-	display: block;
-	width: 16px;
-	height: 16px;
-	line-height: 100%;
-	vertical-align: middle;
-	background-color: white;
-	background-repeat: no-repeat;	
-	background-size: 100% 100%;
-	background-position: center right;
-	padding: -5px;
+  border: none;
+  display: block;
+  width: 16px;
+  height: 16px;
+  line-height: 100%;
+  vertical-align: middle;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center right;
+  padding: -5px;
 }
 td.arrow-top-turnstile {
-	background-image: url(/static/icons/down-right-bar.ico);
+  background-image: url(/static/icons/down-right-bar.ico);
 }
 td.arrow-turnstile {
-	background-image: url(/static/icons/up-down-right-bar.ico);
+  background-image: url(/static/icons/up-down-right-bar.ico);
 }
 td.arrow-arrow {
-	background-image: url(/static/icons/up-right-arrow.ico);
+  background-image: url(/static/icons/up-right-arrow.ico);
 }
 
 input.inline {
-	width: 60%;
+  width: 60%;
 }
 
 .btn-warning.active,
 .btn-danger.active,
 .btn-success.active {
-	  color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.3);
 }
 
 td.inactive {
-	background-color: #E0E0E0;
+  background-color: #E0E0E0;
 }
 
 td.active {
-	background-color: #ffffff;
+  background-color: #ffffff;
 }
 
 .profile-nav {
-	padding: 10px;
+  padding: 10px;
 }
 
 .error {
-	color: red;
+  color: red;
+}
+
+.nav {
+  margin-bottom: 10px;
+}
+
+.editProfile {
+  text-align: center;
+}
+
+.editProfile > p > label {
+  display: inline-block;
+  margin-right: 10px;
+  width: 100px;
+  text-align: right;
+}
+
+.editProfile > input[type="submit"] {
+  width: 25%;
+  margin-left: auto;
+  margin-right: auto;
 }

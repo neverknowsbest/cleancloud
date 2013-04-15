@@ -12,8 +12,8 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('dedool_jobs.views',
-	url(r'^continue/(\d*)/$', 'continue_job'),	
-	url(r'^job_history/$', 'job_history'),	
+	url(r'^continue/(\d*)/$', 'continue_job'),
+	url(r'^job_history/$', 'job_history'),
 )
 
 urlpatterns += patterns('dedool_files.views',
@@ -21,14 +21,14 @@ urlpatterns += patterns('dedool_files.views',
 )
 
 urlpatterns += patterns('dedool_functions.views',
-	url(r'^start/$', 'start'),	
+	url(r'^start/$', 'start'),
 	url(r'^upload/(\d*)/$', 'upload'),
 	url(r'^select/(\d*)/$', 'select'),
 	url(r'^review/(\d*)/$', 'review'),
 	url(r'^configure/(\d*)/$', 'configure'),
 	url(r'^results/(\d*)/$', 'results'),
 	url(r'^status/$', 'status_form'),
-	url(r'^status/(\d*)/$', 'status'),	
+	url(r'^status/(\d*)/$', 'status'),
 )
 
 urlpatterns += patterns('cleancloud.ajax_views',
@@ -41,6 +41,5 @@ urlpatterns += patterns('cleancloud.ajax_views',
 )
 
 urlpatterns += patterns('dedool_profile.views',
-	url(r'^account/profile/$', 'profile'),	
-	url(r'^account/edit_profile/$', 'edit_profile'),
+	url(r'^account/profile/$', 'profile'),
 )
