@@ -17,9 +17,9 @@
 	<form action="" method="POST">	
 		{% csrf_token %}
 		<h2>Similarity Threshold</h2>
-		<p>Set the similarity threshold using the slider below. Lower threshold values allow more permissive fuzzy matching. A threshold value of 1 will only detect exact matches.</p>
+		<p>Set the similarity threshold using the slider below. Lower threshold values allow more permissive fuzzy matching. A threshold value of 1 will only detect exact matches. Lower threshold values work better for short input strings.</p>
 		<div class="span12">
-			<span id="slider" class="span5"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="slider_label"></span>
+			<span id="slider" class="span5"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="slider_label"></span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="slider_example"></span>
 		</div>
 		<input type="hidden" name="threshold" id="threshold"/>
 		
@@ -57,9 +57,27 @@
 <!-- Javascript for threshold slider -->
 <script src="{{ STATIC_URL }}js/jquery-ui.min.js"></script>	
 <script>
+example_text = function(value) {
+	if (value >= 0.9) {
+		$("#slider_example").html("Appropriate for input strings three words or longer.");
+	} else if (value == 0.8) {
+		$("#slider_example").html("Appropriate for input strings two words or longer.");
+	} else if (value <= 0.7) {
+		$("#slider_example").html("Appropriate for input strings one word or longer.");
+	}	
+};
+
 var val = {{ job.threshold }};
-$("#slider").slider({min:0, max:1.0, step:0.1, value:val, slide: function(event, ui){$("#slider_label").html(ui.value);$("#threshold").val(ui.value);}});
+$("#slider").slider({min:0, max:1.0, step:0.1, value:val, slide: 
+	function(event, ui){
+		$("#slider_label").html(ui.value);
+		example_text(ui.value);
+		$("#threshold").val(ui.value);
+	}
+});
+	
 $("#slider_label").html(val);
+example_text(val);
 $("#threshold").val($("#slider").slider("value"));
 </script>
 {% endblock %}

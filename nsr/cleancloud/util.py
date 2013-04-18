@@ -132,7 +132,7 @@ def create_job_steps(job):
 		steps.append(simplejoin)
 	elif job.algorithm == 'MH':
 		lsh_minhash = JarStep(name="MinHashMR-%i" % job.id, 
-						action_on_failure="CONTINUE",
+						action_on_failure="CANCEL_AND_WAIT",
 						jar=jarpath, 
 						main_class="com.nsrdev.MinHashMR", 
 						step_args=[job.get_s3_input_path(), 
