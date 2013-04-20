@@ -1,0 +1,18 @@
+.editProfile {
+  text-align: center;
+}
+
+.editProfile > p > label {
+  display: inline-block;
+  margin-right: 10px;
+  width: 110px;
+  text-align: right;
+}
+
+.editProfile > input[type="submit"] {
+  width: 25%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
