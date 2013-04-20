@@ -1,0 +1,23 @@
+{% extends "dedool_profile/base_profile.html" %}
+
+{% block navpills_class-profile %}active{% endblock navpills_class-profile %}
+
+{% block title %}
+Edit Profile
+{% endblock %}
+
+{% block profile_header %}
+Edit Profile
+{% endblock %}
+
+{% block inner %}
+    <p><b>Username:</b> {{ user.username }}</p>
+    <p><b>E-Mail:</b> {{ user.email }}</p>
+    <hr>
+    <h5>The following fields are all optional.</h5>
+    <form action="{% url 'profile' %}" method="POST" class="editProfile">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input class="btn btn-large btn-primary" type="submit" value="Save"/>
+    </form>
+{% endblock %}

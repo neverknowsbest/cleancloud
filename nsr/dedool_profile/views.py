@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
-from dedool_profile.models import UserProfile
 from dedool_profile.forms import UserProfileForm
 
 
@@ -13,22 +13,15 @@ def profile(request):
     """
     user = request.user
 
-    try:
-        profile = request.user.userprofile
-    except UserProfile.DoesNotExist:
-        profile = None
-
-    if request.method == "POST":
-        if not profile:
-            form = UserProfileForm(request.POST)
-        form = UserProfileForm(request.POST, instance=profile)
-
+    if request.method == 'POST':    # If profile form was submitted.
+        form = UserProfileForm(request.POST, instance=request.user.userprofile)
         if form.is_valid():
             form.save()
-            return redirect('dedool_profile.views.edit_profile')
+            messages.success(request, 'Profile details updated.')
+            return redirect('profile')
         else:
-            return render(request, 'cleancloud/edit_profile.html',
-                          {'user': user, 'profile': profile, 'error': form.errors})
-
-    return render(request, 'cleancloud/edit_profile.html', {'user': user, 'profile': profile})
-
+            messages.error(request, 'Update failed. Please correct the errors below.')
+            return render(request, 'dedool_profile/profile.html', {'form': form, 'user': user})
+    else:
+        form = UserProfileForm(instance=request.user.userprofile)
+        return render(request, 'dedool_profile/profile.html', {'form': form, 'user': user})

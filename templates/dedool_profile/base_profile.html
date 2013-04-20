@@ -2,6 +2,11 @@
 
 {% block navbar_class-profile %}active{% endblock navbar_class-profile %}
 
+{% block stylesheets %}
+    {% load staticfiles %}
+    <link href="{{ STATIC_URL }}css/userprofile.css" rel="stylesheet">
+{% endblock stylesheets %}
+
 {% block body %}
 <div class="container">
     <h2 class="section_header left">

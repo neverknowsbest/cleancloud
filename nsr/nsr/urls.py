@@ -41,5 +41,5 @@ urlpatterns += patterns('cleancloud.ajax_views',
 )
 
 urlpatterns += patterns('dedool_profile.views',
-	url(r'^account/profile/$', 'profile'),
+	url(r'^account/profile/$', 'profile', name='profile'),
 )
