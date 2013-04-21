@@ -15,4 +15,9 @@
   margin-right: auto;
 }
 
-
+.editProfile .helptext {
+    font-size: 80%;
+    text-align: right;
+    display: block;
+    margin-right: 15px;
+}

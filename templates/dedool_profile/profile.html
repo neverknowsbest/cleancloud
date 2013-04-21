@@ -1,4 +1,5 @@
 {% extends "dedool_profile/base_profile.html" %}
+{% load floppyforms %}
 
 {% block navpills_class-profile %}active{% endblock navpills_class-profile %}
 
@@ -15,9 +16,11 @@ Edit Profile
     <p><b>E-Mail:</b> {{ user.email }}</p>
     <hr>
     <h5>The following fields are all optional.</h5>
-    <form action="{% url 'profile' %}" method="POST" class="editProfile">
+    <form action="{% url 'profile' %}" method="POST" class="form-horizontal">
         {% csrf_token %}
-        {{ form.as_p }}
-        <input class="btn btn-large btn-primary" type="submit" value="Save"/>
+        {% form form  using "floppyforms/layouts/bootstrap.html" %}
+        <div class="controls">
+            <input class="btn btn-large btn-primary" type="submit" value="Save"/>
+        </div>
     </form>
 {% endblock %}

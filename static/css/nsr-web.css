@@ -299,7 +299,7 @@ td.active {
   list-style-type: none;
 }
 
-.message {
+.messages .message {
   display: inline-block;
   padding: 2px 10px 2px 30px;
   border-width: 0;
@@ -312,22 +312,22 @@ td.active {
   box-shadow: 0 0 3px 1px rgba(0,0,0,.65);
 }
 
-.info {
+.messages .info {
   background-color: #FFFF9D;
   background-image: url('../icons/info.png');
 }
 
-.success {
+.messages .success {
   background-color: #A7F38D;
   background-image: url('../icons/success.png');
 }
 
-.warning {
+.messages .warning {
   background-color: #FFB997;
   background-image: url('../icons/warning.png');
 }
 
-.error {
+.messages .error {
   background-color: #FFB9B9;
   background-image: url('../icons/error.png');
   font-weight: bold;

@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MaxValueValidator
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
@@ -17,10 +17,12 @@ class UserProfile(models.Model):
     street_address_2 = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
     state = models.CharField(max_length=100, blank=True)
-    zipcode = models.IntegerField(max_length=5, default=0, blank=True)
+    zipcode = models.IntegerField(max_length=5, blank=True, null=True,
+                                  help_text='Five-Digit US Postal Code.',
+                                  validators=[MaxValueValidator(99999)],)
     company = models.CharField(max_length=100, blank=True)
     phone = models.CharField(max_length=10, verbose_name=u'Phone Number',
-                             help_text='Numbers only, no spaces or dashes.',
+                             help_text='Ten digits, no spaces or dashes.',
                              validators=[RegexValidator(regex='\d{10}',
                                                         message='Must consist of exactly 10 digits.')],
                              blank=True)
