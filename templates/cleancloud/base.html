@@ -82,11 +82,11 @@
         <div class="features_page">
             <div class="container" id="content">
                 <div class="row">
-                    <div class="span12 messages">
+                    <div class="span12">
                         {% if messages %}
                             <ul class="messages">
                                 {% for message in messages %}
-                                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                                    <li{% if message.tags %} class="{{ message.tags }} message"{% endif %}>
                                         {{ message }}
                                     </li>
                                 {% endfor %}

@@ -1,47 +1,42 @@
 /* Jumbotrons
--------------------------------------------------- */
-
+--------------------------------------------------*/
 /* Base class
-------------------------- */
+-------------------------*/
 .jumbotron {
-  position: relative;
-  padding: 40px 0;
+  -webkit-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
+  box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
   color: #fff;
   text-align: center;
   text-shadow: 0 1px 3px rgba(0,0,0,.4), 0 0 30px rgba(0,0,0,.075);
-  background: #020031; /* Old browsers */
-  background: -moz-linear-gradient(45deg,  #020031 0%, #6d3353 100%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left bottom, right top, color-stop(0%,#020031), color-stop(100%,#6d3353)); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(45deg,  #020031 0%,#6d3353 100%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(45deg,  #020031 0%,#6d3353 100%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(45deg,  #020031 0%,#6d3353 100%); /* IE10+ */
-  background: linear-gradient(45deg,  #020031 0%,#6d3353 100%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#020031', endColorstr='#6d3353',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
-  -webkit-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
-     -moz-box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
-          box-shadow: inset 0 3px 7px rgba(0,0,0,.2), inset 0 -3px 7px rgba(0,0,0,.2);
 }
+
 .jumbotron h1 {
-  font-size: 80px;
-  font-weight: bold;
   letter-spacing: -1px;
+  font-weight: bold;
+  font-size: 80px;
   line-height: 1;
 }
+
 .jumbotron p {
-  font-size: 24px;
-  font-weight: 300;
-  line-height: 30px;
   margin-bottom: 30px;
+  font-weight: 300;
+  font-size: 24px;
+  line-height: 30px;
 }
 
 /* Link styles (used on .masthead-links as well) */
 .jumbotron a {
   color: #fff;
   color: rgba(255,255,255,.5);
+
   -webkit-transition: all .2s ease-in-out;
-     -moz-transition: all .2s ease-in-out;
-          transition: all .2s ease-in-out;
+  -moz-transition: all .2s ease-in-out;
+  -o-transition: all .2s ease-in-out;
+  -ms-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
 }
+
 .jumbotron a:hover {
   color: #fff;
   text-shadow: 0 0 10px rgba(255,255,255,.25);
@@ -50,65 +45,71 @@
 /* Download button */
 .masthead .btn {
   padding: 14px 24px;
-  font-size: 24px;
-  font-weight: 200;
-  color: #fff; /* redeclare to override the `.jumbotron a` */
   border: 0;
-  -webkit-border-radius: 6px;
-     -moz-border-radius: 6px;
-          border-radius: 6px;
+  border-radius: 6px;
+
   -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
-     -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
+  color: #fff; /* redeclare to override the `.jumbotron a` */
+font-weight: 200;
+  font-size: 24px;
+
   -webkit-transition: none;
-     -moz-transition: none;
-          transition: none;
+  -moz-transition: none;
+  -o-transition: none;
+  -ms-transition: none;
+  transition: none;
 }
+
 .masthead .btn:hover {
   -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
-     -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
-          box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1), 0 1px 5px rgba(0,0,0,.25);
 }
+
 .masthead .btn:active {
   -webkit-box-shadow: inset 0 2px 4px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.1);
-     -moz-box-shadow: inset 0 2px 4px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.1);
-          box-shadow: inset 0 2px 4px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.1);
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.1);
 }
 
-
 /* Pattern overlay
-------------------------- */
+-------------------------*/
 .jumbotron .container {
   position: relative;
   z-index: 2;
 }
+
 .jumbotron:after {
-  content: '';
-  display: block;
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
-/*  background: url(../img/bs-docs-masthead-pattern.png) repeat center center;*/
+  display: block; /* background:    url(../img/bs-docs-masthead-pattern.png) repeat center center;
+
+   */
+content: '';
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+  filter: alpha(opacity=40);
   opacity: .4;
 }
 
 /* Masthead (docs home)
-------------------------- */
+-------------------------*/
 .masthead {
-  padding: 70px 0 80px;
   margin-bottom: 0;
+  padding: 70px 0 80px;
   color: #fff;
 }
+
 .masthead h1 {
+  letter-spacing: -2px;
   font-size: 120px;
   line-height: 1;
-  letter-spacing: -2px;
 }
+
 .masthead p {
-  font-size: 40px;
   font-weight: 200;
+  font-size: 40px;
   line-height: 1.25;
 }
 
@@ -117,6 +118,7 @@
   margin: 0;
   list-style: none;
 }
+
 .masthead-links li {
   display: inline;
   padding: 0 10px;
@@ -126,19 +128,20 @@
 /* Social proof buttons from GitHub & Twitter */
 .bs-docs-social {
   padding: 15px 0;
-  text-align: center;
-  background-color: #f5f5f5;
   border-top: 1px solid #fff;
   border-bottom: 1px solid #ddd;
+  background-color: #f5f5f5;
+  text-align: center;
 }
 
 /* Quick links on Home */
 .bs-docs-social-buttons {
-  margin-left: 0;
   margin-bottom: 0;
+  margin-left: 0;
   padding-left: 0;
   list-style: none;
 }
+
 .bs-docs-social-buttons li {
   display: inline-block;
   padding: 5px 8px;
@@ -148,17 +151,20 @@
 }
 
 /* Subhead (other pages)
-------------------------- */
+-------------------------*/
 .subhead {
-  text-align: left;
   border-bottom: 1px solid #ddd;
+  text-align: left;
 }
+
 .subhead h1 {
   font-size: 60px;
 }
+
 .subhead p {
   margin-bottom: 20px;
 }
+
 .subhead .navbar {
   display: none;
 }
@@ -166,70 +172,99 @@
 /* tablesorter */
 /* tables */
 table.tablesorter {
-  font-family:arial;
-  background-color: #CDCDCD;
-  margin:10px 0pt 15px;
-  font-size: 8pt;
+  margin: 10px 0 15px;
   width: 100%;
+  background-color: #CDCDCD;
   text-align: left;
-}
-table.tablesorter thead tr th, table.tablesorter tfoot tr th {
-  background-color: #e6EEEE;
-  border: 1px solid #FFF;
   font-size: 8pt;
-  padding: 4px;
+  font-family: arial;
 }
+
+table.tablesorter thead tr th,table.tablesorter tfoot tr th {
+  padding: 4px;
+  border: 1px solid #FFF;
+  background-color: #e6EEEE;
+  font-size: 8pt;
+}
+
 table.tablesorter thead tr .header {
   background-image: url(/static/icons/bg.gif);
+  background-position: right center;
   background-repeat: no-repeat;
-  background-position: center right;
   cursor: pointer;
 }
+
 table.tablesorter tbody td {
-  color: #3D3D3D;
-  padding: 4px;
-/*  background-color: #FFF;*/
+  padding: 4px; /* background-color:    #FFF;
+
+   */
+color: #3D3D3D;
   vertical-align: top;
 }
-/*table.tablesorter tbody tr.odd td {
-  background-color:#F0F0F6;
-}
-*/
+
+/* table.tablesorter tbody tr.odd td    {
+
+background-color:   #F0F0F6;
+
+ */
 table.tablesorter thead tr .headerSortUp {
   background-image: url(/static/icons/asc.gif);
 }
+
 table.tablesorter thead tr .headerSortDown {
   background-image: url(/static/icons/desc.gif);
 }
-table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
-background-color: #8dbdd8;
+
+table.tablesorter thead tr .headerSortDown,table.tablesorter thead tr .headerSortUp {
+  background-color: #8dbdd8;
 }
 
 /* borders for rows in tables */
-tr.top td { border-top: thin solid black; }
-tr.bottom td { border-bottom: thick solid black; }
-/*tr.row td:first-child { border-left: thin solid black; }
-tr.row td:last-child { border-right: thin solid black; }*/
+tr.top td {
+  border-top: thin solid black;
+}
 
+tr.bottom td {
+  border-bottom: thick solid black;
+}
+
+/* tr.row td:first-child    {
+
+border-left:    thin solid black;
+
+ */
+/* }
+
+tr.row td:last-child    {
+
+border-right:    thin solid black;
+
+ */
 [class^="arrow-"] {
-  border: none;
   display: block;
+  padding: -5px;
   width: 16px;
   height: 16px;
-  line-height: 100%;
-  vertical-align: middle;
+  border: none;
   background-color: white;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
   background-position: center right;
-  padding: -5px;
+
+  -webkit-background-size: 100% 100%;
+  -moz-background-size: 100% 100%;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  vertical-align: middle;
+  line-height: 100%;
 }
+
 td.arrow-top-turnstile {
   background-image: url(/static/icons/down-right-bar.ico);
 }
+
 td.arrow-turnstile {
   background-image: url(/static/icons/up-down-right-bar.ico);
 }
+
 td.arrow-arrow {
   background-image: url(/static/icons/up-right-arrow.ico);
 }
@@ -238,10 +273,8 @@ input.inline {
   width: 60%;
 }
 
-.btn-warning.active,
-.btn-danger.active,
-.btn-success.active {
-    color: rgba(255, 255, 255, 0.3);
+.btn-warning.active,.btn-danger.active,.btn-success.active {
+  color: rgba(255, 255, 255, 0.3);
 }
 
 td.inactive {
@@ -256,27 +289,46 @@ td.active {
   padding: 10px;
 }
 
-.error {
-  color: red;
-}
-
 .nav {
   margin-bottom: 10px;
 }
 
-.editProfile {
-  text-align: center;
+.messages {
+  margin-top: 10px;
+  margin-left: 0;
+  list-style-type: none;
 }
 
-.editProfile > p > label {
+.message {
   display: inline-block;
-  margin-right: 10px;
-  width: 110px;
-  text-align: right;
+  padding: 2px 10px 2px 30px;
+  border-width: 0;
+  border-style: solid;
+  border-radius: 8px;
+  background-position: 5px 50%;
+  background-repeat: no-repeat;
+
+  -webkit-box-shadow: 0 0 3px 1px rgba(0,0,0,.65);
+  box-shadow: 0 0 3px 1px rgba(0,0,0,.65);
 }
 
-.editProfile > input[type="submit"] {
-  width: 25%;
-  margin-left: auto;
-  margin-right: auto;
+.info {
+  background-color: #FFFF9D;
+  background-image: url('../icons/info.png');
+}
+
+.success {
+  background-color: #A7F38D;
+  background-image: url('../icons/success.png');
+}
+
+.warning {
+  background-color: #FFB997;
+  background-image: url('../icons/warning.png');
+}
+
+.error {
+  background-color: #FFB9B9;
+  background-image: url('../icons/error.png');
+  font-weight: bold;
 }
