@@ -555,7 +555,7 @@ input[type="color"]:focus,
     text-align: center;
     font-weight: bolder;
     color: #252b34;
-    margin-top: 40px;
+    margin-top: 10px;
     position: relative;
     margin-bottom: 10px;
 }

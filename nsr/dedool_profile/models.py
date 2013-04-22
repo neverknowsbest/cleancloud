@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MaxValueValidator
 from django.db.models.signals import post_save
 from django.contrib.auth.models import User
 
@@ -11,16 +11,18 @@ class UserProfile(models.Model):
     jobs = models.ManyToManyField(Job)
     #1 profile per user, 1 user per profile
     user = models.OneToOneField(User)
-    first_name = models.CharField(max_length=100, default="", blank=True)
-    last_name = models.CharField(max_length=100, default="", blank=True)
-    street_address_1 = models.CharField(max_length=100, default="", blank=True)
-    street_address_2 = models.CharField(max_length=100, default="", blank=True)
-    city = models.CharField(max_length=100, default="", blank=True)
-    state = models.CharField(max_length=100, default="", blank=True)
-    zipcode = models.IntegerField(max_length=5, default=0, blank=True)
-    company = models.CharField(max_length=100, default='', blank=True)
-    phone = models.CharField(max_length=10, default=0,
-                             help_text='Numbers only, no spaces or dashes.',
+    first_name = models.CharField(max_length=100, blank=True, verbose_name=u'First Name')
+    last_name = models.CharField(max_length=100, blank=True, verbose_name=u'Last Name')
+    street_address_1 = models.CharField(max_length=100, blank=True)
+    street_address_2 = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    state = models.CharField(max_length=100, blank=True)
+    zipcode = models.IntegerField(max_length=5, blank=True, null=True,
+                                  help_text='Five-Digit US Postal Code.',
+                                  validators=[MaxValueValidator(99999)],)
+    company = models.CharField(max_length=100, blank=True)
+    phone = models.CharField(max_length=10, verbose_name=u'Phone Number',
+                             help_text='Ten digits, no spaces or dashes.',
                              validators=[RegexValidator(regex='\d{10}',
                                                         message='Must consist of exactly 10 digits.')],
                              blank=True)

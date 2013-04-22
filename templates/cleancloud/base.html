@@ -18,6 +18,7 @@
         <script src="{{ STATIC_URL }}js/nsr-web.js">
 
         </script>
+        {% block stylesheets %}{% endblock stylesheets %}
     </head>
 
     <body {%block body_options %}{% endblock %}>
@@ -80,15 +81,18 @@
         <!-- Page body -->
         <div class="features_page">
             <div class="container" id="content">
-                <div class="span12 error">
-                    {% if error %}
-                    <h4>
-                        Error
-                    </h4>
-                    <p>
-                        {{ error }}
-                    </p>
-                    {% endif %}
+                <div class="row">
+                    <div class="span12">
+                        {% if messages %}
+                            <ul class="messages">
+                                {% for message in messages %}
+                                    <li{% if message.tags %} class="{{ message.tags }} message"{% endif %}>
+                                        {{ message }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
                 </div>
                 {% block body %} {% endblock %}
             </div>
