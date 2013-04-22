@@ -299,36 +299,21 @@ td.active {
   list-style-type: none;
 }
 
-.messages .message {
-  display: inline-block;
-  padding: 2px 10px 2px 30px;
-  border-width: 0;
-  border-style: solid;
-  border-radius: 8px;
+.alert {
   background-position: 5px 50%;
   background-repeat: no-repeat;
-
-  -webkit-box-shadow: 0 0 3px 1px rgba(0,0,0,.65);
-  box-shadow: 0 0 3px 1px rgba(0,0,0,.65);
+  padding-left: 30px;
 }
 
-.messages .info {
-  background-color: #FFFF9D;
+.alert-info {
   background-image: url('../icons/info.png');
 }
 
-.messages .success {
-  background-color: #A7F38D;
+.alert-success {
   background-image: url('../icons/success.png');
 }
 
-.messages .warning {
-  background-color: #FFB997;
-  background-image: url('../icons/warning.png');
-}
-
-.messages .error {
-  background-color: #FFB9B9;
+.alert-error {
   background-image: url('../icons/error.png');
   font-weight: bold;
 }

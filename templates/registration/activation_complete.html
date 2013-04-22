@@ -1,8 +1,16 @@
 {%extends "registration/base_registration.html" %}
 
-{% block inner %}
-<p>Activation complete!</p>
+{% block title %}
+    Account Activation
+{% endblock title %}
 
-<p>You can now login to your account <a href="{% url 'auth_login' %}">here</a>.</p>
+{% block inner %}
+<div class="container">
+    <h2 class="section_header left">
+        <span>Activation Complete</span>
+    </h2>
+
+    <p>You can now login to your account <a href="{% url 'auth_login' %}">here</a>.</p>
+</div>
 {% endblock %}
 

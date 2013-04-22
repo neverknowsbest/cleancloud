@@ -1,7 +1,14 @@
 {%extends "registration/base_registration.html" %}
 
-{% block inner %}
-<p>Registration complete!</p>
+{% block title %}
+    Registration Complete
+{% endblock title %}
 
-<p>A link to activate your account has been sent to the email you provided.</p>
+{% block inner %}
+<div class="container">
+    <h2 class="section_header left">
+        <span>Registration Complete</span>
+    </h2>
+    <p>A link to activate your account has been sent to the email you provided.</p>
+</div>
 {% endblock %}
