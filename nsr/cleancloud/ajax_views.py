@@ -7,7 +7,7 @@ from cleancloud.forms import *
 from util import *
 from status import *
 
-import boto
+import boto, json
 
 @login_required
 def check(request, job_id):
@@ -81,3 +81,25 @@ def revert(request, job_id, input_id):
 	data_json = get_original_data(job, input_id)
 	
 	return HttpResponse(data_json, mimetype="application/json")	
+	
+@login_required
+def load_results(request, job_id):
+	"""Load results from the server using jquery dataTables server-side processing."""
+	try:
+		job = Job.objects.get(id=job_id)
+	except:
+		return HttpResponse("Invalid job specified.")
+	
+	rows = get_results_table_rows(job, int(request.GET['iDisplayStart']), int(request.GET['iDisplayLength']))
+	
+	response = {'iTotalRecords':job.rows,
+				'iTotalDisplayRecords':len(rows),
+				'sEcho':request.GET['sEcho'],
+				'aaData':rows}
+	
+	js_data = json.dumps(response)
+	
+	print js_data
+	
+
+	return HttpResponse(js_data, mimetype="application/json")	

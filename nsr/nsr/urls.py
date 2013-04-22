@@ -29,6 +29,7 @@ urlpatterns += patterns('dedool_functions.views',
 	url(r'^results/(\d*)/$', 'results'),
 	url(r'^status/$', 'status_form'),
 	url(r'^status/(\d*)/$', 'status'),
+	url(r'^edit_results/(\d*)/$', 'edit_results'),
 )
 
 urlpatterns += patterns('cleancloud.ajax_views',
@@ -37,7 +38,8 @@ urlpatterns += patterns('cleancloud.ajax_views',
 	url(r'^edit/(\d*)/$', 'edit'),
 	url(r'^revert/(\d*)/(\d*-\d*)/$', 'revert'),
 	url(r'^remove/(\d*)/$', 'remove'),
-	url(r'^hide/(\d*)/$', 'hide')
+	url(r'^hide/(\d*)/$', 'hide'),
+	url(r'^load_results/(\d*)/$', 'load_results'),	
 )
 
 urlpatterns += patterns('dedool_profile.views',

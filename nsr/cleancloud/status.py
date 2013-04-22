@@ -276,9 +276,7 @@ def get_results_table_body(results, original, job):
 
 def prepare_results_page(results, job):
 	"Prepare table of results that is sent in the AJAX response"
-	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
-	marker = '\t' if '\t' in original[0] else ','
-	ncols = len(original[0].split(marker)) + 1
+	ncols = get_results_columns(job)
 	
 	elapsed_time = get_elapsed_time(job)
 	# accuracy = get_accuracy(results, job)
@@ -319,7 +317,7 @@ def prepare_results_page(results, job):
 			</div>
 		</div>
 		<input id="delete" name="delete" type="hidden" value="%s"/>
-		<table class="tablesorter table table-hover" id="result_table">
+		<table class="tablesorter table table-hover" id="results_table">
 			<thead>
 			%s
 			</thead>
@@ -406,7 +404,28 @@ def get_results(job):
 	results_table = prepare_results_page(results_string, job)
 
 	return results_table
+
+def get_results_columns(job):
+	"""Get results table for job job."""
+	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
+	marker = '\t' if '\t' in original[0] else ','
+	ncols = len(original[0].split(marker)) + 1
+
+	return ncols
 	
+def get_results_table_rows_data(results, start, offset):
+	results = results.split("\n")[start:start+offset]
+	rows = [["", ""] + row.strip("()").split(",") for row in results]
+	
+	return rows
+
+def get_results_table_rows(job, start, offset):
+	"""Get [offset] rows from [start] from the results for job [job]."""	
+	results_string = get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
+	rows = get_results_table_rows_data(results_string, start, offset)
+	
+	return rows
+		
 def check_emr_job_status(job):
 	"""Check EMR job status for job job."""
 	emr_status, emr_details, url = get_jobflow_status(job.jobflowid)

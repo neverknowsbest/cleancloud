@@ -170,7 +170,7 @@ def status(request, job_id):
 		job = Job.objects.get(id=job_id)
 	except:
 		error = "Requested job id does not exist."
-		return render(request, 'cleancloud/run.html', {'error':error})
+		return render(request, 'cleancloud/status.html', {'error':error})
 
 	if request.method == "POST":
 		form = ResultsForm(request.POST)
@@ -183,6 +183,29 @@ def status(request, job_id):
 			return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
 	
 	return render(request, 'cleancloud/status.html', {'job':job})
+
+@login_required
+def edit_results(request, job_id):
+	"""Django view for editing results. The same as the status page, but skips delay and slightly different formatting. """
+	try:
+		job = Job.objects.get(id=job_id)
+	except:
+		error = "Requested job id does not exist."
+		return render(request, 'cleancloud/edit.html', {'error':error})
+
+	if request.method == "POST":
+		form = ResultsForm(request.POST)
+		
+		if form.is_valid():
+			job.set_status("completed")
+			job.save()
+			save_results(job, eval(form.cleaned_data['delete']), request.user)
+		
+			return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
+
+	ncols = get_results_columns(job)
+	
+	return render(request, 'cleancloud/edit.html', {'job':job, 'ncols':range(ncols)})
 
 @login_required
 def results(request, job_id):

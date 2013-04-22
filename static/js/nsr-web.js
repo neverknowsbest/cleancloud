@@ -165,7 +165,7 @@ function getCookie(name) {
 /**
 Main AJAX function for status page. This checks the job status and updates the page with the status, as well as filling in the results when they're available.
 */
-function comet(jobid) {
+function comet(jobid, delay) {
 	var csrftoken = getCookie('csrftoken');
 	$.ajaxSetup({
 	    crossDomain: false, // obviates need for sameOrigin test
@@ -192,7 +192,7 @@ function comet(jobid) {
 				if(json == null){
 					$('#status').html('No response from server.');
 					var com = function(){comet(jobid);};
-					setTimeout(com, 15000);
+					setTimeout(com, delay);
 				} else { 
 					progress = parseInt(json['progress']);
 					
@@ -222,19 +222,19 @@ function comet(jobid) {
 					} else {
 						$("#cancel").html("<input class='btn btn-large btn-primary span3' onclick=\"cancel('jobid')\" value='Cancel Running Job'>");
 						var com = function(){comet(jobid);};
-						setTimeout(com, 15000);
+						setTimeout(com, delay);
 					}
 				}
 			},
 			error : function(XMLHttpRequest, textstatus, error) { 
 				$('#status').html(error);
 				var com = function(){comet(jobid);};
-				setTimeout(com, 15000);
+				setTimeout(com, delay);
 			}
 		});};
 	
 	if (jobid != undefined) {
-		setTimeout(ajax_func, 5000); // delay first status check by 5 seconds
+		setTimeout(ajax_func, delay); // delay first status check by 5 seconds
 	}
 }
 

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body_options %}
-onload="comet({{job.id}})"
+onload="comet({{job.id }}, 15)"
 {% endblock %}
 
 {% block breadcrumb %}				
@@ -46,6 +46,9 @@ onload="comet({{job.id}})"
 {% endblock %}
 
 {% block additional_scripts %}
+	<script src="{{ STATIC_URL }}js/jquery.tablesorter.min.js">
+	</script>
+
 	<script>
 	/* Catch enter button, prevent it from submitting the form */
 $('#resultsform').keydown(function(event) {
