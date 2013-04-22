@@ -72,13 +72,13 @@ def edit(request, job_id):
 
 @login_required
 def revert(request, job_id, input_id):
-	"""Get the original data for jobid, at input_id (<row id>-<column id>)"""
+	"""Get the original record for jobid, at input_id (<row id>-<column id>)"""
 	try:
 		job = Job.objects.get(id=job_id)
 	except:
 		return HttpResponse("Invalid job specified.")
 
-	data_json = get_original_data(job, input_id)
+	data_json = get_original_data_json(job, input_id)
 	
 	return HttpResponse(data_json, mimetype="application/json")	
 	

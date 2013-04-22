@@ -151,20 +151,12 @@ def get_final_results_table(job):
 
 	return table_string
 
-def match_results(results, job):
+def match_results(job):
 	"""Match and split results in results according to job.similarity."""
-	result_dict = {}
+	results = get_raw_results_data(job)	
 	results = re.findall("\((\d*),(\d*),(.*),(.*)\)", results)
-	
-	# if job.similarity == "SoftTFIDF":
-	# 	results = re.findall("\((\d*),(\d*),(.*),(.*),(.*)\nscore = ([.0-9]*)\)", results)
-	# elif job.similarity == "Jaccard":
-	# 	results = re.findall("\((\d*),(\d*),(.*),(.*),(.*)\n(.*)\nscore = ([.0-9]*)\)", results)
-	# 	results = [(id1, id2, val1, val2, d1 + d2, score) for (id1, id2, val1, val2, d1, d2, score) in results]
-	# elif job.similarity == "Level2JaroWinkler":
-	# 	results = re.findall("\((\d+),(\d+),(.+?),(.+?),(.+?)\ntotal: [.0-9]*/[.0-9]* = ([.0-9]*)\n\)", results)		
-	# results = sorted([(int(id1), int(id2)) for (id1, id2, val1, val2, details, score) in results])
-	
+	result_dict = {}
+		
 	results = sorted([(int(id1), int(id2)) for (id1, id2, val1, val2) in results])
 	
 	for id1, id2 in results:
@@ -172,11 +164,11 @@ def match_results(results, job):
 
 	return result_dict
 		
-def get_results_table_body(results, original, job):
+def get_results_table_body(original, job):
 	"""Return the table of results for the preview/edit results page. This includes the input boxes for editing the results. 
 	
 	results - the results to format, as a raw string
-	original - the original data file, as an array of strings
+	original - the original data, split on '\n' into an array of strings
 	job - the job
 	"""
 	def checkbox(rowid, delete):
@@ -211,7 +203,7 @@ def get_results_table_body(results, original, job):
 	rows_to_delete = []
 	results_string = []
 	marker = '\t' if '\t' in original[0] else ','	
-	results = match_results(results, job)	
+	results = match_results(job)	
 	
 	#generate table rows from original data + matched pairs from cleaning output
 	for i, (id1, result_set) in enumerate(sorted(results.iteritems())):
@@ -274,8 +266,9 @@ def get_results_table_body(results, original, job):
 	
 	return len(results), results_html, rows_to_delete
 
-def prepare_results_page(results, job):
+def prepare_results_page(job):
 	"Prepare table of results that is sent in the AJAX response"
+	original = get_original_data(job)
 	ncols = get_results_columns(job)
 	
 	elapsed_time = get_elapsed_time(job)
@@ -284,7 +277,7 @@ def prepare_results_page(results, job):
 	accuracy_string = ""	
 	header = ''.join(["<th></th><th>Keep Row</th>"] + ["<th></th>" for i in range(ncols-1)])
 
-	n_results, results_html, rows_to_delete = get_results_table_body(results, original, job)
+	n_results, results_html, rows_to_delete = get_results_table_body(original, job)
 	
 	if n_results == 0:
 		job.set_status("no match")
@@ -330,7 +323,7 @@ def prepare_results_page(results, job):
 
 	return table_string
 
-def get_original_data(job, input_id):
+def get_original_data_json(job, input_id):
 	"""Get original data at input_id and return it as json"""
 	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
 	marker = '\t' if '\t' in original[0] else ','
@@ -400,29 +393,39 @@ def check_single_job_status(job):
 
 def get_results(job):
 	"""Get results table for job job."""
-	results_string = get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
-	results_table = prepare_results_page(results_string, job)
+	results_table = prepare_results_page(job)
 
 	return results_table
 
+def get_original_data(job):
+	"""Return original data file for job job."""
+	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
+
+	return original
+
 def get_results_columns(job):
-	"""Get results table for job job."""
+	"""Return number of columns in job data."""
 	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
 	marker = '\t' if '\t' in original[0] else ','
-	ncols = len(original[0].split(marker)) + 1
+	ncols = len(original[0].split(marker))
 
 	return ncols
 	
-def get_results_table_rows_data(results, start, offset):
-	results = results.split("\n")[start:start+offset]
-	rows = [["", ""] + row.strip("()").split(",") for row in results]
-	
-	return rows
+def get_raw_results_data(job):
+	return get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
 
 def get_results_table_rows(job, start, offset):
 	"""Get [offset] rows from [start] from the results for job [job]."""	
-	results_string = get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
-	rows = get_results_table_rows_data(results_string, start, offset)
+	original = get_original_data(job)
+	marker = '\t' if '\t' in original[0] else ','
+	results = match_results(job).items()
+	results.sort()
+	rows = []
+	
+	for id1, result_set in results[start:start+offset]:
+		rows.append(original[id1-1].split(marker))
+		for id2 in result_set:
+			rows.append(original[id2-1].split(marker))
 	
 	return rows
 		
