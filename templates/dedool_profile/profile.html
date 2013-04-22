@@ -19,8 +19,6 @@ Edit Profile
     <form action="{% url 'profile' %}" method="POST" class="form-horizontal">
         {% csrf_token %}
         {% form form  using "floppyforms/layouts/bootstrap.html" %}
-        <div class="controls">
-            <input class="btn btn-large btn-primary" type="submit" value="Save"/>
-        </div>
+        <input class="btn btn-large btn-primary" type="submit" value="Save"/>
     </form>
 {% endblock %}
