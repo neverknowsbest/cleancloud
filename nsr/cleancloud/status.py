@@ -415,17 +415,35 @@ def get_raw_results_data(job):
 	return get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
 
 def get_results_table_rows(job, start, offset):
-	"""Get [offset] rows from [start] from the results for job [job]."""	
+	"""Get [offset] rows from [start] from the results for job [job]."""
 	original = get_original_data(job)
 	marker = '\t' if '\t' in original[0] else ','
 	results = match_results(job).items()
 	results.sort()
 	rows = []
-	
+	ncols = len(original[0].split(marker))
+		
+	def get_saved_edit(row_id, cell_id):
+		try:
+			edit = EditedResult.objects.get(job=job, local_id="%i-%i" % (row_id, cell_id)).value
+		except EditedResult.DoesNotExist:
+			edit = original[row_id-1].split(marker)[cell_id]
+		return edit
+		
+	def create_data_dict(row_id):
+		data = dict(((str(i+2), get_saved_edit(row_id, i)) for i in range(ncols)))
+		data["0"] = "Delete"
+		data["1"] = "Edit"
+		data["DT_RowId"] = row_id
+		data["DT_RowClass"] = "edit"
+		return data
+		
 	for id1, result_set in results[start:start+offset]:
-		rows.append(original[id1-1].split(marker))
+		data = create_data_dict(id1)
+		rows.append(data)		
 		for id2 in result_set:
-			rows.append(original[id2-1].split(marker))
+			data = create_data_dict(id2)
+			rows.append(data)
 	
 	return rows
 		

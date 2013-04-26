@@ -67,7 +67,7 @@ def edit(request, job_id):
 		return HttpResponse("Invalid job specified.")
 	
 	save_edits(job, request)
-
+	
 	return HttpResponse("Changes saved.")
 
 @login_required
@@ -99,7 +99,4 @@ def load_results(request, job_id):
 	
 	js_data = json.dumps(response)
 	
-	print js_data
-	
-
 	return HttpResponse(js_data, mimetype="application/json")	

@@ -33,6 +33,16 @@ function display_details(id) {
 
 //AJAX method to send edited changes to the server in the background
 function save_edits_ajax(jobid, row_id, save_data) {
+	var csrftoken = getCookie('csrftoken');
+	$.ajaxSetup({
+	    crossDomain: false, // obviates need for sameOrigin test
+	    beforeSend: function(xhr, settings) {
+	        if (!csrfSafeMethod(settings.type)) {
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	        }
+	    }
+	});	
+	
 	$.ajax({
 			type : 'POST',
 			url  : '/edit/' + jobid + '/',
