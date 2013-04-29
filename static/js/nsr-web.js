@@ -21,8 +21,7 @@ function expand_all() {
 }
 
 function display_details(id) {
-	$("tr[id*=details" + id + "-]").toggle(500);
-	$("#editrow" + id).toggle(500);
+	$("tr[id*=details-" + id + "-]").toggle(500);
 	var current_toggle = $("#toggle" + id).html();
 	if (current_toggle.indexOf("plus") != -1) {
 		$("#toggle" + id).html(current_toggle.replace("plus", "minus"));

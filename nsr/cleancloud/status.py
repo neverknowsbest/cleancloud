@@ -430,19 +430,20 @@ def get_results_table_rows(job, start, offset):
 			edit = original[row_id-1].split(marker)[cell_id]
 		return edit
 		
-	def create_data_dict(row_id):
-		data = dict(((str(i+2), get_saved_edit(row_id, i)) for i in range(ncols)))
-		data["0"] = "Delete"
-		data["1"] = "Edit"
-		data["DT_RowId"] = row_id
-		data["DT_RowClass"] = "edit"
+	def create_data_dict(master_id, row_id, row_class):
+		data = dict(((str(i+3), get_saved_edit(row_id, i)) for i in range(ncols)))
+		data["0"] = ""
+		data["1"] = "Delete"
+		data["2"] = "Edit"
+		data["DT_RowId"] = "%i-%i" % (master_id, master_id) if master_id == row_id else "details-%i-%i" % (master_id, row_id)
+		data["DT_RowClass"] = row_class
 		return data
 		
 	for id1, result_set in results[start:start+offset]:
-		data = create_data_dict(id1)
+		data = create_data_dict(id1, id1, "top")
 		rows.append(data)		
 		for id2 in result_set:
-			data = create_data_dict(id2)
+			data = create_data_dict(id1, id2, "row-details expand-child")
 			rows.append(data)
 	
 	return rows
