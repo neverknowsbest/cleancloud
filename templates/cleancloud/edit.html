@@ -1,0 +1,149 @@
+{% extends "cleancloud/base_breadcrumb.html" %}
+
+{% block title %}
+- Edit Results
+{% endblock %}
+
+{% block stylesheets %}
+<link href="{{ STATIC_URL }}css/jquery.dataTables.css" rel="stylesheet">
+{% endblock stylesheets %}
+
+
+{% block body_options %}
+{% endblock %}
+
+{% block breadcrumb %}				
+	<li><a href="{% url 'dedool_functions.views.start' %}">Home</a> <span class="divider">/</span>
+	<li class="active">Edit Results</li>
+{% endblock %}
+
+{% block inner %}
+	{% if error %}
+		{{ error }}
+	{% else %}
+	<div class="row">
+		<h2>Edit Results</h2>
+		<form id="resultsform" name="results" action="" method="post">
+			<div class="btn-toolbar">
+				<div class="btn-group">
+					<a onclick="hide_all()" class="btn"><i class="icon-minus-sign" title="Collapse All"></i></a>
+					<a onclick="expand_all()" class="btn"><i class="icon-plus-sign" title="Expand All"></i></a>
+					<a onclick="save_results_changes('%i')" class="btn"><i class="icon-save" title="Save All Changes"></i></a>
+				</div>
+				
+				<div class="pull-right" id="submit">
+					<input class="btn btn-large btn-primary" type="submit" id="final" value="Generate Final Results">
+				</div>
+			</div>
+			<br/>			
+			{% csrf_token %}
+			<div id="results">
+				<table id="results_table" class="dataTable">
+					<thead>
+						<th>Expand</th>
+						<th>Delete Row</th>
+						<th>Edit Row</th>
+						{% for c in ncols %}
+							<th></th>
+						{% endfor %}
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+		</form>
+	</div>
+	{% endif %}
+{% endblock %}
+
+{% block additional_scripts %}
+<script src="{{ STATIC_URL }}js/jquery.dataTables.min.js"></script>
+	<script>	
+var job_id = {{ job.id }};
+
+function editRow ( nRow )
+{
+    var jqRow = $('#' + nRow);
+	$.each(jqRow[0].cells, function(index, value) {
+		if(index > 2) {
+			old_html = value.innerHTML;
+			value.innerHTML = '<input id="edit' + nRow + '-' + (index-3) + '" type="text" value="' + old_html + '"/>';
+		} else if (index == 2) {
+			value.innerHTML = '<a class="edit" onclick="saveRow(\'' + nRow + '\')">Save</a>';
+		}
+	});
+}
+
+function saveRow(nRow)
+{
+	var oTable = $("#results_table").dataTable();
+	var jqRow = $("#" + nRow);
+	var split_row = nRow.split("-");
+	
+	if(split_row.length == 3) {
+		var row = split_row[1];
+	} else {
+		var row = split_row[0];
+	}
+	
+	$.each(jqRow[0].cells, function(index, value) {
+		if(index > 2) {
+			var jqInput = $("#edit" + nRow + '-' + (index-3)).val();
+			save_results_changes(job_id, row + '-' + (index-3), jqInput);
+			oTable.fnUpdate(jqInput, jqRow[0], index, false);
+		}
+	});
+	oTable.fnUpdate('<a onclick="editRow(\'' + nRow + '\')">Edit</a>', jqRow[0], 2, false);
+	oTable.fnDraw();
+}
+
+/* datatable */
+$(document).ready(function() {	
+	var table = $('#results_table').dataTable( {
+		"bProcessing": true,
+		"bServerSide": true,
+		"sAjaxSource": "{% url 'cleancloud.ajax_views.load_results'  job.id %}",
+		"fnDrawCallback": function(oSettings) {hide_all();},
+		"aoColumnDefs": [{
+			"sWidth":"5%",
+			"sWidth":"5%",
+			"sWidth":"5%",			
+			"aTargets": [0, 1, 2],
+			"mRender": function(data, type, row) {
+				var split_row = row["DT_RowId"].split("-");
+				if (split_row.length == 3) {
+					var masterRow = split_row[1];
+					var nRow = split_row[2];	
+				} else {
+					var masterRow = split_row[0];
+					var nRow = split_row[1];
+				}
+				
+				if (data == "Delete") {
+					if (row["DT_RowClass"].search("top") >= 0) {
+						return '<input type="checkbox" name="delete" value="' + row["DT_RowId"] + '"/>';
+					} else {
+						return '<input type="checkbox" checked name="delete" value="' + row["DT_RowId"] + '"/>';
+					}
+					
+				} else if (data == "Edit") {
+					return '<a onclick="editRow(\'' + row["DT_RowId"] + '\')">' + data + '</a>';
+				} else {
+					return '<label onclick="display_details(\'' + masterRow + '\')" id="toggle' + nRow + '"><i class="icon-plus"></i></label>'
+				}
+		}}]
+	});
+});	
+
+/* Catch enter button, prevent it from submitting the form */
+$('#resultsform').keydown(function(event) {
+	if (event.which == 13) {
+		var tagname = event.target.tagName.toLowerCase();
+		if (tagname == "input") {
+			return false;
+		}
+	}
+});
+	</script>
+{% endblock %}
