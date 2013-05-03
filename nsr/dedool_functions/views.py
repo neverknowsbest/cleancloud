@@ -172,15 +172,15 @@ def status(request, job_id):
 		error = "Requested job id does not exist."
 		return render(request, 'cleancloud/status.html', {'error':error})
 
-	if request.method == "POST":
-		form = ResultsForm(request.POST)
-		
-		if form.is_valid():
-			job.set_status("completed")
-			job.save()
-			save_results(job, eval(form.cleaned_data['delete']), request.user)
-		
-			return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
+	# if request.method == "POST":
+	# 	form = ResultsForm(request.POST)
+	# 	
+	# 	if form.is_valid():
+	# 		job.set_status("completed")
+	# 		job.save()
+	# 		save_results(job, eval(form.cleaned_data['delete']), request.user)
+	# 	
+	# 		return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
 	
 	return render(request, 'cleancloud/status.html', {'job':job})
 
@@ -194,15 +194,13 @@ def edit_results(request, job_id):
 		return render(request, 'cleancloud/edit.html', {'error':error})
 
 	if request.method == "POST":
-		form = ResultsForm(request.POST)
+		# job.set_status("completed")
+		# job.save()
+		save_results(job, request.user)
 		
-		if form.is_valid():
-			job.set_status("completed")
-			job.save()
-			save_results(job, eval(form.cleaned_data['delete']), request.user)
-		
-			return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
+		return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
 
+	mark_secondary_rows_for_deletion(job)
 	ncols = get_results_columns(job)
 	
 	return render(request, 'cleancloud/edit.html', {'job':job, 'ncols':range(ncols)})

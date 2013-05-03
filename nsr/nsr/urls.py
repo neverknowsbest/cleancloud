@@ -40,7 +40,8 @@ urlpatterns += patterns('cleancloud.ajax_views',
     url(r'^revert/(\d*)/(\d*-\d*)/$', 'revert'),
     url(r'^remove/(\d*)/$', 'remove'),
     url(r'^hide/(\d*)/$', 'hide'),
-	url(r'^load/(\d*)/$', 'load_results')
+	url(r'^load/(\d*)/$', 'load_results'),
+	url(r'^delete_row/(\d*)/(\d*)/$', 'delete_row'),
 )
 
 urlpatterns += patterns('dedool_profile.views',

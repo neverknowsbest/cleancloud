@@ -98,15 +98,46 @@ function saveRow(nRow)
 	oTable.fnDraw();
 }
 
+//AJAX method to send delete checkbox changes to the server in the background
+function save_delete_status(row_id, checked) {
+	var jobid = {{ job.id }};
+	var csrftoken = getCookie('csrftoken');
+	$.ajaxSetup({
+	    crossDomain: false, // obviates need for sameOrigin test
+	    beforeSend: function(xhr, settings) {
+	        if (!csrfSafeMethod(settings.type)) {
+	            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+	        }
+	    }
+	});	
+	
+	$.ajax({
+			type : 'POST',
+			url  : '/delete_row/' + jobid + '/' + row_id + '/',
+			async : true,
+			cache : false,
+			data : {"checked":checked},
+			dataType : "html",
+			success : function(response, status, jqxhr) {
+				// alert(response);
+			},
+			error : function(XMLHttpRequest, textstatus, error) { 
+			
+			}
+	});
+}
+
 /* datatable */
 $(document).ready(function() {	
 	var table = $('#results_table').dataTable( {
 		"bProcessing": true,
 		"bServerSide": true,
 		"sAjaxSource": "{% url 'cleancloud.ajax_views.load_results'  job.id %}",
-		"fnDrawCallback": function(oSettings) {hide_all();},
+		"fnDrawCallback": function(oSettings) {
+			hide_all();
+		},
 		"aoColumnDefs": [{
-			"sWidth":"5%",
+			"sWidth":"3%",
 			"sWidth":"5%",
 			"sWidth":"5%",			
 			"aTargets": [0, 1, 2],
@@ -132,9 +163,25 @@ $(document).ready(function() {
 				} else {
 					return '<label onclick="display_details(\'' + masterRow + '\')" id="toggle' + nRow + '"><i class="icon-plus"></i></label>'
 				}
-		}}]
+			}
+		}]
 	});
-});	
+});
+
+$("#results_table").change(function(e) {
+	var split_row_id = e.originalEvent.srcElement.parentNode.parentNode.id.split("-")
+	if (split_row_id.length == 3) {
+		var row_id = split_row_id[2];
+	} else {
+		var row_id = split_row_id[1];
+	}
+	
+	if (e.originalEvent.srcElement.checked) {
+		save_delete_status(row_id, true);
+	} else if (!e.originalEvent.srcElement.checked) {
+		save_delete_status(row_id, false);
+	}
+});
 
 /* Catch enter button, prevent it from submitting the form */
 $('#resultsform').keydown(function(event) {

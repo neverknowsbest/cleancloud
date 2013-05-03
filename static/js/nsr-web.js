@@ -220,7 +220,8 @@ function comet(jobid, delay) {
 				
 					if (json['status'] == "COMPLETED" || 
 						json['status'] == "Testing OK") {
-						display_results(json);
+							window.location.replace(json['redirect'])
+						// display_results(json);
 					} else if (json['status'] == "FAILED") {
 						$('#results').html(json['results']);
 					} else if ((json['status'] == "WAITING" || 

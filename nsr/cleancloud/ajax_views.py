@@ -17,7 +17,7 @@ def check(request, job_id):
 	if request.is_ajax() or \
 	(request.user.is_authenticated() and \
 	request.user == job.user):
-		status = check_job_status(job)
+		status = check_job_status(job, request)
 		return HttpResponse(status, mimetype="application/json")
 
 @login_required
@@ -89,6 +89,9 @@ def load_results(request, job_id):
 		job = Job.objects.get(id=job_id)
 	except:
 		return HttpResponse("Invalid job specified.")
+	# 
+	# if len(request.GET['sSearch']) > 0:
+	# 	
 	
 	rows = get_results_table_rows(job, int(request.GET['iDisplayStart']), int(request.GET['iDisplayLength']))
 	
@@ -100,3 +103,14 @@ def load_results(request, job_id):
 	js_data = json.dumps(response)
 	
 	return HttpResponse(js_data, mimetype="application/json")	
+	
+def delete_row(request, job_id, row_id):
+	"""Delete a row from the results of job with job_id."""
+	try:
+		job = Job.objects.get(id=job_id)
+	except:
+		return HttpResponse("Invalid job specified.")
+	
+	mark_row_for_deletion(job, row_id, request.POST["checked"])
+	
+	return HttpResponse("Row deletion status updated.")

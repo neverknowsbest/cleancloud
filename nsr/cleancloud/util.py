@@ -9,6 +9,7 @@ from cleancloud.constants import *
 from dedool_jobs.models import Job
 from dedool_files.models import UserFile
 from dedool_functions.models import EditedResult
+from cleancloud.status import match_results
 
 def get_job_or_error(job_id, page):
 	"""Get job by job_id, or return an error"""
@@ -260,6 +261,23 @@ def save_edits(job, request):
 		except EditedResult.DoesNotExist:
 			result = EditedResult(job=job, local_id=k, value=v)
 			result.save()
+			
+def mark_row_for_deletion(job, row_id, checked):
+	"""Mark row for deletion in the database."""
+	try:
+		result = EditedResult.objects.get(job=job, local_id=row_id)
+		result.value = checked
+		result.save()
+	except EditedResult.DoesNotExist:
+		result = EditedResult(job=job, local_id=row_id, value=checked)
+		result.save()
+
+def mark_secondary_rows_for_deletion(job):
+	results = match_results(job).items()
+	for id1, result_set in results:
+		for id2 in result_set:
+			mark_row_for_deletion(job, id2, True)
+
 
 def get_redirect_from_job_status(job):
 	if job.status == "unsubmitted":

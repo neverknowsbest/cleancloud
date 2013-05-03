@@ -3,12 +3,12 @@ import numpy as np
 
 from boto.s3.key import Key
 from django.core.files import File
+from django.core.urlresolvers import reverse
 from django.utils import timezone
 
 from dedool_functions.models import EditedResult
 from dedool_files.models import UserFile
 from cleancloud.constants import *
-
 
 def get_accuracy(results, job):
 	"""For sample datasets that include a ground truth file, calculate and return the precision & recall of the given results set."""
@@ -333,7 +333,7 @@ def get_original_data_json(job, input_id):
 	
 	return json.dumps({'original':data})
 	
-def check_job_status(job):
+def check_job_status(job, request):
 	"""Return the JSON-formatted job status. This includes the results if the job is completed."""
 	if job.status == "cancelled":
 		return json.dumps({'status':"CANCELLED"})
@@ -343,6 +343,7 @@ def check_job_status(job):
 		status = check_single_job_status(job)
 
 	if status['status'] == "COMPLETED" or status['status'] == "WAITING":
+		status['redirect'] = request.build_absolute_uri(reverse("dedool_functions.views.edit_results", args=[job.id]))
 		job.finish_datetime = job.start_datetime + get_elapsed_time(job)
 		job.set_status("results")
 		job.save()
@@ -490,7 +491,7 @@ def get_jobflow_status(emr_id):
 
 	return status, details, url
 
-def save_results(job, marked_rows, user):
+def save_results(job, user):
 	"""Create final results file. The rows in marked_rows will not be included in the final file. If any edited results exist in the EditedResult database, a new row will be created with the contents of the EditedResult.
 	
 	marked_rows - array of row IDs to be deleted
@@ -501,14 +502,16 @@ def save_results(job, marked_rows, user):
 	marker = '\t' if '\t' in original[0] else ','
 	ncols = len(original[0].split(marker))
 	
-	results = match_results(get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + job.get_input_file().name), job)
-	marked_original = [row-1 for row in marked_rows]
-	
 	#generate data file
 	for i, line in enumerate(original):
 		if line == "\n": continue
-		edited = []		
-		if i not in marked_original:
+		edited = []	
+		try:
+			marked_delete = False if EditedResult.objects.get(job=job, local_id=(i+1)).value.lower() == "false" else True
+		except EditedResult.DoesNotExist:
+			marked_delete = False
+	
+		if not marked_delete:
 			#if row is checked, don't include in final data file
 			line = line.split(marker)
 			if len(line) != ncols:
