@@ -515,14 +515,14 @@ def save_results(job, user):
 			#if row is checked, don't include in final data file
 			line = line.split(marker)
 			if len(line) != ncols:
-				edited = marker.join(line)
+				edited = ','.join(line)
 			else:	
 				for j in range(ncols):
 					try:
 						edited.append(EditedResult.objects.get(job=job, local_id='%i-%i' % (i+1, j)).value)
 					except EditedResult.DoesNotExist:
 						edited.append(line[j])
-				edited = marker.join(edited)
+				edited = ','.join(edited)
 			results_csv.append(edited)
 	nrows = len(results_csv)
 	results_csv = "\n".join(results_csv)
