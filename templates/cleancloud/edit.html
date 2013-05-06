@@ -161,7 +161,12 @@ $(document).ready(function() {
 				} else if (data == "Edit") {
 					return '<a onclick="editRow(\'' + row["DT_RowId"] + '\')">' + data + '</a>';
 				} else {
-					return '<label onclick="display_details(\'' + masterRow + '\')" id="toggle' + nRow + '"><i class="icon-plus"></i></label>'
+					if (masterRow == nRow) {
+						return '<label onclick="display_details(\'' + masterRow + '\')" id="toggle' + nRow + '"><i class="icon-plus"></i></label>';
+					} else {
+						return '';
+					}
+					
 				}
 			}
 		}]

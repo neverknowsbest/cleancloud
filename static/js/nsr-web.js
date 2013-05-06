@@ -212,9 +212,9 @@ function comet(jobid, delay) {
 						$('#tracker_url').attr('href', json['emr_tracker']);
 						$('#tracker_span').show();
 					}
-					
-					if (4.9 * progress > $('.bar').width()) {
-						$('.bar').width(progress * 4.9);
+
+					if (5.7 * progress > $('.bar').width()) {
+						$('.bar').width(progress * 5.7);
 						$('.bar').text(progress + "%");
 					}
 				
@@ -256,7 +256,7 @@ function display_results(json) {
 	var sorting = [[2,0]]; 
 	
 	//Set status bar to 100%
-	$('.bar').width(490);
+	$('.bar').width(570);
 	$('.bar').text(100 + "%");
 	
 	//Fill in the results div with the results table
@@ -284,6 +284,7 @@ function cancel(jobid) {
 		cache	: false
 	});
 	$("#cancel").hide(500);
+	$("#progress").hide(500);
 }
 
 /**

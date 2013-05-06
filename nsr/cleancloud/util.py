@@ -215,7 +215,7 @@ def estimate_running_time(job_type, rows):
 		elif "1" in job_type:
 			a, b, c = [1.77358211e-04, 5.06898263e-02, -2.29059299e+01]		
 	elif "mh" in job_type:
-		a, b, c = [  1.98641850e-06,  -4.04040423e-03,   6.10269608e+01]
+		a, b, c = [  1.98641850e-06,  -4.04040423e-03,   6.10269608e+01 + 120]
 		if "4" in job_type:
 			pass
 		if "8" in job_type:

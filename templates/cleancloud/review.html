@@ -68,7 +68,7 @@ example_text = function(value) {
 };
 
 var val = {{ job.threshold }};
-$("#slider").slider({min:0, max:1.0, step:0.1, value:val, slide: 
+$("#slider").slider({min:0, max:1.0, step:0.05, value:val, slide: 
 	function(event, ui){
 		$("#slider_label").html(ui.value);
 		example_text(ui.value);
