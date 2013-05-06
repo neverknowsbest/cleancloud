@@ -230,7 +230,7 @@ function comet(jobid, delay) {
 						display_results(json);
 					} else if (json['status'] == "CANCELLED") {
 					} else {
-						$("#cancel").html("<input class='btn btn-large btn-primary span3' onclick=\"cancel('jobid')\" value='Cancel Running Job'>");
+						$("#cancel").html("<input class='btn btn-large btn-primary span3' onclick=\"cancel('" + jobid + "')\" value='Cancel Running Job'>");
 						var com = function(){comet(jobid);};
 						setTimeout(com, delay);
 					}
@@ -276,14 +276,14 @@ function cancel(jobid) {
 	if (base_url == undefined) {
 		var base_url = ".";
 	}
-	$("#results").hide(500)
-	$("#status").html("Cancelling...")
+	$("#status").html("Cancelling...");
 	$.ajax({
 		type	: 'Get',
 		url		: '/cancel/' + jobid + '/',
 		async	: true,
 		cache	: false
 	});
+	$("#cancel").hide(500);
 }
 
 /**
