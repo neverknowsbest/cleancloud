@@ -424,20 +424,30 @@ def get_results_table_rows(job, start, offset):
 	rows = []
 	ncols = len(original[0].split(marker))
 		
-	def get_saved_edit(row_id, cell_id):
+	def get_saved_edit(row_id, cell_id, master_id):
+		local_id = "%i-%i" % (row_id, cell_id) if cell_id >= 0 else str(row_id)
 		try:
-			edit = EditedResult.objects.get(job=job, local_id="%i-%i" % (row_id, cell_id)).value
+			edit = EditedResult.objects.get(job=job, local_id=local_id).value
+			if cell_id >= 0:
+				if edit == "true":
+					return True
+				else:
+					return False
 		except EditedResult.DoesNotExist:
-			edit = original[row_id-1].split(marker)[cell_id]
+			if cell_id >= 0:
+				edit = original[row_id-1].split(marker)[cell_id]
+			else:
+				edit = not (row_id == master_id)
 		return edit
 		
 	def create_data_dict(master_id, row_id, row_class):
-		data = dict(((str(i+3), get_saved_edit(row_id, i)) for i in range(ncols)))
+		data = dict(((str(i+3), get_saved_edit(row_id, i, master_id)) for i in range(ncols)))
 		data["0"] = ""
 		data["1"] = "Delete"
 		data["2"] = "Edit"
 		data["DT_RowId"] = "%i-%i" % (master_id, master_id) if master_id == row_id else "details-%i-%i" % (master_id, row_id)
 		data["DT_RowClass"] = row_class
+		data["checked"] = "checked" if get_saved_edit(row_id, -1, master_id) else ""
 		return data
 		
 	for id1, result_set in results[start:start+offset]:

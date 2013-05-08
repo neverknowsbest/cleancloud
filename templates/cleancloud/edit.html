@@ -154,9 +154,9 @@ $(document).ready(function() {
 				
 				if (data == "Delete") {
 					if (row["DT_RowClass"].search("top") >= 0) {
-						return '<input type="checkbox" name="delete" value="' + row["DT_RowId"] + '"/>';
+						return '<input type="checkbox"' + row["checked"] + ' name="delete" value="' + row["DT_RowId"] + '"/>';
 					} else {
-						return '<input type="checkbox" checked name="delete" value="' + row["DT_RowId"] + '"/>';
+						return '<input type="checkbox"' + row["checked"] + ' name="delete" value="' + row["DT_RowId"] + '"/>';
 					}
 					
 				} else if (data == "Edit") {
