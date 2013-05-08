@@ -441,10 +441,10 @@ def get_results_table_rows(job, start, offset):
 		return data
 		
 	for id1, result_set in results[start:start+offset]:
-		data = create_data_dict(id1, id1, "top")
+		data = create_data_dict(id1, id1, "top odd")
 		rows.append(data)		
 		for id2 in result_set:
-			data = create_data_dict(id1, id2, "row-details expand-child")
+			data = create_data_dict(id1, id2, "row-details expand-child even")
 			rows.append(data)
 	
 	return rows
