@@ -286,7 +286,9 @@ def get_redirect_from_job_status(job):
 		return redirect('dedool_functions.views.review', job.id)	
 	elif job.status == "reviewed":
 		return redirect('dedool_functions.views.configure', job.id)
-	elif job.status == "running" or job.status == "results":
+	elif job.status == "running":
+		return redirect('dedool_functions.views.edit_results', job.id)
+	elif job.status == "results":
 		return redirect('dedool_functions.views.status', job.id)
 	else:
 		return redirect('dedool_functions.views.status', job.id)

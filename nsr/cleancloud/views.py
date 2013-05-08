@@ -7,6 +7,4 @@ from django.db.models import Q
 
 from cleancloud.models import *
 from cleancloud.forms import *
-
-from util import *
-from status import *
+	
