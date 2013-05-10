@@ -28,7 +28,6 @@
 				<div class="btn-group">
 					<a onclick="hide_all()" class="btn"><i class="icon-minus-sign" title="Collapse All"></i></a>
 					<a onclick="expand_all()" class="btn"><i class="icon-plus-sign" title="Expand All"></i></a>
-					<a onclick="save_results_changes('%i')" class="btn"><i class="icon-save" title="Save All Changes"></i></a>
 				</div>
 				
 				<div class="pull-right" id="submit">
@@ -136,7 +135,7 @@ $(document).ready(function() {
 		"fnDrawCallback": function(oSettings) {
 			hide_all();
 		},
-		"asStripClasses":[],
+		"asStripeClasses":[],
 		"aoColumnDefs": [{
 			"sWidth":"3%",
 			"sWidth":"5%",
@@ -152,13 +151,12 @@ $(document).ready(function() {
 					var nRow = split_row[1];
 				}
 				
-				if (data == "Delete") {
+				if (data == "Delete") {					
 					if (row["DT_RowClass"].search("top") >= 0) {
-						return '<input type="checkbox"' + row["checked"] + ' name="delete" value="' + row["DT_RowId"] + '"/>';
+						return '<input type="checkbox" ' + row["checked"] + ' name="delete" value="' + row["DT_RowId"] + '"/>';
 					} else {
-						return '<input type="checkbox"' + row["checked"] + ' name="delete" value="' + row["DT_RowId"] + '"/>';
+						return '<input type="checkbox" ' + row["checked"] + ' name="delete" value="' + row["DT_RowId"] + '"/>';
 					}
-					
 				} else if (data == "Edit") {
 					return '<a onclick="editRow(\'' + row["DT_RowId"] + '\')">' + data + '</a>';
 				} else {

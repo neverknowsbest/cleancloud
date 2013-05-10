@@ -426,13 +426,14 @@ def get_results_table_rows(job, start, offset):
 		
 	def get_saved_edit(row_id, cell_id, master_id):
 		local_id = "%i-%i" % (row_id, cell_id) if cell_id >= 0 else str(row_id)
+
 		try:
 			edit = EditedResult.objects.get(job=job, local_id=local_id).value
-			if cell_id >= 0:
-				if edit == "true":
-					return True
+			if cell_id <	 0:
+				if edit == "true" or edit == "True":
+					edit = True
 				else:
-					return False
+					edit = False
 		except EditedResult.DoesNotExist:
 			if cell_id >= 0:
 				edit = original[row_id-1].split(marker)[cell_id]

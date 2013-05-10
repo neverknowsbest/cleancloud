@@ -262,12 +262,13 @@ def save_edits(job, request):
 			result = EditedResult(job=job, local_id=k, value=v)
 			result.save()
 			
-def mark_row_for_deletion(job, row_id, checked):
+def mark_row_for_deletion(job, row_id, checked, force=True):
 	"""Mark row for deletion in the database."""
 	try:
 		result = EditedResult.objects.get(job=job, local_id=row_id)
-		result.value = checked
-		result.save()
+		if force:
+			result.value = checked
+			result.save()
 	except EditedResult.DoesNotExist:
 		result = EditedResult(job=job, local_id=row_id, value=checked)
 		result.save()
@@ -276,20 +277,20 @@ def mark_secondary_rows_for_deletion(job):
 	results = match_results(job).items()
 	for id1, result_set in results:
 		for id2 in result_set:
-			mark_row_for_deletion(job, id2, True)
+			mark_row_for_deletion(job, id2, True, force=False)
 
 
 def get_redirect_from_job_status(job):
 	if job.status == "unsubmitted":
 		return redirect('dedool_functions.views.select', job.id)
 	elif job.status == "uploaded":
-		return redirect('dedool_functions.views.review', job.id)	
+		return redirect('dedool_functions.views.review', job.id)
 	elif job.status == "reviewed":
 		return redirect('dedool_functions.views.configure', job.id)
 	elif job.status == "running":
-		return redirect('dedool_functions.views.edit_results', job.id)
-	elif job.status == "results":
 		return redirect('dedool_functions.views.status', job.id)
+	elif job.status == "results":
+		return redirect('dedool_functions.views.edit_results', job.id)
 	else:
 		return redirect('dedool_functions.views.status', job.id)
 
