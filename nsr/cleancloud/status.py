@@ -388,7 +388,8 @@ def check_single_job_status(job):
 	elif status > 1:
 		state = "COMPLETED"
 		progress = 100
-		results = get_results(job)
+		results = ''
+		# results = get_results(job)
 
 	return {"results":results, "progress":progress, "status":state}
 
@@ -404,14 +405,6 @@ def get_original_data(job):
 
 	return original
 
-def get_results_columns(job):
-	"""Return number of columns in job data."""
-	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
-	marker = '\t' if '\t' in original[0] else ','
-	ncols = len(original[0].split(marker))
-
-	return ncols
-	
 def get_raw_results_data(job):
 	return get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
 
@@ -421,6 +414,7 @@ def get_results_table_rows(job, start, offset):
 	marker = '\t' if '\t' in original[0] else ','
 	results = match_results(job).items()
 	results.sort()
+	results_rows = len(results)
 	rows = []
 	ncols = len(original[0].split(marker))
 		
@@ -429,8 +423,8 @@ def get_results_table_rows(job, start, offset):
 
 		try:
 			edit = EditedResult.objects.get(job=job, local_id=local_id).value
-			if cell_id <	 0:
-				if edit == "true" or edit == "True":
+			if cell_id < 0:
+				if edit.lower() == "true":
 					edit = True
 				else:
 					edit = False
@@ -458,7 +452,7 @@ def get_results_table_rows(job, start, offset):
 			data = create_data_dict(id1, id2, "row-details expand-child even")
 			rows.append(data)
 	
-	return rows
+	return rows, results_rows
 		
 def check_emr_job_status(job):
 	"""Check EMR job status for job job."""
@@ -472,18 +466,21 @@ def check_emr_job_status(job):
 		t_fraction = (timezone.now() - job.start_datetime).seconds/300.
 		progress = t_fraction * 10
 	elif emr_status == "COMPLETED":
-		results = get_results(job)
+		pass
+		# results = get_results(job)
 	elif emr_status == "WAITING":
 		time.sleep(1) #wait 1 second for everything to update
 		if step_completed(job.jobflowid):
-			results = get_results(job)
+			pass
+			# results = get_results(job)
 		else:
 			emr_status = "RUNNING"
 			progress = 10 + get_step_status(job.jobflowid)
 	elif emr_status == "TERMINATED" or emr_status == "FAILED":
 		job.cancel()
 		if step_completed(job.jobflowid):
-			results = get_results(job)
+			pass
+			# results = get_results(job)
 			
 	return {"status":emr_status, "emr_details":emr_details, "progress":progress, "results":results, 'emr_tracker':url}
 	
@@ -511,7 +508,7 @@ def save_results(job, user):
 	
 	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
 	marker = '\t' if '\t' in original[0] else ','
-	ncols = len(original[0].split(marker))
+	ncols = job.get_user_file().columns
 	
 	#generate data file
 	for i, line in enumerate(original):

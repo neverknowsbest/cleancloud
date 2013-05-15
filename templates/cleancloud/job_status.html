@@ -5,7 +5,7 @@
 {% elif job.status == "reviewed" %}
 	<a href="{% url 'dedool_functions.views.configure' job.id %}">Select Service Level</a>
 {% elif job.status == "results" %}
-	<a href="{% url 'dedool_functions.views.status' job.id %}">Edit Results</a>
+	<a href="{% url 'dedool_functions.views.edit_results' job.id %}">Edit Results</a>
 {% elif job.status == "completed" %}
 	<a href="{% url 'dedool_functions.views.results' job.id %}">Final Results</a>
 {% elif job.status == "cancelled" %}

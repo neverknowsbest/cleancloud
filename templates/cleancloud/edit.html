@@ -36,21 +36,32 @@
 			</div>
 			<br/>			
 			{% csrf_token %}
-			<div id="results">
-				<table id="results_table" class="dataTable">
-					<thead>
-						<th>Expand</th>
-						<th>Delete Row</th>
-						<th>Edit Row</th>
-						{% for c in ncols %}
-							<th></th>
-						{% endfor %}
-					</thead>
-					<tbody>
+			{% if empty %}
+				<div id="results">
+					<p>No matching rows were found in the dataset. If you feel that this is an error, please try your job again with a lower threshold value, or using a Nested Loop algorithm.</p>
+				</div>
+			{% else %}
+				<div id="results">
+					<table id="results_table" class="dataTable">
+						<thead>
+							<th>Expand</th>
+							<th>Delete Row</th>
+							<th>Edit Row</th>
+							{% for c in ncols %}
+								{% if c in values %}
+									<th>*</th>
+								{% else %}	
+									<th></th>
+								{% endif %}
+							{% endfor %}
+						</thead>
+						<tbody>
 						
-					</tbody>
-				</table>
-			</div>
+						</tbody>
+					</table>
+					<p>* indicates that a column was used in the matching algorithm. </p>
+				</div>
+			{% endif %}
 		</form>
 	</div>
 	{% endif %}
@@ -131,6 +142,7 @@ $(document).ready(function() {
 	var table = $('#results_table').dataTable( {
 		"bProcessing": true,
 		"bServerSide": true,
+		"bInfo":false,
 		"sAjaxSource": "{% url 'cleancloud.ajax_views.load_results'  job.id %}",
 		"fnDrawCallback": function(oSettings) {
 			hide_all();
@@ -139,7 +151,7 @@ $(document).ready(function() {
 		"aoColumnDefs": [{
 			"sWidth":"3%",
 			"sWidth":"5%",
-			"sWidth":"5%",			
+			"sWidth":"5%",
 			"aTargets": [0, 1, 2],
 			"mRender": function(data, type, row) {
 				var split_row = row["DT_RowId"].split("-");

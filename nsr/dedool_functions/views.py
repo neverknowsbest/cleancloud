@@ -186,7 +186,7 @@ def status(request, job_id):
 
 @login_required
 def edit_results(request, job_id):
-	"""Django view for editing results. The same as the status page, but skips delay and slightly different formatting. """
+	"""Django view for editing results."""
 	try:
 		job = Job.objects.get(id=job_id)
 	except:
@@ -201,9 +201,11 @@ def edit_results(request, job_id):
 		return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
 
 	mark_secondary_rows_for_deletion(job)
-	ncols = get_results_columns(job)
+	value_columns = [int(v)-1 for v in job.value]
+	ncols = job.get_user_file().columns
+	rows = get_results_table_rows(job, 0, 5)
 	
-	return render(request, 'cleancloud/edit.html', {'job':job, 'ncols':range(ncols)})
+	return render(request, 'cleancloud/edit.html', {'job':job, 'ncols':range(ncols), 'values':value_columns, 'empty':rows == 0})
 
 @login_required
 def results(request, job_id):

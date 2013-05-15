@@ -175,6 +175,9 @@ function getCookie(name) {
 Main AJAX function for status page. This checks the job status and updates the page with the status, as well as filling in the results when they're available.
 */
 function comet(jobid, delay) {
+	if (delay == "undefined") {
+		delay = 15000;
+	}
 	var csrftoken = getCookie('csrftoken');
 	$.ajaxSetup({
 	    crossDomain: false, // obviates need for sameOrigin test
@@ -244,7 +247,7 @@ function comet(jobid, delay) {
 		});};
 	
 	if (jobid != undefined) {
-		setTimeout(ajax_func, delay); // delay first status check by 5 seconds
+		setTimeout(ajax_func, 5000); // delay first status check by 5 seconds
 	}
 }
 

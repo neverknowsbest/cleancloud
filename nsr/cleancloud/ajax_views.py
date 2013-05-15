@@ -93,9 +93,9 @@ def load_results(request, job_id):
 	# if len(request.GET['sSearch']) > 0:
 	# 	
 	
-	rows = get_results_table_rows(job, int(request.GET['iDisplayStart']), int(request.GET['iDisplayLength']))
+	rows, results_rows = get_results_table_rows(job, int(request.GET['iDisplayStart']), int(request.GET['iDisplayLength']))
 	
-	response = {'iTotalRecords':job.rows,
+	response = {'iTotalRecords':results_rows,
 				'iTotalDisplayRecords':len(rows),
 				'sEcho':request.GET['sEcho'],
 				'aaData':rows}
