@@ -160,7 +160,12 @@ def match_results(job):
 	results = sorted([(int(id1), int(id2)) for (id1, id2, val1, val2) in results])
 	
 	for id1, id2 in results:
-		result_dict.setdefault(id1, set()).add(id2)
+		for k, result_set in result_dict.iteritems():
+			if id1 in result_set or id2 in result_set:
+				result_set.add(id1)
+				result_set.add(id2)
+		else:
+			result_dict.setdefault(id1, set()).add(id2)
 
 	return result_dict
 		
@@ -333,7 +338,7 @@ def get_original_data_json(job, input_id):
 	
 	return json.dumps({'original':data})
 	
-def check_job_status(job, request):
+def check_job_status(job):
 	"""Return the JSON-formatted job status. This includes the results if the job is completed."""
 	if job.status == "cancelled":
 		return json.dumps({'status':"CANCELLED"})
@@ -343,12 +348,11 @@ def check_job_status(job, request):
 		status = check_single_job_status(job)
 
 	if status['status'] == "COMPLETED" or status['status'] == "WAITING":
-		status['redirect'] = request.build_absolute_uri(reverse("dedool_functions.views.edit_results", args=[job.id]))
 		job.finish_datetime = job.start_datetime + get_elapsed_time(job)
 		job.set_status("results")
 		job.save()
 
-	return json.dumps(status)
+	return status
 
 def get_single_status(job):
 	"""Get the job status of single machine job job by reading the job status file on the single machine host."""
@@ -466,21 +470,18 @@ def check_emr_job_status(job):
 		t_fraction = (timezone.now() - job.start_datetime).seconds/300.
 		progress = t_fraction * 10
 	elif emr_status == "COMPLETED":
-		pass
-		# results = get_results(job)
+		results = "completed"
 	elif emr_status == "WAITING":
 		time.sleep(1) #wait 1 second for everything to update
 		if step_completed(job.jobflowid):
-			pass
-			# results = get_results(job)
+			results = "completed"
 		else:
 			emr_status = "RUNNING"
 			progress = 10 + get_step_status(job.jobflowid)
 	elif emr_status == "TERMINATED" or emr_status == "FAILED":
 		job.cancel()
 		if step_completed(job.jobflowid):
-			pass
-			# results = get_results(job)
+			results = "completed"
 			
 	return {"status":emr_status, "emr_details":emr_details, "progress":progress, "results":results, 'emr_tracker':url}
 	
@@ -535,7 +536,7 @@ def save_results(job, user):
 	nrows = len(results_csv)
 	results_csv = "\n".join(results_csv)
 	output_file = File(cStringIO.StringIO(results_csv))
-	output_file.name = "%i_%s.cleaned.csv" % (job.id, ".".join(job.get_input_file().name.split(".")[:-1]))
+	output_file.name = "%s.%i.cleaned.csv" % (".".join(job.get_input_file().name.split(".")[:-1]), job.id)
 
 	try:
 		uf = UserFile.filter(jobs=job).order_by('id').reverse()[0]

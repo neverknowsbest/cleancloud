@@ -207,7 +207,7 @@ def estimate_running_time(job_type, rows):
 	"""Estimate the running time of a job based on the number of rows in the input, the number of machines, and the algorithm used."""
 	curve = lambda x, a, b, c: a*x**2 + b*x + c
 	if "nl" in job_type:
-		a, b, c = [  5.05025473e-05,   1.46056654e-02,   7.35174938e+01]
+		a, b, c = [  5.05025473e-05,   1.46056654e-02,   7.35174938e+01 + 180]
 		if "4" in job_type:
 			pass
 		elif "8" in job_type:
@@ -215,7 +215,7 @@ def estimate_running_time(job_type, rows):
 		elif "1" in job_type:
 			a, b, c = [1.77358211e-04, 5.06898263e-02, -2.29059299e+01]		
 	elif "mh" in job_type:
-		a, b, c = [  1.98641850e-06,  -4.04040423e-03,   6.10269608e+01 + 120]
+		a, b, c = [  1.98641850e-06,  -4.04040423e-03,   6.10269608e+01 + 150]
 		if "4" in job_type:
 			pass
 		if "8" in job_type:
@@ -353,3 +353,21 @@ def get_user_file_library(user, view):
 	
 def get_active_jobs(user):
 	return Job.objects.filter((Q(status="uploaded") | Q(status="reviewed") | Q(status="unsubmitted") | Q(status="running")), user=user)	
+	
+def check_file_is_csv(input_file):
+	"""Check if file contains a comma in the first line. However, input files can be a single column with no commas, therefore this won't work as an input file check..."""
+	line = []
+	char = input_file.read(1)
+	line.append(char)
+	while char != "\n":
+		line.append(char)
+		char = input_file.read(1)
+	line = ''.join(line)
+
+	try:
+		line.index(",")
+	except ValueError:
+		return False
+	return True
+
+	

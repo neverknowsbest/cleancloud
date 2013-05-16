@@ -1,4 +1,5 @@
 from django import forms
+from django.core.validators import MaxLengthValidator
 from models import *
 
 class FileUploadForm(forms.Form):
@@ -13,10 +14,11 @@ class ReviewForm(forms.Form):
 
 	def __init__(self, n, *args, **kwargs):
 		super(ReviewForm, self).__init__(*args, **kwargs)
-		self.fields["value"] = forms.MultipleChoiceField(choices=[(str(i), str(i)) for i in range(int(n))])
+		self.fields["value"] = forms.MultipleChoiceField(choices=[(str(i), str(i)) for i in range(int(n))], validators=[MaxLengthValidator(50)])
 		
 class ServiceLevelForm(forms.Form):
 	service = forms.CharField()
+	notify = forms.BooleanField(required=False)
 
 class ResultsForm(forms.Form):
 	delete = forms.CharField()

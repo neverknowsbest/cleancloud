@@ -176,7 +176,7 @@ Main AJAX function for status page. This checks the job status and updates the p
 */
 function comet(jobid, delay) {
 	if (delay == "undefined") {
-		delay = 15000;
+		delay = 20000;
 	}
 	var csrftoken = getCookie('csrftoken');
 	$.ajaxSetup({
@@ -230,7 +230,8 @@ function comet(jobid, delay) {
 					} else if ((json['status'] == "WAITING" || 
 								json['status'] == "TERMINATED") && 
 								json['results'].length > 0) {
-						display_results(json);
+						window.location.replace(json['redirect'])
+						// display_results(json);
 					} else if (json['status'] == "CANCELLED") {
 					} else {
 						$("#cancel").html("<input class='btn btn-large btn-primary span3' onclick=\"cancel('" + jobid + "')\" value='Cancel Running Job'>");
@@ -247,7 +248,7 @@ function comet(jobid, delay) {
 		});};
 	
 	if (jobid != undefined) {
-		setTimeout(ajax_func, 5000); // delay first status check by 5 seconds
+		setTimeout(ajax_func, delay); // delay first status check by 1 second
 	}
 }
 
@@ -308,7 +309,7 @@ function toggle_remove_row_button(jobid, rowid) {
 		ok_button.attr('class', ok_button_class.replace("active", ""));
 		remove_button.attr('class', remove_button_class + " active");
 
-		//Save OK button state on server		
+		//Save OK button state on server
 		var save_data = {};
 		save_data[rowid] = 0;
 		save_edits_ajax(jobid, rowid, save_data);

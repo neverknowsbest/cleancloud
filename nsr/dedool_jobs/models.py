@@ -27,13 +27,14 @@ class Job(models.Model):
 	#possible states: unsubmitted, uploaded, reviewed, running, results, completed, cancelled
 	status = models.CharField(max_length=20, default="unsubmitted")
 	key = models.IntegerField(default=0)
-	value = models.CommaSeparatedIntegerField(max_length=5, default=[1])
+	value = models.CommaSeparatedIntegerField(max_length=50, default=[1])
 	cost = models.IntegerField(default=0, validators=[MinValueValidator(0)])
 	service = models.CharField(max_length=15, default="free")
 	rows = models.IntegerField(default=0)
 	jobflowid = models.CharField(max_length=50, default="")
 	start_datetime = models.DateTimeField(null=True)
 	finish_datetime = models.DateTimeField(null=True)
+	notify_by_email = models.IntegerField(default=0)
 	
 	def cancel(self):
 		self.status = "cancelled"
@@ -88,6 +89,6 @@ class Job(models.Model):
 	def set_status(self, status):
 		self.status = status
 		self.save()
-	
+		
 	def __unicode__(self):
 		return '-'.join([str(self.job_type), str(self.id), str(self.input_file), str(self.algorithm), str(self.similarity)])

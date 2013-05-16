@@ -54,6 +54,7 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	<label><input type="checkbox" name="notify"/>Check this box if you want to be notified by email when your job has completed.</label>
 	<div class="form-actions">
 		<input class="btn btn-large btn-primary span2" onclick="load_page_onclick('{% url 'dedool_functions.views.review' job.id %}')" value="Previous">
 		<div class="pull-right" id="clean">

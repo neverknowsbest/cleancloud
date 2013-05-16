@@ -317,3 +317,7 @@ td.active {
   background-image: url('../icons/error.png');
   font-weight: bold;
 }
+
+.error {
+	color: red;
+}

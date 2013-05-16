@@ -27,6 +27,8 @@ def files(request):
 				error += "Maximum storage quota reached. Please remove some files and try again.\n"
 			if request.FILES['input_file'].size == 0:
 				error += "Empty file uploaded. Please upload a file with size greater than 0. \n"
+			# if not check_file_is_csv(request.FILES['input_file']):
+			# 	error += "File is not a CSV file. Please upload a comma-separated value file.\n"
 			
 			if not error:
 				form.save(request.user)

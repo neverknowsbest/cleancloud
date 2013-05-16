@@ -115,7 +115,7 @@ def review(request, job_id):
 				
 	if request.method == "POST":
 		form = ReviewForm(request.POST['ncols'], request.POST)
-		print form.errors
+
 		if form.is_valid():
 			job.key = form.cleaned_data['key']
 			job.value = ",".join(form.cleaned_data['value'])
@@ -127,10 +127,15 @@ def review(request, job_id):
 			job.save()
 
 			return redirect('dedool_functions.views.configure', job.id)
-	else:
-		table_header, table_body, n, ncols = get_preview(job)
+		else:
+			error = []
+			if 'value' not in request.POST or len(request.POST['value']) == 0:
+				error.append("You must select a column to be used in matching.")
+			
+			error = '\n'.join(error)
+	table_header, table_body, n, ncols = get_preview(job)
 		
-	return render(request, 'cleancloud/review.html', {'job':job, 'table_header':table_header, 'table_body':table_body, 'ncols':ncols, 'nrows':n})	
+	return render(request, 'cleancloud/review.html', {'job':job, 'table_header':table_header, 'table_body':table_body, 'ncols':ncols, 'nrows':n, 'error':error})	
 
 @login_required
 def configure(request, job_id):
@@ -152,6 +157,7 @@ def configure(request, job_id):
 			fill_job_from_service(job, form.cleaned_data['service'])
 			
 			jobflowid = run_job(job)
+			job.notify_by_email = int(form.cleaned_data['notify'])
 			job.set_status("running")
 			job.jobflowid = jobflowid
 			job.start_datetime = datetime.datetime.now()
@@ -171,16 +177,6 @@ def status(request, job_id):
 	except:
 		error = "Requested job id does not exist."
 		return render(request, 'cleancloud/status.html', {'error':error})
-
-	# if request.method == "POST":
-	# 	form = ResultsForm(request.POST)
-	# 	
-	# 	if form.is_valid():
-	# 		job.set_status("completed")
-	# 		job.save()
-	# 		save_results(job, eval(form.cleaned_data['delete']), request.user)
-	# 	
-	# 		return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
 	
 	return render(request, 'cleancloud/status.html', {'job':job})
 
@@ -201,7 +197,7 @@ def edit_results(request, job_id):
 		return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
 
 	mark_secondary_rows_for_deletion(job)
-	value_columns = [int(v)-1 for v in job.value]
+	value_columns = [int(v)-1 for v in job.value.split(",")]
 	ncols = job.get_user_file().columns
 	rows = get_results_table_rows(job, 0, 5)
 	

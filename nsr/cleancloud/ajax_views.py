@@ -17,7 +17,9 @@ def check(request, job_id):
 	if request.is_ajax() or \
 	(request.user.is_authenticated() and \
 	request.user == job.user):
-		status = check_job_status(job, request)
+		status = check_job_status(job)
+		status['redirect'] = request.build_absolute_uri(reverse("dedool_functions.views.edit_results", args=[job_id]))
+		status = json.dumps(status)
 		return HttpResponse(status, mimetype="application/json")
 
 @login_required
