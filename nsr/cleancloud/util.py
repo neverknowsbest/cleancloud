@@ -313,8 +313,10 @@ def remove_user_file(user_file):
 		return user_file.input_file.name
 		
 def get_sample_file_library():	
+	descriptions = ["Celebrity names and addresses. <br>Sample Line: ANDRE AGASSI    8921 ANDRE DR.  LAS VEGAS   NV 89113", "Bird names. <br>Sample Line: Gavia stellata  Red-throated Loon", "Addresses. <br>Sample Line: 61 Mozley Street", "Restaurant names and addresses. <br>Sample Line: apple pan  the 10801 w  pico blvd  west la 310 475 3585 american"]	
 	sample_files = UserFile.objects.filter(type="S")
-	sample_files = [(f, str("".join(f.input_file.name.split("/")[-1]))) for f in sample_files if len(f.input_file.name) > 0]	
+	sample_files = [(f, str("".join(f.input_file.name.split("/")[-1])), descriptions[i]) for i,f in enumerate(sample_files) if len(f.input_file.name) > 0]
+	
 	return sample_files
 	
 def create_sample_file_library():

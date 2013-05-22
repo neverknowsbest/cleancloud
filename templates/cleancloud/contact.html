@@ -5,27 +5,25 @@
 {% block title %}Contact Us{% endblock %}
 
 {% block body %}
-<div class="span12">
-	<h2 class="section_header left">
-		<span>Contact Us</span>
-	</h2>
-	{% if submitted %}
-	<div class="span6">
-		<p>Your comment has been forwarded to the team at Dedool.com. Thank you for your thoughts!</p>
-	</div>
-	{% else %}
-	<div class="span12">
-		<form action="" method="POST">
-			{% csrf_token %}
-			Name:<br>
-			<input type="text" name="name"><br>
-			E-mail:<br>
-			<input type="text" name="mail"><br>
-			Comment:<br>
-			<textarea rows="15" cols="300" name="comment"></textarea><br><br>
-			<input class="btn btn-large btn-primary" type="submit" value="Send">
-		</form>
-	</div>
-	{% endif %}
+<h2 class="section_header left">
+	<span>Contact Us</span>
+</h2>
+{% if submitted %}
+<div class="span6">
+	<p>Your comment has been forwarded to the team at Dedool.com. Thank you for your thoughts!</p>
 </div>
+{% else %}
+<div class="span12">
+	<form action="" method="POST">
+		{% csrf_token %}
+		Name:<br>
+		<input type="text" name="name"><br>
+		Your E-mail:<br>
+		<input type="text" name="mail"><br>
+		Comment:<br>
+		<textarea rows="15" cols="300" name="comment"></textarea><br><br>
+		<input class="btn btn-large btn-primary" type="submit" value="Send">
+	</form>
+</div>
+{% endif %}
 {% endblock %}

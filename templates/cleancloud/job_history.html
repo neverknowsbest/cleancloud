@@ -41,9 +41,9 @@
 						<td>{{ job.get_short_input_file_name }}</td>
 						<td>
 							{% if job.job_type == 'e' %}
-								{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}
+								{{ job.algorithm }}, {{ job.similarity }}, EMR, {{ job.nodes }}, {{ job.node_size }}, {{ job.threshold }}
 							{% else %}
-								{{ job.algorithm }}, {{ job.similarity }}, Single Machine
+								{{ job.algorithm }}, {{ job.similarity }}, Single Machine, {{ job.threshold }}
 							{% endif %}
 						</td>
 						<!-- <td>${{ job.cost }}</td> -->

@@ -16,6 +16,7 @@ urlpatterns = patterns('',
 urlpatterns += patterns('dedool_jobs.views',
     url(r'^continue/(\d*)/$', 'continue_job'),
     url(r'^job_history/$', 'job_history'),
+    url(r'^continue/$', 'job_history'),
 )
 
 urlpatterns += patterns('dedool_files.views',
@@ -28,10 +29,19 @@ urlpatterns += patterns('dedool_functions.views',
     url(r'^select/(\d*)/$', 'select'),
     url(r'^review/(\d*)/$', 'review'),
     url(r'^configure/(\d*)/$', 'configure'),
-    url(r'^results/(\d*)/$', 'results'),
-    url(r'^status/$', 'status_form'),
+    # url(r'^results/(\d*)/$', 'results'),
     url(r'^status/(\d*)/$', 'status'),
+    url(r'^status/$', 'status_form'),
 	url(r'^edit_results/(\d*)/$', 'edit_results'),
+	url(r'^results/(\d*)/$', 'results'),
+	
+	#redirect to start if no job is specified
+    url(r'^upload/$', 'start'),
+    url(r'^select/$', 'start'),
+    url(r'^review/$', 'start'),
+    url(r'^configure/$', 'start'),	
+	url(r'^edit_results/$', 'start'),	
+	url(r'^results/$', 'start'),	
 )
 
 urlpatterns += patterns('cleancloud.ajax_views',

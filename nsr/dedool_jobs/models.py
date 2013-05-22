@@ -66,7 +66,7 @@ class Job(models.Model):
 			return self.userfile_set.all()[0].input_file
 		except IndexError:
 			return ""
-			
+	
 	def add_file(self, uf):
 		self.clear_userfile_set()
 		uf.add_job(self)

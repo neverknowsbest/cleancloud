@@ -21,8 +21,10 @@ def files(request):
 		if form.is_valid():
 			if not user_file_is_unique(request.user, request.FILES['input_file'].name):
 				error += "A file with this name already exists. Please select another file, rename this file, or remove the existing file.\n"	
-		 	if request.FILES['input_file'].content_type != "text/csv" and request.FILES['input_file'].content_type != "text/plain":
-				error += "File is not a CSV or TXT file. Please upload a comma-separated value file.\n"
+			#content_type check is problematic if CSV files are opened w/ MS excel on an OS that changes metadata (OS X)
+		 	# if request.FILES['input_file'].content_type != "text/csv" and request.FILES['input_file'].content_type != "text/plain": 
+			if request.FILES['input_file'].name[-3:] != "csv" and request.FILES['input_file'].name[-3:] != "txt":
+		 					error += "File is not a CSV or TXT file. Please upload a comma-separated value file.\n"
 			if total_size + request.FILES['input_file'].size > QUOTA:
 				error += "Maximum storage quota reached. Please remove some files and try again.\n"
 			if request.FILES['input_file'].size == 0:

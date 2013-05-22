@@ -26,4 +26,4 @@ class UserFileForm(forms.ModelForm):
 		
 	class Meta:
 		model = UserFile
-		exclude = ('user', 'jobs', 'size', 'rows', 'columns', 'type')
+		exclude = ('user', 'jobs', 'size', 'rows', 'columns', 'type', 'public_link')

@@ -9,67 +9,71 @@
 
 {% block inner %}
 <h3>Select File</h3>
-<div class="span12">
-	<p>Select a file to clean from your file library, or use one of the sample files that is provided below.</p>
-	<form method="POST">
-		{% csrf_token %}
-	<h4>File Library</h4>		
-	<table class="table table-bordered table-hover">
-		<thead>
+<p>Select a file to clean from your file library, or use one of the sample files that is provided below.</p>
+<form method="POST">
+	{% csrf_token %}
+<h4>File Library</h4>		
+<table class="table table-bordered table-hover">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Size</th>
+			<th>Rows</th>
+			<th>Columns</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for file, stripped_filename in files %}
+			<tr id="{{ file.id }}">
+				<td><input name="file" type="radio" id="{{ file.id }}" value="{{ file.id }}"></td>
+				<td>{{ stripped_filename }}</td>
+				<td>{{ file.size|filesizeformat }}</td>
+				<td>{{ file.rows }}</td>
+				<td>{{ file.columns }}</td>
 			<tr>
-				<th></th>
-				<th>Name</th>
-				<th>Size</th>
-				<th>Rows</th>
-				<th>Columns</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for file, stripped_filename in files %}
-				<tr id="{{ file.id }}">
-					<td><input name="file" type="radio" id="{{ file.id }}" value="{{ file.id }}"></td>
-					<td>{{ stripped_filename }}</td>
-					<td>{{ file.size|filesizeformat }}</td>
-					<td>{{ file.rows }}</td>
-					<td>{{ file.columns }}</td>
-				<tr>
-			{% empty %}
-				<tr>
-					<td colspan=5>No files in file library. Please visit your <a href="{% url 'dedool_files.views.files' %}">File Library</a> to upload files, or use one of the sample files below.</td>
-				</tr>
-			{% endfor %}
-		</tbody>	
-	</table>
-	
-	<h4>Sample Files</h4>		
-	<table class="table table-bordered table-hover">
-		<thead>
+		{% empty %}
 			<tr>
-				<th></th>
-				<th>Name</th>
-				<th>Size</th>
-				<th>Rows</th>
-				<th>Columns</th>
+				<td colspan=5>No files in file library. Please visit your <a href="{% url 'dedool_files.views.files' %}">File Library</a> to upload files, or use one of the sample files below.</td>
 			</tr>
-		</thead>
-		<tbody>
-			{% for file, stripped_filename in sample_files %}
-				<tr id="{{ file.id }}">
-					<td><input name="file" type="radio" id="{{ file.id }}" value="{{ file.id }}"></td>
-					<td>{{ stripped_filename }}</td>
-					<td>{{ file.size|filesizeformat }}</td>
-					<td>{{ file.rows }}</td>
-					<td>{{ file.columns }}</td>
-				<tr>
-			{% endfor %}
-		</tbody>	
-	</table>	
-	<div>
-		<input class="btn btn-large btn-primary" onclick="load_page_onclick('{% url 'dedool_functions.views.start' %}')" value="Back" type="button">
-		<div class="pull-right">
-			<input class="btn btn-large btn-primary" type="submit" value="Next">
-		</div>
-	</div>	
-	</form>	
-</div>
+		{% endfor %}
+	</tbody>	
+</table>
+
+<h4>Sample Files</h4>		
+<table class="table table-bordered table-hover">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Size</th>
+			<th>Rows</th>
+			<th>Columns</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for file, stripped_filename, description in sample_files %}
+			<tr id="{{ file.id }}">
+				<td><input name="file" type="radio" id="{{ file.id }}" value="{{ file.id }}"></td>
+				<td>{{ stripped_filename }}</td>
+				<td>{{ file.size|filesizeformat }}</td>
+				<td>{{ file.rows }}</td>
+				<td>{{ file.columns }}</td>
+			<tr>
+			<tr>
+				<td></td>
+				{% autoescape off %}
+				<td colspan="5">Description: {{ description }} </td>
+				{% endautoescape %}
+			</tr>
+		{% endfor %}
+	</tbody>	
+</table>	
+<div>
+	<input class="btn btn-large btn-primary" onclick="load_page_onclick('{% url 'dedool_functions.views.start' %}')" value="Back" type="button">
+	<div class="pull-right">
+		<input class="btn btn-large btn-primary" type="submit" value="Next">
+	</div>
+</div>	
+</form>	
 {% endblock %}

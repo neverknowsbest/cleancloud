@@ -1,7 +1,7 @@
 <table class="table table-bordered table-striped">
 	<thead>
 		<tr>
-			<th></th>
+			<!-- <th></th> -->
 			<th>Name</th>
 			<th>Submission Time</th>
 			<th>Completion Time</th>
@@ -14,7 +14,7 @@
 	<tbody>
 	{% for job in active %}
 		<tr id="{{ job.id }}">
-			<td><a onclick="cancel_job('{{ job.id }}')"><i class="icon-remove"></i></td>				
+			<!-- <td><a onclick="cancel_job('{{ job.id }}')"><i class="icon-remove"></i></td>				 -->
 			<td><a href="{% url 'dedool_jobs.views.continue_job' job.id %}">{{ job.name }}</a></td>
 			<td>{{ job.start_datetime }}</td>
 			<td>{{ job.finish_datetime }}</td>

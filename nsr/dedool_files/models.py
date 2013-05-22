@@ -26,6 +26,7 @@ class UserFile(models.Model):
 	rows = models.IntegerField(max_length=100)
 	columns = models.IntegerField(max_length=100)
 	type = models.CharField(max_length=1)
+	public_link = models.CharField(default="", max_length=200)
 	
 	def __unicode__(self):
 		return "-".join([str(self.user), self.type, str(self.input_file)])
@@ -34,17 +35,22 @@ class UserFile(models.Model):
 		self.jobs.add(job)
 		self.save()
 		
+	def set_public_link(self):
+		#make file publicly accessible
+		c = boto.connect_s3()
+		b = c.create_bucket(USER_FILE_BUCKET)
+		k = Key(b)
+		k.key = self.input_file.name
+		k.set_acl('public-read')
+
+		public_s3_file = "http://s3.amazonaws.com/" + USER_FILE_BUCKET + "/" + self.input_file.name
+		self.public_link = public_s3_file
+		self.save()
+		return public_s3_file		
+		
 	def get_public_link(self):
-		if len(self.public_s3_file) == 0:
-			#make file publicly accessible
-			c = boto.connect_s3()
-			b = c.create_bucket(USER_FILE_BUCKET)
-			k = Key(b)
-			k.key = self.input_file.name
-			k.set_acl('public-read')
-	
-			public_s3_file = "http://s3.amazonaws.com/" + USER_FILE_BUCKET + "/" + self.input_file.name
-			self.public_s3_file = public_s3_file
-			return public_s3_file
+		if self.public_link:
+			return self.public_link
 		else:
-			return self.public_s3_file
+			self.set_public_link()
+			return self.public_link

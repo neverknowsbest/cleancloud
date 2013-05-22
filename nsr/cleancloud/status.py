@@ -161,9 +161,10 @@ def match_results(job):
 	
 	for id1, id2 in results:
 		for k, result_set in result_dict.iteritems():
-			if id1 in result_set or id2 in result_set:
-				result_set.add(id1)
+			if id1 in result_set:
 				result_set.add(id2)
+			elif id2 in result_set:
+				result_set.add(id1)
 		else:
 			result_dict.setdefault(id1, set()).add(id2)
 
