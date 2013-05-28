@@ -173,8 +173,7 @@ def get_tiers(job):
 	"""Return the tier description strings."""
 	names = ['1-nl', '4-nl', '4-mh']
 	running_times = [estimate_running_time(name, job.rows) for name in names]
-	costs = [PRICES[name.split('-')[0]] * t.seconds for t, name in zip(running_times, names)]
-	running_times = [str(t).split(".")[0] for t in running_times]
+	costs = [PRICES[name.split('-')[0]] * t * 60 for t, name in zip(running_times, names)]
 	
 	ALGS = {'nl':'Nested loop algorithm - slow but most accurate', 'mh':'MinHash algorithm - fast, but may miss some fuzzy matches'}
 	ROWS = 'Unlimited rows'
@@ -220,7 +219,9 @@ def estimate_running_time(job_type, rows):
 			pass
 		if "8" in job_type:
 			a, b, c = a/2., b/2., c/2.
-	return datetime.timedelta(seconds=curve(rows, a, b, c))
+	minutes = curve(rows, a, b, c)/60.
+	
+	return minutes
 		
 def cancel_job(job):
 	"""Cancel job job by terminating the EMR job flow or killing the single machine process."""
@@ -277,8 +278,8 @@ def mark_secondary_rows_for_deletion(job):
 	results = match_results(job).items()
 	for id1, result_set in results:
 		for id2 in result_set:
-			mark_row_for_deletion(job, id2, True, force=False)
-
+			if id1 != id2:
+				mark_row_for_deletion(job, id2, True, force=False)
 
 def get_redirect_from_job_status(job):
 	if job.status == "unsubmitted":
@@ -313,7 +314,7 @@ def remove_user_file(user_file):
 		return user_file.input_file.name
 		
 def get_sample_file_library():	
-	descriptions = ["Celebrity names and addresses. <br>Sample Line: ANDRE AGASSI    8921 ANDRE DR.  LAS VEGAS   NV 89113", "Bird names. <br>Sample Line: Gavia stellata  Red-throated Loon", "Addresses. <br>Sample Line: 61 Mozley Street", "Restaurant names and addresses. <br>Sample Line: apple pan  the 10801 w  pico blvd  west la 310 475 3585 american"]	
+	descriptions = ["Celebrity names and addresses. <br><strong>Sample</strong>: ANDRE AGASSI    8921 ANDRE DR.  LAS VEGAS   NV 89113", "Bird names. <br><strong>Sample</strong>: Gavia stellata  Red-throated Loon", "Addresses. <br><strong>Sample</strong>: 61 Mozley Street", "Restaurant names and addresses. <br><strong>Sample</strong>: apple pan  the 10801 w  pico blvd  west la 310 475 3585 american"]	
 	sample_files = UserFile.objects.filter(type="S")
 	sample_files = [(f, str("".join(f.input_file.name.split("/")[-1])), descriptions[i]) for i,f in enumerate(sample_files) if len(f.input_file.name) > 0]
 	

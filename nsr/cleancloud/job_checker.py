@@ -1,7 +1,7 @@
 #/usr/bin/python
 import threading, subprocess, time
 
-import os, sys
+import os, sys, time
 sys.path.append('/home/ec2-user/nsr-django/nsr')
 os.environ['DJANGO_SETTINGS_MODULE'] = 'nsr.settings'
 
@@ -22,10 +22,10 @@ The Dedool.com team
 
 def check_status():
 	jobs = Job.objects.filter(status="running")
-	# print jobs
+	print time.time(), jobs
 	for job in jobs:
 		status = check_job_status(job)
-		# print job, status['status']
+		print time.time(), job, status['status']
 		if status['status'] == "COMPLETED" or status['status'] == "WAITING":
 			job.finish_datetime = job.start_datetime + get_elapsed_time(job)
 			job.set_status("results")
@@ -34,7 +34,6 @@ def check_status():
 			if job.notify_by_email:
 				send_mail("Dedool.com Job %s Complete!" % job.name, email_body(job.name, job.id), "support@nittanysystem.com", [job.user.email])
 		time.sleep(20)
-
 
 def repeat(event, action):
 	while True:

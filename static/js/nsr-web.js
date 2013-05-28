@@ -10,7 +10,9 @@ function hide_all() {
 	$(".row-details").hide();
 	var all_toggles = $("label[id*=toggle]");
 	var current_toggles = all_toggles.html();	
-	all_toggles.html(current_toggles.replace("minus", "plus"));
+	if (current_toggles != undefined) {
+		all_toggles.html(current_toggles.replace("minus", "plus"));		
+	}
 }
 
 function expand_all() {

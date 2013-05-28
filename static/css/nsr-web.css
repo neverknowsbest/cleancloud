@@ -222,10 +222,14 @@ table.tablesorter thead tr .headerSortDown,table.tablesorter thead tr .headerSor
 /* borders for rows in tables */
 tr.top td {
   border-top: thin solid black;
+  border-left: thin dotted black;
+  border-right: thin dotted black;
 }
 
 tr.bottom td {
   border-bottom: thick solid black;
+  border-left: thin dotted black;
+  border-right: thin dotted black;
 }
 
 /* tr.row td:first-child    {

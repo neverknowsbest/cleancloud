@@ -36,7 +36,7 @@
 			</div>
 			<br/>			
 			{% csrf_token %}
-			{% if empty %}
+			{% if nrows == 0 %}
 				<div id="results">
 					<p>No matching rows were found in the dataset. If you feel that this is an error, please try your job again with a lower threshold value, or using a Nested Loop algorithm.</p>
 				</div>
@@ -59,6 +59,7 @@
 						
 						</tbody>
 					</table>
+					<p><strong>{{ nrows }} total rows matched.</strong></p>
 					<p>* indicates that a column was used in the matching algorithm. </p>
 				</div>
 			{% endif %}

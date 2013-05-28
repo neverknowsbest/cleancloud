@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from storages.backends.s3boto import S3BotoStorage
+from django.core.urlresolvers import reverse
 
 from dedool_jobs.models import Job
 from cleancloud.constants import *
@@ -27,6 +28,7 @@ class UserFile(models.Model):
 	columns = models.IntegerField(max_length=100)
 	type = models.CharField(max_length=1)
 	public_link = models.CharField(default="", max_length=200)
+	created = models.DateTimeField(auto_now_add=True)
 	
 	def __unicode__(self):
 		return "-".join([str(self.user), self.type, str(self.input_file)])
@@ -54,3 +56,12 @@ class UserFile(models.Model):
 		else:
 			self.set_public_link()
 			return self.public_link
+			
+	def get_job(self):
+		return self.jobs.get().id
+		
+	def get_job_name(self):
+		return self.jobs.get().name
+		
+	def get_job_link(self):
+		return reverse('dedool_functions.views.edit_results', args=(self.get_job(),))

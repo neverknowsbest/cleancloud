@@ -80,11 +80,9 @@ class Job(models.Model):
 		except:
 			return ""
 			
-		if "_" in name:
-			name = str("".join(name.split("/")[-1].split("_")[1:]))	
-		else:
-			name = str("".join(name.split("/")[-1]))
-		return name			
+		name = str("".join(name.split("/")[-1]))
+		
+		return name
 	
 	def set_status(self, status):
 		self.status = status

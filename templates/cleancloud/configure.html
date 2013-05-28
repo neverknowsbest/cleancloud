@@ -42,7 +42,7 @@
 						${{ cost|floatformat:2|intcomma }}
 					{% endif %}
 				</td> -->
-				<td>{{ time }}</td>
+				<td>{% include 'cleancloud/running_time.html' %}</td>
 				<td>
 					<ul>
 						{% for desc_line in description %}

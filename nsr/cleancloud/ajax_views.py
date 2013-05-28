@@ -91,20 +91,20 @@ def load_results(request, job_id):
 		job = Job.objects.get(id=job_id)
 	except:
 		return HttpResponse("Invalid job specified.")
-	# 
-	# if len(request.GET['sSearch']) > 0:
-	# 	
 	
-	rows, results_rows = get_results_table_rows(job, int(request.GET['iDisplayStart']), int(request.GET['iDisplayLength']))
+	if len(request.GET['sSearch']) > 0:
+		# print request.GET['sSearch']
+		rows, results_rows = get_results_table_rows(job, 0, 0, request.GET['sSearch'])
+	else:
+		rows, results_rows = get_results_table_rows(job, int(request.GET['iDisplayStart']), int(request.GET['iDisplayLength']))
 	
 	response = {'iTotalRecords':results_rows,
 				'iTotalDisplayRecords':len(rows),
 				'sEcho':request.GET['sEcho'],
 				'aaData':rows}
+	js_response = json.dumps(response)
 	
-	js_data = json.dumps(response)
-	
-	return HttpResponse(js_data, mimetype="application/json")	
+	return HttpResponse(js_response, mimetype="application/json")	
 	
 def delete_row(request, job_id, row_id):
 	"""Delete a row from the results of job with job_id."""

@@ -199,9 +199,9 @@ def edit_results(request, job_id):
 	mark_secondary_rows_for_deletion(job)
 	value_columns = [int(v)-1 for v in job.value.strip("[]").split(",")]
 	ncols = job.get_user_file().columns
-	rows = get_results_table_rows(job, 0, 5)
+	nrows = get_results_table_rows(job, 0, -1)[1]
 	
-	return render(request, 'cleancloud/edit.html', {'job':job, 'ncols':range(ncols), 'values':value_columns, 'empty':rows == 0})
+	return render(request, 'cleancloud/edit.html', {'job':job, 'ncols':range(ncols), 'values':value_columns, 'nrows':nrows})
 
 @login_required
 def results(request, job_id):

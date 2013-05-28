@@ -10,6 +10,8 @@ from dedool_functions.models import EditedResult
 from dedool_files.models import UserFile
 from cleancloud.constants import *
 
+GLOBAL_BUCKETS = {}
+
 def get_accuracy(results, job):
 	"""For sample datasets that include a ground truth file, calculate and return the precision & recall of the given results set."""
 	base_filename = '_'.join(job.get_input_file().name.split("_")[1:]).split('.')[:-1][0]
@@ -111,15 +113,20 @@ def step_completed(emrid):
 		
 def get_string_from_s3(bucket, s3filename):
 	"""Get string from S3 bucket bucket, with S3 filename s3filename."""
-	s3 = boto.connect_s3()
-	bucket = s3.create_bucket(bucket)
-	file_list = bucket.list(s3filename)
+	if bucket not in GLOBAL_BUCKETS:
+		s3 = boto.connect_s3()
+		s3_bucket = s3.create_bucket(bucket)
+		GLOBAL_BUCKETS[bucket] = s3_bucket
+	else:
+		s3_bucket = GLOBAL_BUCKETS[bucket]
+
+	file_list = s3_bucket.list(s3filename)
 
 	contents = []
 	for k in file_list:
 		contents.append(k.get_contents_as_string())
 	contents = ''.join(contents)
-	s3.close()
+	# s3.close()
 	
 	return contents		
 
@@ -163,8 +170,10 @@ def match_results(job):
 		for k, result_set in result_dict.iteritems():
 			if id1 in result_set:
 				result_set.add(id2)
+				break
 			elif id2 in result_set:
 				result_set.add(id1)
+				break
 		else:
 			result_dict.setdefault(id1, set()).add(id2)
 
@@ -413,8 +422,8 @@ def get_original_data(job):
 def get_raw_results_data(job):
 	return get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
 
-def get_results_table_rows(job, start, offset):
-	"""Get [offset] rows from [start] from the results for job [job]."""
+def get_results_table_rows(job, start, offset, search=None):
+	"""Get [offset] rows from [start] from the results for job [job], alternately, search for word [search] and return all rows containing that word."""
 	original = get_original_data(job)
 	marker = '\t' if '\t' in original[0] else ','
 	results = match_results(job).items()
@@ -422,7 +431,7 @@ def get_results_table_rows(job, start, offset):
 	results_rows = len(results)
 	rows = []
 	ncols = len(original[0].split(marker))
-		
+	
 	def get_saved_edit(row_id, cell_id, master_id):
 		local_id = "%i-%i" % (row_id, cell_id) if cell_id >= 0 else str(row_id)
 
@@ -438,6 +447,7 @@ def get_results_table_rows(job, start, offset):
 				edit = original[row_id-1].split(marker)[cell_id]
 			else:
 				edit = not (row_id == master_id)
+		# print master_id, row_id, cell_id, edit, master_id == row_id
 		return edit
 		
 	def create_data_dict(master_id, row_id, row_class):
@@ -450,7 +460,29 @@ def get_results_table_rows(job, start, offset):
 		data["checked"] = "checked" if get_saved_edit(row_id, -1, master_id) else ""
 		return data
 		
-	for id1, result_set in results[start:start+offset]:
+	def get_search_keys():
+		search_rows = set()
+		for i, line in enumerate(original):
+			if search.lower() in line.lower():
+				search_rows.add(i+1)
+				
+		keys = search_rows & set(zip(*results)[0])
+		rows = search_rows - keys
+		
+		for id1, result_set in results:
+			if len(search_rows & result_set) > 0:
+				keys.add(id1)
+		
+		return keys
+		
+	if search:
+		keys = get_search_keys()
+		result_dict = dict(results)	
+		results_slice = [(k, result_dict[k]) for k in keys]
+	else:
+		results_slice = results[start:start+offset]
+		
+	for id1, result_set in results_slice:
 		data = create_data_dict(id1, id1, "top odd")
 		rows.append(data)		
 		for id2 in result_set:

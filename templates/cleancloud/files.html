@@ -42,10 +42,12 @@
 						<th>Rows</th>
 						<th>Columns</th>
 						<th>Type</th>
+						<th>Created</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for file, stripped_filename in files %}
+					{% if file.type == "U" %}
 						<tr id="{{ file.id }}">
 							<td><a onclick="remove_file('{{ file.id }}')"><i class="icon-remove"></i></td>
 							<td><a href="{{ file.get_public_link }}">{{ stripped_filename }}</a></td>
@@ -53,10 +55,40 @@
 							<td>{{ file.rows }}</td>
 							<td>{{ file.columns }}</td>
 							<td>{% if file.type == "U" %}Uploaded{% else %}Cleaned{% endif %}</td>
+							<td>{{ file.created }}
 						<tr>
+					{% endif %}
 					{% endfor %}
 				</tbody>
 			</table>
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr>
+						<th></th>
+						<th>Name</th>
+						<th>Size</th>
+						<th>Rows</th>
+						<th>Type</th>
+						<th>Created</th>
+						<th>Job</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for file, stripped_filename in files %}
+					{% if file.type != "U" %}
+						<tr id="{{ file.id }}">
+							<td><a onclick="remove_file('{{ file.id }}')"><i class="icon-remove"></i></td>
+							<td><a href="{{ file.get_public_link }}">{{ stripped_filename }}</a></td>
+							<td>{{ file.size|filesizeformat }}</td>
+							<td>{{ file.rows }}</td>
+							<td>{% if file.type == "U" %}Uploaded{% else %}Cleaned{% endif %}</td>
+							<td>{{ file.created }}</td>
+							<td><a href="{{ file.get_job_link }}">{{ file.get_job_name }}</td>
+						<tr>
+					{% endif %}
+					{% endfor %}
+				</tbody>
+			</table>			
 		</div>
 	</div>
 </div>
