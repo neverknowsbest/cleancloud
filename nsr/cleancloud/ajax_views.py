@@ -94,12 +94,12 @@ def load_results(request, job_id):
 	
 	if len(request.GET['sSearch']) > 0:
 		# print request.GET['sSearch']
-		rows, results_rows = get_results_table_rows(job, 0, 0, request.GET['sSearch'])
+		rows, nrows = get_results_table_rows(job, 0, 0, request.GET['sSearch'])
 	else:
-		rows, results_rows = get_results_table_rows(job, int(request.GET['iDisplayStart']), int(request.GET['iDisplayLength']))
+		rows, nrows = get_results_table_rows(job, int(request.GET['iDisplayStart']), int(request.GET['iDisplayLength']))
 	
-	response = {'iTotalRecords':results_rows,
-				'iTotalDisplayRecords':len(rows),
+	response = {'iTotalRecords':nrows,
+				'iTotalDisplayRecords':nrows,
 				'sEcho':request.GET['sEcho'],
 				'aaData':rows}
 	js_response = json.dumps(response)

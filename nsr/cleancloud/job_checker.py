@@ -1,5 +1,5 @@
 #/usr/bin/python
-import threading, subprocess, time
+import threading, subprocess, datetime
 
 import os, sys, time
 sys.path.append('/home/ec2-user/nsr-django/nsr')
@@ -21,11 +21,12 @@ The Dedool.com team
 """ % (name, id)
 
 def check_status():
+	Job.objects.update()
 	jobs = Job.objects.filter(status="running")
-	print time.time(), jobs
+	print str(datetime.datetime.now()), jobs
 	for job in jobs:
 		status = check_job_status(job)
-		print time.time(), job, status['status']
+		print str(datetime.datetime.now()), job, status['status']
 		if status['status'] == "COMPLETED" or status['status'] == "WAITING":
 			job.finish_datetime = job.start_datetime + get_elapsed_time(job)
 			job.set_status("results")

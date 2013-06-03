@@ -2,7 +2,7 @@ import boto, json, time, datetime, re, httplib, paramiko, subprocess, sys, cStri
 import numpy as np
 
 from boto.s3.key import Key
-from django.core.files import File
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.utils import timezone
 
@@ -110,36 +110,39 @@ def step_completed(emrid):
 		return True
 	else:
 		return False
-		
-def get_string_from_s3(bucket, s3filename):
-	"""Get string from S3 bucket bucket, with S3 filename s3filename."""
+
+def get_s3_bucket(bucket):
+	"""Get s3 bucket by reading the s3 bucket cache or opening a new connection"""
 	if bucket not in GLOBAL_BUCKETS:
 		s3 = boto.connect_s3()
 		s3_bucket = s3.create_bucket(bucket)
 		GLOBAL_BUCKETS[bucket] = s3_bucket
+		s3.close()
 	else:
 		s3_bucket = GLOBAL_BUCKETS[bucket]
+		
+	return s3_bucket	
 
+def get_string_from_s3(bucket, s3filename):
+	"""Get string from S3 bucket bucket, with S3 filename s3filename."""
+	s3_bucket = get_s3_bucket(bucket)
 	file_list = s3_bucket.list(s3filename)
 
 	contents = []
 	for k in file_list:
 		contents.append(k.get_contents_as_string())
 	contents = ''.join(contents)
-	# s3.close()
 	
 	return contents		
 
 def save_string_to_s3(contents, bucket, filename, public=False):
 	"""Save string in contents to S3 bucket bucket, with S3 filename filename. If public is True, the file is publicly accessible."""
-	s3 = boto.connect_s3()
-	bucket = s3.create_bucket(bucket)
-	k = Key(bucket)
+	s3_bucket = get_s3_bucket(bucket)
+	k = Key(s3_bucket)
 	k.key = filename
 	k.set_contents_from_string(contents)
 	if public:
 		k.set_acl('public-read')
-	s3.close()
 
 def get_public_results_link(job):
 	"""Return the publicly accessible link to the file containing the final results for job job."""
@@ -153,7 +156,7 @@ def get_final_results_table(job):
 	marker = '\t' if '\t' in results[0] else ','
 	
 	table_header = "<tr>\n %s </tr>" % "".join(["<th>Column %i</td>\n" % (i + 1) for i in range(len(results[0].split(marker)))])
-	table_body = "".join(["<tr>\n %s</tr>\n" % "".join(["<td>%s</td>\n" % column_data for column_data in line.split(marker)]) for line in results])
+	table_body = "".join(["<tr>\n %s</tr>\n" % "".join(["<td>%s</td>\n" % column_data for column_data in line.split(marker)]) for line in results[:20]])
 	table_string = "<table class='table'>%s %s</table>" % (table_header, table_body)
 
 	return table_string
@@ -168,14 +171,24 @@ def match_results(job):
 	
 	for id1, id2 in results:
 		for k, result_set in result_dict.iteritems():
-			if id1 in result_set:
+			if id1 in result_set or id1 == k:
 				result_set.add(id2)
 				break
-			elif id2 in result_set:
+			elif id2 in result_set or id2 == k:
 				result_set.add(id1)
 				break
 		else:
 			result_dict.setdefault(id1, set()).add(id2)
+
+	delete = []
+	for k, result_set in result_dict.iteritems():
+		for k2, result_set2 in result_dict.iteritems():
+			if k in result_set2:
+				delete.append((k, k2))
+	for k, k2 in delete:
+		result_dict[k2].add(k)
+		result_dict[k2] |= result_dict[k]
+		del result_dict[k]
 
 	return result_dict
 		
@@ -428,7 +441,6 @@ def get_results_table_rows(job, start, offset, search=None):
 	marker = '\t' if '\t' in original[0] else ','
 	results = match_results(job).items()
 	results.sort()
-	results_rows = len(results)
 	rows = []
 	ncols = len(original[0].split(marker))
 	
@@ -450,11 +462,12 @@ def get_results_table_rows(job, start, offset, search=None):
 		# print master_id, row_id, cell_id, edit, master_id == row_id
 		return edit
 		
-	def create_data_dict(master_id, row_id, row_class):
-		data = dict(((str(i+3), get_saved_edit(row_id, i, master_id)) for i in range(ncols)))
-		data["0"] = ""
-		data["1"] = "Delete"
-		data["2"] = "Edit"
+	def create_data_dict(master_id, row_id, n, row_class):
+		data = dict(((str(i+4), get_saved_edit(row_id, i, master_id)) for i in range(ncols)))
+		data["0"] = "%i" % n
+		data["1"] = ""
+		data["2"] = "Delete"
+		data["3"] = "Edit"
 		data["DT_RowId"] = "%i-%i" % (master_id, master_id) if master_id == row_id else "details-%i-%i" % (master_id, row_id)
 		data["DT_RowClass"] = row_class
 		data["checked"] = "checked" if get_saved_edit(row_id, -1, master_id) else ""
@@ -480,16 +493,22 @@ def get_results_table_rows(job, start, offset, search=None):
 		result_dict = dict(results)	
 		results_slice = [(k, result_dict[k]) for k in keys]
 	else:
-		results_slice = results[start:start+offset]
+		results_slice = results#[start:start+offset]
 		
-	for id1, result_set in results_slice:
-		data = create_data_dict(id1, id1, "top odd")
+	for i, (id1, result_set) in enumerate(results):
+		if search and id1 not in keys:
+			continue
+		if not search and ((i < start) or (i >= start + offset)):
+			continue
+		
+		data = create_data_dict(id1, id1, i, "top odd")
 		rows.append(data)		
 		for id2 in result_set:
-			data = create_data_dict(id1, id2, "row-details expand-child even")
-			rows.append(data)
+			if id1 != id2:
+				data = create_data_dict(id1, id2, i, "row-details expand-child even")
+				rows.append(data)
 	
-	return rows, results_rows
+	return rows, len(results)
 		
 def check_emr_job_status(job):
 	"""Check EMR job status for job job."""
@@ -568,7 +587,8 @@ def save_results(job, user):
 			results_csv.append(edited)
 	nrows = len(results_csv)
 	results_csv = "\n".join(results_csv)
-	output_file = File(cStringIO.StringIO(results_csv))
+	
+	output_file = ContentFile(results_csv)
 	output_file.name = "%s.%i.cleaned.csv" % (".".join(job.get_input_file().name.split(".")[:-1]), job.id)
 
 	try:

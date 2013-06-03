@@ -33,6 +33,7 @@
 			<h4>File Library</h4>
 			<h5>Quota Usage</h5>
 			<p><b>{{ total_size|filesizeformat }}</b> out of <b>{{ quota|filesizeformat }}</b>. {{ percentage }}% used.</p>
+			{% if files %}
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
@@ -61,6 +62,7 @@
 					{% endfor %}
 				</tbody>
 			</table>
+
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr>
@@ -89,6 +91,7 @@
 					{% endfor %}
 				</tbody>
 			</table>			
+			{% endif %}			
 		</div>
 	</div>
 </div>
