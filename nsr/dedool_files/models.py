@@ -42,8 +42,13 @@ class UserFile(models.Model):
 		c = boto.connect_s3()
 		b = c.create_bucket(USER_FILE_BUCKET)
 		k = Key(b)
-		k.key = self.input_file.name
-		k.set_acl('public-read')
+		try:
+			k.key = self.input_file.name
+			k.set_acl('public-read')
+		except:
+			self.public_link = ""
+			self.save()
+			return ""
 
 		public_s3_file = "http://s3.amazonaws.com/" + USER_FILE_BUCKET + "/" + self.input_file.name
 		self.public_link = public_s3_file

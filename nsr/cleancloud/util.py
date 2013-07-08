@@ -9,7 +9,6 @@ from cleancloud.constants import *
 from dedool_jobs.models import Job
 from dedool_files.models import UserFile
 from dedool_functions.models import EditedResult
-from cleancloud.status import match_results
 
 def get_job_or_error(job_id, page):
 	"""Get job by job_id, or return an error"""
@@ -109,7 +108,8 @@ def run_job(job):
 def create_job_steps(job):
 	"""Prepare job steps for EMR job"""
 	steps = []
-	hdfs_path = "hdfs:///%i/" % job.id	#intermediary output/input path for simplejoin
+	hdfs_path_sj = "hdfs:///%i-input/" % job.id 
+	hdfs_path = "hdfs:///%i/" % job.id	#intermediary output/input path for collate
 	jarpath = "s3n://simplejoin/hadoop/simplejoin.jar"
 	
 	if job.algorithm == 'NL':
@@ -118,15 +118,15 @@ def create_job_steps(job):
 						jar=jarpath, 
 						main_class="com.nsrdev.PrepareInput", 
 						step_args=[job.get_s3_input_path(), 
-							hdfs_path, 
+							hdfs_path_sj, 
 							job.key, 
 							job.value])
 		simplejoin = JarStep(name="SimpleJoin-%i" % job.id, 
 						action_on_failure="CANCEL_AND_WAIT",
 						jar=jarpath, 
 						main_class="com.nsrdev.SimpleJoin", 
-						step_args=[hdfs_path, 
-							job.get_s3_output_path(), 
+						step_args=[hdfs_path_sj, 
+							hdfs_path, 
 							job.similarity, 
 							job.threshold])
 		steps.append(prepare_input)
@@ -137,12 +137,18 @@ def create_job_steps(job):
 						jar=jarpath, 
 						main_class="com.nsrdev.MinHashMR", 
 						step_args=[job.get_s3_input_path(), 
-							job.get_s3_output_path(), 
+							hdfs_path, 
 							job.hashes, 
 							job.similarity, 
 							job.threshold])
 		steps.append(lsh_minhash)
-
+	collate = JarStep(name="Collate-%i" % job.id,
+					action_on_failure="CANCEL_AND_WAIT",
+					jar=jarpath,
+					main_class="com.nsrdev.Collate",
+					step_args=[hdfs_path,
+					job.get_s3_output_path()])
+	steps.append(collate)
 	return steps
 	
 def create_job_flow(steps, job):
@@ -179,7 +185,7 @@ def get_tiers(job):
 	ROWS = 'Unlimited rows'
 	MACHINES = {'1':'One machine', '4':'4 parallel machines', '8':'8 parallel machines', '8xl':'8 high-capacity parallel machines'}
 	
-	free_desc = [('Clean up to 1000 rows', 'One machine', ALGS['nl'])]
+	free_desc = [('Unlimited rows', 'One machine', ALGS['nl'])]
 	descriptions = free_desc + [(ROWS, MACHINES[name.split('-')[0]], ALGS[name.split('-')[-1]]) for name in names[1:]]
 	
 	return zip(names, costs, running_times, descriptions)
@@ -274,13 +280,6 @@ def mark_row_for_deletion(job, row_id, checked, force=True):
 		result = EditedResult(job=job, local_id=row_id, value=checked)
 		result.save()
 
-def mark_secondary_rows_for_deletion(job):
-	results = match_results(job).items()
-	for id1, result_set in results:
-		for id2 in result_set:
-			if id1 != id2:
-				mark_row_for_deletion(job, id2, True, force=False)
-
 def get_redirect_from_job_status(job):
 	if job.status == "unsubmitted":
 		return redirect('dedool_functions.views.select', job.id)
@@ -314,7 +313,7 @@ def remove_user_file(user_file):
 		return user_file.input_file.name
 		
 def get_sample_file_library():	
-	descriptions = ["Celebrity names and addresses. <br><strong>Sample</strong>: ANDRE AGASSI    8921 ANDRE DR.  LAS VEGAS   NV 89113", "Bird names. <br><strong>Sample</strong>: Gavia stellata  Red-throated Loon", "Addresses. <br><strong>Sample</strong>: 61 Mozley Street", "Restaurant names and addresses. <br><strong>Sample</strong>: apple pan  the 10801 w  pico blvd  west la 310 475 3585 american"]	
+	descriptions = ["Celebrity names and addresses. <br><strong>Sample</strong>: ANDRE AGASSI    8921 ANDRE DR.  LAS VEGAS   NV 89113", "Bird names. <br><strong>Sample</strong>: Gavia stellata  Red-throated Loon", "Addresses. <br><strong>Sample</strong>: 61 Mozley Street", "Restaurant names and addresses. <br><strong>Sample</strong>: apple pan  the 10801 w  pico blvd  west la 310 475 3585 american", "Addresses. <br><strong>Sample</strong>: 236 Minghwang Road"]	
 	sample_files = UserFile.objects.filter(type="S")
 	sample_files = [(f, str("".join(f.input_file.name.split("/")[-1])), descriptions[i]) for i,f in enumerate(sample_files) if len(f.input_file.name) > 0]
 	
@@ -325,7 +324,7 @@ def create_sample_file_library():
 	from django.core.files import File as DjangoFile
 	
 	prefix = "/var/www/sample/"
-	sample_files = ["celebrity.txt", "birdNybirdExtracted.txt", "dbgen-1k_input.txt", "restaurant.txt"]
+	sample_files = ["celebrity.txt", "birdNybirdExtracted.txt", "dbgen-1k_input.txt", "restaurant.txt", "dbgen_50k_input.txt"]
 	
 	for fn in sample_files:
 		with open(prefix + fn) as f:		
@@ -355,7 +354,7 @@ def get_user_file_library(user, view):
 	return files
 	
 def get_active_jobs(user):
-	return Job.objects.filter((Q(status="uploaded") | Q(status="reviewed") | Q(status="unsubmitted") | Q(status="running")), user=user)	
+	return Job.objects.filter((Q(status="uploaded") | Q(status="reviewed") | Q(status="unsubmitted") | Q(status="running")) | Q(status="post"), user=user)	
 	
 def check_file_is_csv(input_file):
 	"""Check if file contains a comma in the first line. However, input files can be a single column with no commas, therefore this won't work as an input file check..."""

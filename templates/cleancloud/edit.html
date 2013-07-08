@@ -42,7 +42,7 @@
 				</div>
 			{% else %}
 				<div id="results">
-					<p><strong>{{ nrows }} matching groups found.</strong></p>					
+					<p><strong>{{ nrows }} matching groups found using a threshold value of {{ job.threshold }}.</strong></p>					
 					<table id="results_table" class="dataTable">
 						<thead>
 							<th></th>
@@ -107,7 +107,8 @@ function saveRow(nRow)
 		}
 	});
 	oTable.fnUpdate('<a onclick="editRow(\'' + nRow + '\')">Edit</a>', jqRow[0], 3, false);
-	setTimeout(oTable.fnDraw(), 3000);
+
+	// setTimeout(oTable.fnDraw(), 100000);
 }
 
 //AJAX method to send delete checkbox changes to the server in the background

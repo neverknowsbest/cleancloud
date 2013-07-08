@@ -17,14 +17,15 @@
 							<div class="active item slide1">
 								<div class="row">
 									<div class="span6">
-										<img src="{{ STATIC_URL }}img/slide1.png" alt="slide1" />
+										<!-- <img src="{{ STATIC_URL }}img/slide1.jpg" alt="slide1" /> -->
+										<iframe width="420" height="315" src="http://www.youtube.com/embed/FDejEGMGlqI" frameborder="0" allowfullscreen></iframe>
 									</div>
 									<div class="span4">
 										<h1>
-											Cloud-based Data Cleaning Service
+											Cloud-based Data Cleaning
 										</h1>
 										<p>
-											Duplicate record cleaning. Clean database files with millions of records.
+											Duplicate record detection. Clean database files with millions of records.
 										</p>
 										<a href="{% url 'dedool_functions.views.start' %}" class="btn btn-primary btn-large">
 											Start Cleaning!
@@ -64,7 +65,7 @@
 	</div>
 	<div id="intro">
 		<div class="container">
-			<h1>Dedool is a high-performance cloud-based database record cleaning service.</h1>
+			<h1>Dedool is a high-performance cloud-based database record cleaning service</h1>
 		</div>
 	</div>
 {% endblock %}
@@ -79,30 +80,30 @@
 
 	<div class="row">
 		<div class="span4 feature">
-			<img src="{{ STATIC_URL }}img/feature1.jpg" alt="feature1" class="thumb" />
+			<img src="{{ STATIC_URL }}img/feature1.jpg" alt="feature1" class="thumb" width="400" height="300"/>
 			<h3>
-				<i class="i_chart"></i> Cloud-based Record Cleaning
+				<i class="i_chart"></i> Cleaning-in-the-Cloud
 			</h3>
 			<p class="description">
-				Cleaning takes place on our servers in the cloud -- no downloads or installation hassle.
+				Use the convenience of web based interface to control the cleaning tasks running remotely in the Cloud -- no downloads or installation hassle.
 			</p>
 		</div>
 		<div class="span4 feature">
 			<img src="{{ STATIC_URL }}img/feature2.jpg" alt="feature2" class="thumb" />
 			<h3>
-				<i class="i_cloud"></i> Online File Storage
+				<i class="i_cloud"></i> Large-scale Cleaning
 			</h3>
 			<p class="description">
-				Cleaned files are automatically stored in our online storage, up to 10 GB.
+				Use the power of the parallel and distributed processing in the Cloud to be able to clean very large files quickly.
 			</p>
 		</div>
 		<div class="span4 feature">
 			<img src="{{ STATIC_URL }}img/feature3.jpg" alt="feature3" class="thumb" />
 			<h3>
-				<i class="i_chart"></i> Multiple Price Tiers
+				<i class="i_chart"></i> Low-cost Cleaning
 			</h3>
 			<p class="description">
-				Choose the price and service that matches your needs!
+				Choose the price and service that matches your needs at all performance levels with our convenient, pay-as-you-go pricing.
 			</p>
 		</div>
 	</div>

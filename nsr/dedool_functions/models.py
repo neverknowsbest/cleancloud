@@ -1,9 +1,8 @@
 from django.db import models
 
-from dedool_jobs.models import Job
 
 class EditedResult(models.Model):
-	job = models.ForeignKey(Job)
+	job = models.ForeignKey('dedool_jobs.Job')
 	local_id = models.CharField(max_length=31)
 	value = models.TextField()
 	

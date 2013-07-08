@@ -1,16 +1,17 @@
-import boto, json, time, datetime, re, httplib, paramiko, subprocess, sys, cStringIO
+import boto, json, time, datetime, re, httplib, paramiko, subprocess, sys, cStringIO, multiprocessing
 import numpy as np
 
 from boto.s3.key import Key
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.db import connection
 
 from dedool_functions.models import EditedResult
 from dedool_files.models import UserFile
 from cleancloud.constants import *
-
-GLOBAL_BUCKETS = {}
+from cleancloud.s3ops import *
 
 def get_accuracy(results, job):
 	"""For sample datasets that include a ground truth file, calculate and return the precision & recall of the given results set."""
@@ -41,42 +42,6 @@ def get_accuracy(results, job):
 		return (float(len(hits))/(len(hits) + len(false)), float(len(hits))/len(ground))
 	else:
 		return (-2,)
-		
-def get_elapsed_time(job):
-	"""Get elapsed time for job."""
-	if job.job_type == "e":
-		return get_elapsed_time_emr(job, job.jobflowid)
-	else:
-		return datetime.timedelta(seconds=get_single_status(job))
-
-def get_elapsed_time_emr(job, emrid):
-	"""Get elapsed time for EMR job with job flow id emrid, based on EMR job information."""
-	emr = boto.connect_emr()
-	jobflow = emr.describe_jobflow(emrid)
-	emr.close()
-	
-	try:
-		steps = [s for s in jobflow.steps if int(s.name.split("-")[1]) == job.id]
-	except IndexError:
-		try:
-			stepcount = -2 if jobflow.steps[-1].name == "SimpleJoin" else -1
-			starttime = datetime.datetime.strptime(jobflow.steps[stepcount].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
-		except AttributeError as e:
-			starttime = datetime.datetime.strptime(jobflow.startdatetime, '%Y-%m-%dT%H:%M:%SZ')
-		except:
-			starttime = datetime.datetime.strptime(jobflow.steps[-1].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
-	
-		try:
-			endtime = datetime.datetime.strptime(jobflow.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
-		except AttributeError:
-			endtime = datetime.datetime.today()	
-		except:
-			endtime = datetime.datetime.strptime(jobflow.steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
-	else:
-		starttime = datetime.datetime.strptime(steps[0].creationdatetime, '%Y-%m-%dT%H:%M:%SZ')
-		endtime = datetime.datetime.strptime(steps[-1].enddatetime, '%Y-%m-%dT%H:%M:%SZ')
-
-	return (endtime-starttime)
 
 def get_step_status(emrid):	
 	"""Get percentage complete of EMR job with jobflow id emrid.
@@ -111,39 +76,6 @@ def step_completed(emrid):
 	else:
 		return False
 
-def get_s3_bucket(bucket):
-	"""Get s3 bucket by reading the s3 bucket cache or opening a new connection"""
-	if bucket not in GLOBAL_BUCKETS:
-		s3 = boto.connect_s3()
-		s3_bucket = s3.create_bucket(bucket)
-		GLOBAL_BUCKETS[bucket] = s3_bucket
-		s3.close()
-	else:
-		s3_bucket = GLOBAL_BUCKETS[bucket]
-		
-	return s3_bucket	
-
-def get_string_from_s3(bucket, s3filename):
-	"""Get string from S3 bucket bucket, with S3 filename s3filename."""
-	s3_bucket = get_s3_bucket(bucket)
-	file_list = s3_bucket.list(s3filename)
-
-	contents = []
-	for k in file_list:
-		contents.append(k.get_contents_as_string())
-	contents = ''.join(contents)
-	
-	return contents		
-
-def save_string_to_s3(contents, bucket, filename, public=False):
-	"""Save string in contents to S3 bucket bucket, with S3 filename filename. If public is True, the file is publicly accessible."""
-	s3_bucket = get_s3_bucket(bucket)
-	k = Key(s3_bucket)
-	k.key = filename
-	k.set_contents_from_string(contents)
-	if public:
-		k.set_acl('public-read')
-
 def get_public_results_link(job):
 	"""Return the publicly accessible link to the file containing the final results for job job."""
 	result_file = UserFile.objects.filter(jobs=job, type="O").order_by('id').reverse()[0]
@@ -160,37 +92,6 @@ def get_final_results_table(job):
 	table_string = "<table class='table'>%s %s</table>" % (table_header, table_body)
 
 	return table_string
-
-def match_results(job):
-	"""Match and split results in results according to job.similarity."""
-	results = get_raw_results_data(job)	
-	results = re.findall("\((\d*),(\d*),(.*),(.*)\)", results)
-	result_dict = {}
-		
-	results = sorted([(int(id1), int(id2)) for (id1, id2, val1, val2) in results])
-	
-	for id1, id2 in results:
-		for k, result_set in result_dict.iteritems():
-			if id1 in result_set or id1 == k:
-				result_set.add(id2)
-				break
-			elif id2 in result_set or id2 == k:
-				result_set.add(id1)
-				break
-		else:
-			result_dict.setdefault(id1, set()).add(id2)
-
-	delete = []
-	for k, result_set in result_dict.iteritems():
-		for k2, result_set2 in result_dict.iteritems():
-			if k in result_set2:
-				delete.append((k, k2))
-	for k, k2 in delete:
-		result_dict[k2].add(k)
-		result_dict[k2] |= result_dict[k]
-		del result_dict[k]
-
-	return result_dict
 		
 def get_results_table_body(original, job):
 	"""Return the table of results for the preview/edit results page. This includes the input boxes for editing the results. 
@@ -364,16 +265,17 @@ def get_original_data_json(job, input_id):
 def check_job_status(job):
 	"""Return the JSON-formatted job status. This includes the results if the job is completed."""
 	if job.status == "cancelled":
-		return json.dumps({'status':"CANCELLED"})
+		return {'status':"CANCELLED"}
 	if job.job_type == "e":
 		status = check_emr_job_status(job)
 	else:
 		status = check_single_job_status(job)
 
 	if status['status'] == "COMPLETED" or status['status'] == "WAITING":
-		job.finish_datetime = job.start_datetime + get_elapsed_time(job)
-		job.set_status("results")
-		job.save()
+		job.finish_job()
+		
+	if job.status == "post":
+		status['status'] = "WAITING"
 
 	return status
 
@@ -432,20 +334,17 @@ def get_original_data(job):
 
 	return original
 
-def get_raw_results_data(job):
-	return get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
-
 def get_results_table_rows(job, start, offset, search=None):
 	"""Get [offset] rows from [start] from the results for job [job], alternately, search for word [search] and return all rows containing that word."""
 	original = get_original_data(job)
 	marker = '\t' if '\t' in original[0] else ','
-	results = match_results(job).items()
+	results = job.get_matched_rows().items()
 	results.sort()
 	rows = []
 	ncols = len(original[0].split(marker))
 	
 	def get_saved_edit(row_id, cell_id, master_id):
-		local_id = "%i-%i" % (row_id, cell_id) if cell_id >= 0 else str(row_id)
+		local_id = "%i-%i" % (row_id, cell_id) if cell_id >= 0 else int(row_id)
 
 		try:
 			edit = EditedResult.objects.get(job=job, local_id=local_id).value
@@ -459,7 +358,15 @@ def get_results_table_rows(job, start, offset, search=None):
 				edit = original[row_id-1].split(marker)[cell_id]
 			else:
 				edit = not (row_id == master_id)
+		except EditedResult.MultipleObjectsReturned:
+			edit = EditedResult.objects.filter(job=job, local_id=local_id)[0].value
+			if cell_id < 0:
+				if edit.lower() == "true":
+					edit = True
+				else:
+					edit = False			
 		# print master_id, row_id, cell_id, edit, master_id == row_id
+		
 		return edit
 		
 	def create_data_dict(master_id, row_id, n, row_class):
@@ -553,10 +460,17 @@ def get_jobflow_status(emr_id):
 	return status, details, url
 
 def save_results(job, user):
+	q = multiprocessing.Queue()
+	p = multiprocessing.Process(target=save_results_mp, args=(job, user, q))
+	p.start()
+	print "Queue", q.get()
+
+def save_results_mp(job, user, q):
 	"""Create final results file. The rows in marked_rows will not be included in the final file. If any edited results exist in the EditedResult database, a new row will be created with the contents of the EditedResult.
 	
 	marked_rows - array of row IDs to be deleted
 	"""
+	connection.close() #needed bc Django + multiprocessing = messy
 	results_csv = []
 	
 	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
@@ -571,7 +485,9 @@ def save_results(job, user):
 			marked_delete = False if EditedResult.objects.get(job=job, local_id=(i+1)).value.lower() == "false" else True
 		except EditedResult.DoesNotExist:
 			marked_delete = False
-	
+		except EditedResult.MultipleObjectsReturned:
+			marked_delete = False if EditedResult.objects.filter(job=job, local_id=(i+1))[0].value.lower() == "false" else True
+			
 		if not marked_delete:
 			#if row is checked, don't include in final data file
 			line = line.split(marker)
@@ -583,13 +499,18 @@ def save_results(job, user):
 						edited.append(EditedResult.objects.get(job=job, local_id='%i-%i' % (i+1, j)).value)
 					except EditedResult.DoesNotExist:
 						edited.append(line[j])
+					except EditedResult.MultipleObjectsReturned:
+						edited.append(EditedResult.objects.filter(job=job, local_id='%i-%i' % (i+1, j))[0].value)
 				edited = ','.join(edited)
 			results_csv.append(edited)
+		if float(i)/len(original) % 10./len(original) == 0:
+			q.put(float(i)/len(original))
 	nrows = len(results_csv)
 	results_csv = "\n".join(results_csv)
 	
+	latest = UserFile.objects.latest('id')
 	output_file = ContentFile(results_csv)
-	output_file.name = "%s.%i.cleaned.csv" % (".".join(job.get_input_file().name.split(".")[:-1]), job.id)
+	output_file.name = "%s.%i.%i.cleaned.csv" % 	(".".join(job.get_input_file().name.split(".")[:-1]), job.id, latest.id + 1)
 
 	try:
 		uf = UserFile.filter(jobs=job).order_by('id').reverse()[0]
@@ -601,3 +522,17 @@ def save_results(job, user):
 	finally:
 		uf.jobs.add(job)
 		uf.save()
+
+	job.set_status("results")
+	q.put(100.)
+	email_body = lambda name: \
+"""
+Hello,
+
+The final results for your file cleaning job, %s are ready! You can download your results here:
+http://dedool.com/files/
+
+Thank you,
+The Dedool.com team
+""" % (name)	
+	send_mail("Dedool.com Final Results for Job %s Ready!" % job.name, email_body(job.name), "support@nittanysystem.com", [job.user.email])	

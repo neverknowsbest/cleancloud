@@ -21,6 +21,9 @@
 <div class="span12">
 	<h2>Select Service Level</h2>
 	<p>CleanCloud provides multiple levels of service that vary by cost, accuracy, and speed. Please review your options below and select one. Prices and estimated completion times are based on the number of rows in the data file you uploaded.</p>
+	{% if job.rows > 5000 %}
+	<p class="error">Note: For input files with over 5000 records, only MinHash is available, due to the extremely large running time of the other algorithms.</p>
+	{% endif %}
 	<table class="table">
 		<thead>
 			<tr>
@@ -34,7 +37,13 @@
 		<tbody>
 			{% for name, cost, time, description in tiers %}
 			<tr>
-				<td><input type="radio" name="service" value="{{ name }}" {% if cost == 0 %}checked{% endif %}></td>
+				<td>
+					{% if job.rows <= 5000 or name == "4-mh" %}
+					<input type="radio" name="service" value="{{ name }}" {% if cost == 0 %}checked{% endif %}>
+					{% else %}
+					<input type="radio" name="service" value="{{ name }}" disabled>
+					{% endif %}
+				</td>
 				<td>{{ name }}
 				<!-- <td>{% if cost == 0 %}
 						Free
@@ -51,6 +60,7 @@
 					</ul>
 				</td>
 			</tr>
+			
 			{% endfor %}
 		</tbody>
 	</table>

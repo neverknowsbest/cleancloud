@@ -10,6 +10,8 @@
 	<a href="{% url 'dedool_functions.views.results' job.id %}">Final Results</a>
 {% elif job.status == "cancelled" %}
 	Cancelled
-{% elif job.status == "running" %}
+{% elif job.status == "running" or job.status == "post" %}
 	<a href="{% url 'dedool_functions.views.status' job.id %}">Running</a>
+{% elif job.status == "generating" %}
+	Generating Final Results
 {% endif %}		

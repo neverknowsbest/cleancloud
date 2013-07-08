@@ -18,7 +18,7 @@ def continue_job(request, job_id):
 @login_required
 def job_history(request):
 	"""Display current user's job history."""
-	finished_jobs = Job.objects.filter((Q(status="completed") | Q(status="results") | Q(status="cancelled")), user=request.user)
+	finished_jobs = Job.objects.filter((Q(status="completed") | Q(status="results") | Q(status="cancelled") | Q(status="generating")), user=request.user)
 	active_jobs = get_active_jobs(request.user)
 	
 	return render(request, 'cleancloud/job_history.html', {'active':active_jobs, 'finished':finished_jobs})

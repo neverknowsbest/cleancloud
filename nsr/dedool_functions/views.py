@@ -192,11 +192,11 @@ def edit_results(request, job_id):
 	if request.method == "POST":
 		# job.set_status("completed")
 		# job.save()
+		job.set_status("generating")
 		save_results(job, request.user)
 		
 		return HttpResponseRedirect(reverse('dedool_functions.views.results', args=(str(job.id),)))
 
-	mark_secondary_rows_for_deletion(job)
 	value_columns = [int(v)-1 for v in job.value.strip("[]").split(",")]
 	ncols = job.get_user_file().columns
 	nrows = get_results_table_rows(job, 0, -1)[1]
@@ -213,11 +213,11 @@ def results(request, job_id):
 		return render(request, 'cleancloud/results.html', {'error':error})		
 	
 	#Get and format results for display
-	results_link = get_public_results_link(job)
-	results_table = get_final_results_table(job)
+	# results_link = get_public_results_link(job)
+	# results_table = get_final_results_table(job)
 
-	return render(request, 'cleancloud/results.html', {'results_link':results_link, 'results_table':results_table})		
-
+	return render(request, 'cleancloud/results.html')
+	
 @login_required
 def status_form(request):	
 	if request.method == "POST":
