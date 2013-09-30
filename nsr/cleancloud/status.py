@@ -76,182 +76,6 @@ def step_completed(emrid):
 	else:
 		return False
 
-def get_public_results_link(job):
-	"""Return the publicly accessible link to the file containing the final results for job job."""
-	result_file = UserFile.objects.filter(jobs=job, type="O").order_by('id').reverse()[0]
-	return result_file.get_public_link()
-	
-def get_final_results_table(job):
-	"""Return the table containing the full, final results for job job."""
-	result_file = UserFile.objects.filter(jobs=job, type="O").order_by('id').reverse()[0]
-	results = get_string_from_s3(USER_FILE_BUCKET, result_file.input_file.name).split('\n')
-	marker = '\t' if '\t' in results[0] else ','
-	
-	table_header = "<tr>\n %s </tr>" % "".join(["<th>Column %i</td>\n" % (i + 1) for i in range(len(results[0].split(marker)))])
-	table_body = "".join(["<tr>\n %s</tr>\n" % "".join(["<td>%s</td>\n" % column_data for column_data in line.split(marker)]) for line in results[:20]])
-	table_string = "<table class='table'>%s %s</table>" % (table_header, table_body)
-
-	return table_string
-		
-def get_results_table_body(original, job):
-	"""Return the table of results for the preview/edit results page. This includes the input boxes for editing the results. 
-	
-	results - the results to format, as a raw string
-	original - the original data, split on '\n' into an array of strings
-	job - the job
-	"""
-	def checkbox(rowid, delete):
-		return """
-<td>
-	<span id="editstatus%i"></span>
-	<span id="id_items_%i" class="btn-group" data-toggle="buttons-radio" onclick="toggle_remove_row_button('%i', '%i')">
-		<button id="button_ok_%i" type="button" class="btn btn-small btn-success %s"><i class="icon-white icon-ok"></i></button>
-		<button id="button_remove_%i" type="button" class="btn btn-small btn-danger %s"><i class="icon-white icon-remove"></i></button>
-	</span>
-</td>	
-		""" % (rowid, rowid, job.id, rowid, rowid, '' if delete else 'active', rowid, 'active' if delete else '')
-	def close_button(rowid):
-		return """
-<td>
-	<label onclick="display_details('%i')" id="toggle%i"><i class="icon-plus"></i></label>
-</td>
-""" % (rowid, rowid)
-	def edit_row_template(inputs, rowid):
-		return """
-<tr id="editrow%i" class="row-details expand-child bottom">
-	<td colspan="2">
-		<span id="editstatus%i"></span>
-	</td>
-	<td width='16'><img src='/static/icons/up-right-arrow.ico'></td>
-	%s
-</tr>
-"""	% (rowid, rowid, inputs)
-	def active_column(column, job):
-		return "active" if str(column+1) in job.value else "inactive"
-
-	rows_to_delete = []
-	results_string = []
-	marker = '\t' if '\t' in original[0] else ','	
-	results = match_results(job)	
-	
-	#generate table rows from original data + matched pairs from cleaning output
-	for i, (id1, result_set) in enumerate(sorted(results.iteritems())):
-		rows = []
-		#first row, always visible
-		#fill row with edited result data if available, otherwise use data from original input
-		row_data = []
-		for j, data in enumerate(original[id1-1].split(marker)):
-			try:
-				er = lambda j: EditedResult.objects.get(job=job, local_id="%i-%i" % (id1, j)).value
-				row_data.append("""<td class="%s" id="cell%i-%i" onclick="send_value_to_input('%i', '%i-%i', '%s')">%s</td>""" % (active_column(j, job), id1, j, job.id, id1, j, er(j), er(j)))
-			except EditedResult.DoesNotExist:
-				row_data.append("""<td class="%s" id="cell%i-%i" onclick="send_value_to_input('%i', '%i-%i', '%s')">%s</td>""" % (active_column(j, job), id1, j, job.id, id1, j, data, data))
-		
-		#get "delete row" state from database
-		try:
-			delete = EditedResult.objects.get(job=job.id, local_id=id1).value
-		except EditedResult.DoesNotExist:
-			delete = False
-		finally:
-			if delete:
-				rows_to_delete.append(id1)
-		
-		rows.append(''.join(["<tr class='top'>"] + \
-			[close_button(id1)] + \
-			[checkbox(id1, delete)] + \
-			row_data + \
-			["</tr>"]))
-			
-		#One or more secondary rows, hidden by default
-		for k, row_id in enumerate(result_set):
-			try:
-				delete = EditedResult.objects.get(job=job.id, local_id=row_id).value
-			except EditedResult.DoesNotExist:
-				#delete secondary rows by default
-				delete = True 
-			finally:
-				if delete:
-					rows_to_delete.append(row_id)
-
-			row_data = []
-			for j, data in enumerate(original[row_id-1].split(marker)):
-				try:
-					er = lambda j: EditedResult.objects.get(job=job, local_id="%i-%i" % (row_id, j)).value				
-					row_data.append("""<td class="%s" id="cell%i-%i" onclick="send_value_to_input('%i', '%i-%i', '%s')">%s</td>""" % (active_column(j, job), row_id, j, job.id, row_id, j, er(j), er(j)))
-				except EditedResult.DoesNotExist:
-					row_data.append("""<td class="%s" id="cell%i-%i" onclick="send_value_to_input('%i', '%i-%i', '%s')">%s</td>""" % (active_column(j, job), row_id, j, job.id, row_id, j, data, data))
-						
-			row = ''.join(["<tr id='details%i-%i' class='row-details expand-child %s'>" % (id1, row_id, 'bottom' if k == len(result_set)-1 else '')] + \
-				["<td></td>"] + #close button is not needed for secondary rows \
-				[checkbox(row_id, delete)] + \
-				row_data + \
-				["</tr>"])
-			rows.append(row)
-		rows = ''.join(rows)
-
-		results_string.append(rows)
-		
-	results_html = "".join(results_string)	
-	
-	return len(results), results_html, rows_to_delete
-
-def prepare_results_page(job):
-	"Prepare table of results that is sent in the AJAX response"
-	original = get_original_data(job)
-	ncols = get_results_columns(job)
-	
-	elapsed_time = get_elapsed_time(job)
-	# accuracy = get_accuracy(results, job)
-	# accuracy_string = ("<p>Precision/Recall: %s </p>" % str(accuracy)) if accuracy[0] > 0 else ""
-	accuracy_string = ""	
-	header = ''.join(["<th></th><th>Keep Row</th>"] + ["<th></th>" for i in range(ncols-1)])
-
-	n_results, results_html, rows_to_delete = get_results_table_body(original, job)
-	
-	if n_results == 0:
-		job.set_status("no match")
-		table_string = \
-"""
-<div class="span12">
-	<p>No records matched.</p>
-</div>
-"""
-	else:
-		table_string = \
-"""
-<div class="span12">
-	<h2>Preview Results</h2>
-	<p>Running Time: %.2f minutes</p>
-	%s
-	<p><strong>%i</strong> records matched. Click the '+' button to edit the matched record. Check the box next to a row to remove that row from the final results. </p>
-
-		<div class="form-actions">
-			<div class="btn-toolbar">
-				<div class="btn-group">
-					<a onclick="hide_all()" class="btn"><i class="icon-minus-sign" title="Collapse All"></i></a>
-					<a onclick="expand_all()" class="btn"><i class="icon-plus-sign" title="Expand All"></i></a>
-					<a onclick="save_results_changes('%i')" class="btn"><i class="icon-save" title="Save All Changes"></i></a>
-				</div>
-					
-				<div class="pull-right" id="submit">
-					<input class="btn btn-large btn-primary" type="submit" id="final" value="Generate Final Results">
-				</div>
-			</div>
-		</div>
-		<input id="delete" name="delete" type="hidden" value="%s"/>
-		<table class="tablesorter table table-hover" id="results_table">
-			<thead>
-			%s
-			</thead>
-			<tbody>
-			%s
-			</tbody>
-		</table>
-</div>
-""" % (float(elapsed_time.seconds / 60.), accuracy_string, n_results, job.id, rows_to_delete, header, results_html)
-
-	return table_string
-
 def get_original_data_json(job, input_id):
 	"""Get original data at input_id and return it as json"""
 	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
@@ -318,25 +142,12 @@ def check_single_job_status(job):
 		state = "COMPLETED"
 		progress = 100
 		results = ''
-		# results = get_results(job)
 
 	return {"results":results, "progress":progress, "status":state}
 
-def get_results(job):
-	"""Get results table for job job."""
-	results_table = prepare_results_page(job)
-
-	return results_table
-
-def get_original_data(job):
-	"""Return original data file for job job."""
-	original = get_string_from_s3(USER_FILE_BUCKET, job.get_input_file().name).split('\n')
-
-	return original
-
 def get_results_table_rows(job, start, offset, search=None):
 	"""Get [offset] rows from [start] from the results for job [job], alternately, search for word [search] and return all rows containing that word."""
-	original = get_original_data(job)
+	original = job.get_original_data()
 	marker = '\t' if '\t' in original[0] else ','
 	results = job.get_matched_rows().items()
 	results.sort()
@@ -344,6 +155,7 @@ def get_results_table_rows(job, start, offset, search=None):
 	ncols = len(original[0].split(marker))
 	
 	def get_saved_edit(row_id, cell_id, master_id):
+		"""Get the saved edited result from the edited result database"""
 		local_id = "%i-%i" % (row_id, cell_id) if cell_id >= 0 else int(row_id)
 
 		try:
@@ -370,6 +182,7 @@ def get_results_table_rows(job, start, offset, search=None):
 		return edit
 		
 	def create_data_dict(master_id, row_id, n, row_class):
+		"""Create the dictionary that contains the edited result data and metadata for each row in the results"""
 		data = dict(((str(i+4), get_saved_edit(row_id, i, master_id)) for i in range(ncols)))
 		data["0"] = "%i" % n
 		data["1"] = ""
@@ -381,6 +194,7 @@ def get_results_table_rows(job, start, offset, search=None):
 		return data
 		
 	def get_search_keys():
+		"""Cache search keys locally when conducting searches"""
 		search_rows = set()
 		for i, line in enumerate(original):
 			if search.lower() in line.lower():
@@ -460,6 +274,7 @@ def get_jobflow_status(emr_id):
 	return status, details, url
 
 def save_results(job, user):
+	"""Call the save results function in a separate process"""
 	q = multiprocessing.Queue()
 	p = multiprocessing.Process(target=save_results_mp, args=(job, user, q))
 	p.start()

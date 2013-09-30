@@ -106,7 +106,7 @@ def run_job(job):
 	return jobflowid
 		
 def create_job_steps(job):
-	"""Prepare job steps for EMR job"""
+	"""Create job steps for EMR job"""
 	steps = []
 	hdfs_path_sj = "hdfs:///%i-input/" % job.id 
 	hdfs_path = "hdfs:///%i/" % job.id	#intermediary output/input path for collate
@@ -176,7 +176,14 @@ def run_single_machine(job):
 	# print p.communicate()
 		
 def get_tiers(job):
-	"""Return the tier description strings."""
+	"""Return the tier description strings.
+	
+	Service tiers consist of 4 parts:
+	name - the name of the tier
+	cost - the price of the tier
+	running_time - the estimated running time of the tier
+	description - a verbal description of the tier
+	"""
 	names = ['1-nl', '4-nl', '4-mh']
 	running_times = [estimate_running_time(name, job.rows) for name in names]
 	costs = [PRICES[name.split('-')[0]] * t * 60 for t, name in zip(running_times, names)]
@@ -312,7 +319,8 @@ def remove_user_file(user_file):
 	finally:
 		return user_file.input_file.name
 		
-def get_sample_file_library():	
+def get_sample_file_library():
+	"""Load data about the sample file library"""
 	descriptions = ["Celebrity names and addresses. <br><strong>Sample</strong>: ANDRE AGASSI    8921 ANDRE DR.  LAS VEGAS   NV 89113", "Bird names. <br><strong>Sample</strong>: Gavia stellata  Red-throated Loon", "Addresses. <br><strong>Sample</strong>: 61 Mozley Street", "Restaurant names and addresses. <br><strong>Sample</strong>: apple pan  the 10801 w  pico blvd  west la 310 475 3585 american", "Addresses. <br><strong>Sample</strong>: 236 Minghwang Road"]	
 	sample_files = UserFile.objects.filter(type="S")
 	sample_files = [(f, str("".join(f.input_file.name.split("/")[-1])), descriptions[i]) for i,f in enumerate(sample_files) if len(f.input_file.name) > 0]
@@ -320,6 +328,7 @@ def get_sample_file_library():
 	return sample_files
 	
 def create_sample_file_library():
+	"""Utility function to create the sample file library"""
 	import os, pickle
 	from django.core.files import File as DjangoFile
 	
@@ -346,6 +355,7 @@ def strip_filename(name):
 	return name	
 	
 def get_user_file_library(user, view):
+	"""Return a list of files that contains the user file library"""
 	files = UserFile.objects.filter(user=user)	
 	if view == "files":
 		files = [(f, strip_filename(f.input_file.name)) for f in files if len(f.input_file.name) > 0 and f.type != "S"]

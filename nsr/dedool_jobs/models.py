@@ -15,6 +15,30 @@ from dedool_functions.models import EditedResult
 import re, boto, datetime, paramiko
 
 class Job(models.Model):
+	"""A dedool cleaning job.
+	
+	user - a foreign key relation to the user who started this job
+	input_file - deprecated, used to contain the input file for the job, files are now a separate database table related to this one
+	name - the job name
+	algorithm - the algorithm used by the job
+	similarity - the similarity function used by the job
+	threshold - the threshold value used by the job
+	hashes - the number of hashes used by the job (only for MinHash jobs)
+	nodes - the number of EMR nodes used by the job (only for EMR jobs)
+	node_size - the EMR node size used by the job (only for EMR jobs)
+	job_type - the type of job: EMR or single machine
+	status - the job status (see below for possible values)
+	key - the column in the data that is used as the key
+	value - the column(s) in the data that are used as the values
+	cost - the cost of the job
+	service - the service level of the job
+	rows - the number of rows in the data
+	jobflowid - the EMR job flow id (only for EMR jobs)
+	start_datetime - start timestamp
+	finish_datetime - finish timestamp
+	notify_by_email - whether the user wants to be notified by email or not
+	matched_rows - a string containing a list of the rows matched in the cleaning
+	"""
 	ALGORITHM_CHOICES = (('MH', 'MinHash'), ('NL', 'Nested Loop'))
 	SIMILARITY_CHOICES = (('SoftTFIDF', 'SoftTFIDF'), ('Jaccard', 'Jaccard'), ('Level2JaroWinkler', 'Level2JaroWinkler'))
 	NODE_SIZE_CHOICES = (('m1.small', 'Small'), ('m1.large', 'Large'))
@@ -51,6 +75,11 @@ class Job(models.Model):
 	
 	def clear_userfile_set(self):
 		self.userfile_set.clear()
+
+	def get_public_results_link(self):
+		"""Return the publicly accessible link to the file containing the final results for job job."""
+		result_file = UserFile.objects.filter(jobs=self, type="O").order_by('id').reverse()[0]
+		return result_file.get_public_link()
 		
 	def get_s3_input_path(self):
 		try:
@@ -75,6 +104,12 @@ class Job(models.Model):
 			return self.userfile_set.all()[0].input_file
 		except IndexError:
 			return ""
+
+	def get_original_data(self):
+		"""Return original data file for job job."""
+		original = get_string_from_s3(USER_FILE_BUCKET, self.get_input_file().name).split('\n')
+
+		return original
 	
 	def add_file(self, uf):
 		self.clear_userfile_set()
@@ -101,6 +136,7 @@ class Job(models.Model):
 		return get_string_from_s3(DEDOOL_OUTPUT_BUCKET, "output/" + str(job.id) + "/" + job.get_output_file_name())
 		
 	def match_results_emr(job):
+		"""Parses results from the EMR result data and returns a dict with the results."""
 		results = job.get_raw_results_data()		
 		results =  re.findall("(\d*)\t([\d,]*)", results)
 		result_dict = {}
@@ -135,6 +171,7 @@ class Job(models.Model):
 		return result_dict	
 		
 	def match_results_single(job):
+		"""Parses results from the single machine results data and returns a dict with the results."""
 		results = job.get_raw_results_data()
 		results = re.findall("\((\d*),(\d*),(.*),(.*)\)", results)
 		results = sorted([(int(id1), int(id2)) for (id1, id2, val1, val2) in results])

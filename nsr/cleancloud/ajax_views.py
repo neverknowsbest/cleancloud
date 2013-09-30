@@ -1,3 +1,8 @@
+"""
+
+Dedool Django views for AJAX calls. These views all return JSON or plaintext formatted data.
+
+"""
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
@@ -24,7 +29,7 @@ def check(request, job_id):
 
 @login_required
 def remove(request, file_id):
-	"""Remove a user file."""
+	"""Remove a user file. This removes the file from the user's file library AND deletes the file from S3. Not reversable."""
 	user_file = UserFile.objects.get(id=file_id)
 	success = remove_user_file(user_file)
 	user_file.delete()
@@ -33,7 +38,7 @@ def remove(request, file_id):
 	
 @login_required
 def hide(request, job_id):
-	"""Hide a job from the inactive job history table."""
+	"""Hide a job from the inactive job history table. This does not remove any files or database entries."""
 	try:
 		job = Job.objects.get(id=job_id)
 	except:
@@ -45,6 +50,7 @@ def hide(request, job_id):
 	
 @login_required
 def cancel(request, job_id):
+	"""Cancel a running job."""
 	try:
 		job = Job.objects.get(id=job_id)
 	except:

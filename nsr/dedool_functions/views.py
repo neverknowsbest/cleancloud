@@ -212,10 +212,6 @@ def results(request, job_id):
 		error = "Requested job id does not exist."
 		return render(request, 'cleancloud/results.html', {'error':error})		
 	
-	#Get and format results for display
-	# results_link = get_public_results_link(job)
-	# results_table = get_final_results_table(job)
-
 	return render(request, 'cleancloud/results.html')
 	
 @login_required

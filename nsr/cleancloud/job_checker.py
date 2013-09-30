@@ -11,10 +11,10 @@ from status import check_job_status
 def check_status():
 	Job.objects.update()
 	jobs = Job.objects.filter(status="running")
-	print str(datetime.datetime.now()), jobs
+	# print str(datetime.datetime.now()), jobs
 	for job in jobs:
 		status = check_job_status(job)
-		print str(datetime.datetime.now()), job, status['status']
+		# print str(datetime.datetime.now()), job, status['status']
 		if status['status'] == "COMPLETED" or (status['status'] == "WAITING" and job.status != "results" and job.status != "post"):
 			job.finish_job()
 

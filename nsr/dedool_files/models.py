@@ -13,10 +13,18 @@ class UserFile(models.Model):
 	"""
 	A user-uploaded file in the file library. Files are stored in the USER_FILE_BUCKET Amazon S3 bucket, in folders by date of upload, with the username prefixed to the filename.
 	
+	user - foreign key reference to a User in the user database
+	jobs - manytomany reference to a Job in the job database
+	input_file - a Django File reference to the S3 object containing the file
+	size - the size of the file
+	rows - the number of rows in the data
+	columns - the number of columns in the data
 	type - type of file: 
 					U - user uploaded
 					C - cleaned
 					S - sample datafile
+	public_link - a publicly-accessible link to the file on S3
+	created - file creation timestamp
 	"""
 	#1 user per file
 	user = models.ForeignKey(User)
