@@ -1,0 +1,18 @@
+{% if time < 10 %}
+Under 10 minutes
+{% elif time >= 10 and time < 20 %}
+Under 20 minutes
+{% elif time >= 20 and time < 30 %}
+Under 30 minutes
+{% elif time >= 30 and time < 60 %}
+Under 1 hour
+{% elif time >= 60 and time < 120 %}
+Under 2 hours
+{% elif time >= 120 and time < 240 %}
+Under 4 hours
+{% elif time >= 240 %}
+Over 4 hours
+{% endif %}
+
+
+

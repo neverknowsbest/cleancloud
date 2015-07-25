@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>currentDocument</key>
-	<string>nsr/cleancloud/util.py</string>
+	<string>nsr/cleancloud/status.py</string>
 	<key>documents</key>
 	<array>
 		<dict>
@@ -40,28 +40,28 @@
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>34</integer>
+				<integer>11</integer>
 				<key>line</key>
-				<integer>34</integer>
+				<integer>338</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
-			<integer>69</integer>
+			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>48</integer>
+			<integer>27</integer>
 		</dict>
 		<key>nsr/cleancloud/util.py</key>
 		<dict>
 			<key>caret</key>
 			<dict>
 				<key>column</key>
-				<integer>32</integer>
+				<integer>29</integer>
 				<key>line</key>
-				<integer>153</integer>
+				<integer>366</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
 			<integer>0</integer>
 			<key>firstVisibleLine</key>
-			<integer>143</integer>
+			<integer>340</integer>
 		</dict>
 		<key>nsr/dedool_files/models.py</key>
 		<dict>
@@ -87,9 +87,9 @@
 				<integer>213</integer>
 			</dict>
 			<key>firstVisibleColumn</key>
-			<integer>0</integer>
+			<integer>64</integer>
 			<key>firstVisibleLine</key>
-			<integer>179</integer>
+			<integer>131</integer>
 		</dict>
 		<key>nsr/dedool_jobs/models.py</key>
 		<dict>
@@ -160,20 +160,6 @@
 			<integer>10176</integer>
 			<key>firstVisibleLine</key>
 			<integer>32</integer>
-		</dict>
-		<key>templates/cleancloud/configure.html</key>
-		<dict>
-			<key>caret</key>
-			<dict>
-				<key>column</key>
-				<integer>11</integer>
-				<key>line</key>
-				<integer>25</integer>
-			</dict>
-			<key>firstVisibleColumn</key>
-			<integer>0</integer>
-			<key>firstVisibleLine</key>
-			<integer>18</integer>
 		</dict>
 		<key>templates/cleancloud/contact.html</key>
 		<dict>
@@ -313,6 +299,13 @@
 							<key>subItems</key>
 							<dict/>
 						</dict>
+						<key>dedool_functions</key>
+						<dict>
+							<key>isExpanded</key>
+							<true/>
+							<key>subItems</key>
+							<dict/>
+						</dict>
 						<key>dedool_jobs</key>
 						<dict>
 							<key>isExpanded</key>
@@ -334,7 +327,15 @@
 					<key>isExpanded</key>
 					<true/>
 					<key>subItems</key>
-					<dict/>
+					<dict>
+						<key>cleancloud</key>
+						<dict>
+							<key>isExpanded</key>
+							<true/>
+							<key>subItems</key>
+							<dict/>
+						</dict>
+					</dict>
 				</dict>
 			</dict>
 		</dict>
